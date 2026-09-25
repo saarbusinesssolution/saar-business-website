@@ -15,7 +15,9 @@
     "test:qa": "node scripts/audit-qa.mjs",
     "test:journeys": "node scripts/test-visitor-journeys.mjs",
     "test:hosted": "node scripts/test-hosted-runtime.mjs",
-    "preview:pages": "wrangler pages dev dist"
+    "preview:pages": "wrangler pages dev dist",
+    "preview:worker": "wrangler dev",
+    "deploy:worker": "wrangler versions upload"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -26,6 +28,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@types/node": "^26.6.2"
+    "@types/node": "^26.6.2",
+    "wrangler": "^4.140.0"
   }
 }
