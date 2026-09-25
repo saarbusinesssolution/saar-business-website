@@ -1,0 +1,85 @@
+---
+import type { NavigationItem } from '../../types/content';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  items: NavigationItem[];
+  cta?: NavigationItem | null;
+  currentPath?: string;
+  class?: string;
+}
+
+const {
+  items,
+  cta = null,
+  currentPath = Astro.url.pathname,
+  class: className = '',
+} = Astro.props;
+
+/**
+ * Normalizes a URL path for reliable exact matching.
+ * Preserves root '/' and ensures consistent trailing slash.
+ */
+function normalize(p: string): string {
+  if (!p || p === '/') return '/';
+  return p.endsWith('/') ? p : `${p}/`;
+}
+
+const normalizedCurrent = normalize(currentPath);
+
+function isExactActive(itemPath: string): boolean {
+  return normalize(itemPath) === normalizedCurrent;
+}
+
+function isParentActive(itemPath: string): boolean {
+  const normItem = normalize(itemPath);
+  if (normItem === '/') return false;
+  return normalizedCurrent.startsWith(normItem) && normItem !== normalizedCurrent;
+}
+---
+
+<nav aria-label="Desktop Navigation" class:list={['hidden lg:flex items-center gap-8', className]}>
+  {items.length > 0 && (
+    <ul class="flex items-center gap-6 xl:gap-8 list-none m-0 p-0">
+      {items.map((item) => {
+        const exact = isExactActive(item.path);
+        const parent = isParentActive(item.path);
+
+        return (
+          <li class="relative">
+            <a
+              href={item.path}
+              aria-current={exact ? 'page' : undefined}
+              data-parent-active={parent ? 'true' : undefined}
+              class:list={[
+                'inline-flex items-center min-h-[44px] py-2 px-1 text-sm font-medium transition-colors duration-200 select-none border-b-2',
+                exact
+                  ? 'text-brand-navy border-brand-gold font-semibold'
+                  : parent
+                    ? 'text-brand-navy border-brand-gold/40'
+                    : 'text-brand-charcoal/80 border-transparent hover:text-brand-navy hover:border-brand-gold/60',
+              ]}
+            >
+              {item.label}
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  )}
+
+  {cta && (
+    <div class="flex items-center pl-2">
+      <Button
+        variant="gold"
+        size="sm"
+        href={cta.path}
+        data-analytics-cta="header-plan-my-project"
+        data-analytics-placement="header"
+        class="shadow-sm font-semibold tracking-wide"
+      >
+        {cta.label}
+      </Button>
+    </div>
+  )}
+</nav>

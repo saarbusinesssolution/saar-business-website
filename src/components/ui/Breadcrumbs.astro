@@ -1,0 +1,77 @@
+---
+export interface BreadcrumbItem {
+  label: string;
+  href?: string;
+  current?: boolean;
+}
+
+interface Props {
+  items?: BreadcrumbItem[];
+  currentPath?: string;
+  class?: string;
+}
+
+const {
+  items = [],
+  currentPath = Astro.url.pathname,
+  class: className = '',
+} = Astro.props;
+
+// Do not render breadcrumbs on homepage or if items list is empty
+const isHome = currentPath === '/' || currentPath === '';
+const shouldRender = !isHome && items.length > 0;
+---
+
+{shouldRender && (
+  <nav
+    aria-label="Breadcrumb"
+    class:list={['py-3 text-xs sm:text-sm text-brand-charcoal/70', className]}
+  >
+    <ol class="flex flex-wrap items-center gap-1.5 sm:gap-2 list-none m-0 p-0">
+      <!-- Always include Home root ancestor if not explicitly provided as first item -->
+      {items[0]?.href !== '/' && (
+        <li class="inline-flex items-center gap-1.5 sm:gap-2">
+          <a
+            href="/"
+            class="text-brand-charcoal/75 hover:text-brand-navy hover:underline transition-colors focus-visible:outline-2 focus-visible:outline-brand-navy rounded-xs"
+          >
+            Home
+          </a>
+          <span aria-hidden="true" class="text-brand-charcoal/30 select-none">/</span>
+        </li>
+      )}
+
+      {items.map((item, index) => {
+        const isLast = index === items.length - 1;
+        const isCurrent = item.current ?? isLast;
+
+        return (
+          <li
+            class="inline-flex items-center gap-1.5 sm:gap-2 max-w-full"
+            aria-current={isCurrent ? 'page' : undefined}
+          >
+            {isCurrent || !item.href ? (
+              <span
+                class="font-medium text-brand-navy truncate max-w-[220px] sm:max-w-xs md:max-w-md select-text"
+                title={item.label}
+              >
+                {item.label}
+              </span>
+            ) : (
+              <>
+                <a
+                  href={item.href}
+                  class="text-brand-charcoal/75 hover:text-brand-navy hover:underline transition-colors focus-visible:outline-2 focus-visible:outline-brand-navy rounded-xs truncate max-w-[180px] sm:max-w-xs"
+                  title={item.label}
+                >
+                  {item.label}
+                </a>
+                <span aria-hidden="true" class="text-brand-charcoal/30 select-none">/</span>
+              </>
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  </nav>
+)}

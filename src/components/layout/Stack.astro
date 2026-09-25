@@ -1,0 +1,26 @@
+---
+interface Props {
+  as?: 'div' | 'ul' | 'ol' | 'nav';
+  space?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  class?: string;
+}
+
+const {
+  as: Element = 'div',
+  space = 'md',
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+const spaceClasses = {
+  xs: 'space-y-1',
+  sm: 'space-y-2',
+  md: 'space-y-4',
+  lg: 'space-y-6',
+  xl: 'space-y-8',
+};
+---
+
+<Element class:list={['flex flex-col', spaceClasses[space], className]} {...rest}>
+  <slot />
+</Element>

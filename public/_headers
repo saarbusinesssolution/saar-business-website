@@ -1,0 +1,24 @@
+# Cloudflare Pages Custom HTTP Headers
+
+# Global Security & Content Policy
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Transactional, Utility, and API Endpoints (Strict Edge Noindex)
+/api/*
+  X-Robots-Tag: noindex, nofollow
+/thank-you/
+  X-Robots-Tag: noindex, nofollow
+/404.html
+  X-Robots-Tag: noindex, nofollow
+
+# Static Asset Long-Term Caching
+/images/*
+  Cache-Control: public, max-age=31536000, immutable
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+/favicon*
+  Cache-Control: public, max-age=86400

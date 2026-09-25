@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page Not Found" description="The requested page could not be found." noindex={true}>
+  <div class="py-16 md:py-24 flex items-center justify-center p-6 md:p-12">
+    <div class="w-full max-w-lg bg-surface-pure border border-line rounded-lg shadow-sm p-8 md:p-12 text-center">
+      <!-- Monogram Icon -->
+      <div class="flex justify-center mb-6">
+        <img
+          src="/images/brand/logo-icon.webp"
+          alt="SAAR Monogram"
+          width="64"
+          height="64"
+          class="w-16 h-16 object-contain"
+        />
+      </div>
+
+      <!-- 404 Heading -->
+      <span class="text-sm font-semibold tracking-widest text-brand-gold uppercase block mb-2">
+        Error 404
+      </span>
+      <h1 class="text-3xl font-bold text-brand-navy mb-4">
+        Page Not Found
+      </h1>
+
+      <p class="text-brand-charcoal/80 text-sm md:text-base leading-relaxed mb-8">
+        The architectural route you are attempting to access does not exist or has been relocated.
+      </p>
+
+      <!-- Return Home Action -->
+      <a
+        href="/"
+        class="inline-flex items-center justify-center px-6 py-3 rounded-md bg-brand-navy text-brand-softwhite font-medium text-sm hover:bg-brand-navy/90 focus-visible:outline-brand-navy transition-colors"
+      >
+        &larr; Return to Home
+      </a>
+    </div>
+  </div>
+</BaseLayout>

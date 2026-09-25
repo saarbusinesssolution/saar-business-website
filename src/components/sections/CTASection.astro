@@ -1,0 +1,134 @@
+---
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+import Button from '../ui/Button.astro';
+
+interface ActionItem {
+  label: string;
+  href: string;
+  variant?: 'gold' | 'primary' | 'secondary' | 'outline-gold' | 'ghost';
+  ariaLabel?: string;
+  ctaId?: string;
+}
+
+interface Props {
+  eyebrow?: string;
+  heading: string;
+  headingTag?: 'h2' | 'h3';
+  description?: string;
+  primaryAction?: ActionItem | null;
+  secondaryAction?: ActionItem | null;
+  variant?: 'navy' | 'light';
+  id?: string;
+  class?: string;
+}
+
+const {
+  eyebrow,
+  heading,
+  headingTag = 'h2',
+  description,
+  primaryAction = null,
+  secondaryAction = null,
+  variant = 'navy',
+  id,
+  class: className = '',
+} = Astro.props;
+
+const HeadingComponent = headingTag;
+
+const isNavy = variant === 'navy';
+---
+
+<Section
+  id={id}
+  padding="md"
+  class:list={[
+    'relative overflow-hidden transition-colors',
+    isNavy
+      ? 'bg-brand-navy text-brand-softwhite border-t border-brand-navy'
+      : 'bg-surface-pure text-brand-charcoal border-y border-border-subtle',
+    className,
+  ]}
+>
+  <!-- Architectural drafting background grid subtle texture -->
+  <div
+    class:list={[
+      'absolute inset-0 pointer-events-none opacity-5',
+      isNavy ? 'bg-[radial-gradient(#F4F1EA_1px,transparent_1px)] [background-size:24px_24px]' : 'bg-[radial-gradient(#173A5E_1px,transparent_1px)] [background-size:24px_24px]',
+    ]}
+    aria-hidden="true"
+  />
+
+  <Container size="content" class="relative z-base">
+    <div class="max-w-3xl mx-auto text-center flex flex-col items-center">
+      {eyebrow && (
+        <span
+          class:list={[
+            'inline-block text-xs font-bold uppercase tracking-widest mb-3',
+            isNavy ? 'text-brand-gold' : 'text-brand-gold',
+          ]}
+        >
+          {eyebrow}
+        </span>
+      )}
+
+      <HeadingComponent
+        class:list={[
+          'text-2xl sm:text-3xl md:text-4xl font-serif font-bold tracking-tight mb-4',
+          isNavy ? 'text-brand-softwhite' : 'text-brand-navy',
+        ]}
+      >
+        {heading}
+      </HeadingComponent>
+
+      {description && (
+        <p
+          class:list={[
+            'text-base md:text-lg leading-relaxed mb-8 max-w-2xl',
+            isNavy ? 'text-brand-softwhite/80' : 'text-brand-charcoal/80',
+          ]}
+        >
+          {description}
+        </p>
+      )}
+
+      {(primaryAction || secondaryAction) && (
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          {primaryAction && (
+            <Button
+              variant={primaryAction.variant || (isNavy ? 'gold' : 'primary')}
+              size="lg"
+              href={primaryAction.href}
+              ariaLabel={primaryAction.ariaLabel}
+              data-analytics-cta={primaryAction.ctaId || 'cta-section-primary'}
+              data-analytics-placement="services"
+              class="font-semibold shadow-md min-w-[160px]"
+            >
+              {primaryAction.label}
+            </Button>
+          )}
+
+          {secondaryAction && (
+            <Button
+              variant={secondaryAction.variant || (isNavy ? 'secondary' : 'secondary')}
+              size="lg"
+              href={secondaryAction.href}
+              ariaLabel={secondaryAction.ariaLabel}
+              data-analytics-cta={secondaryAction.ctaId || 'cta-section-secondary'}
+              data-analytics-placement="services"
+              class:list={[
+                'font-medium min-w-[160px]',
+                isNavy ? 'bg-surface-pure/10 text-brand-softwhite border-brand-softwhite/30 hover:bg-surface-pure/20' : '',
+              ]}
+            >
+              {secondaryAction.label}
+            </Button>
+          )}
+        </div>
+      )}
+
+      <slot />
+    </div>
+  </Container>
+</Section>

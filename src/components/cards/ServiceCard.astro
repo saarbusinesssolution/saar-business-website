@@ -1,0 +1,99 @@
+---
+import Badge from '../ui/Badge.astro';
+
+interface Props {
+  title: string;
+  shortSummary: string;
+  deliverables?: string[];
+  imagePath?: string;
+  imageAlt?: string;
+  href?: string;
+  orderNumber?: number;
+  class?: string;
+}
+
+const {
+  title,
+  shortSummary,
+  deliverables = [],
+  imagePath,
+  imageAlt,
+  href,
+  orderNumber,
+  class: className = '',
+} = Astro.props;
+
+const CardElement = href ? 'a' : 'div';
+---
+
+<CardElement
+  href={href}
+  class:list={[
+    'flex flex-col justify-between bg-surface-elevated border border-border-subtle rounded-md overflow-hidden transition-all duration-200 group relative',
+    href ? 'hover:border-brand-gold hover:shadow-card cursor-pointer' : '',
+    className,
+  ]}
+>
+  {imagePath && (
+    <div class="relative w-full aspect-[4/3] bg-surface-subtle overflow-hidden border-b border-border-subtle">
+      <img
+        src={imagePath}
+        alt={imageAlt || title}
+        width="800"
+        height="600"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  )}
+
+  <div class="p-6 sm:p-8 flex flex-col flex-grow justify-between">
+    <div>
+      <!-- Header with Order Index -->
+      <div class="flex items-center justify-between mb-4">
+        {orderNumber !== undefined && (
+          <span class="text-xs font-mono font-bold text-brand-gold tracking-widest">
+            {orderNumber < 10 ? `0${orderNumber}` : orderNumber}
+          </span>
+        )}
+        <Badge variant="category">Pillar Discipline</Badge>
+      </div>
+
+    <!-- Title -->
+    <h3 class="font-serif text-2xl font-semibold text-text-navy mb-3 group-hover:text-brand-navy transition-colors">
+      {title}
+    </h3>
+
+    <!-- Summary -->
+    <p class="text-sm text-text-muted leading-relaxed mb-6">
+      {shortSummary}
+    </p>
+
+    <!-- Deliverables Preview List -->
+    {deliverables.length > 0 && (
+      <div class="border-t border-border-subtle pt-4 mb-6">
+        <p class="text-xs font-semibold uppercase tracking-wider text-text-navy mb-2.5">
+          Key Deliverables
+        </p>
+        <ul class="space-y-1.5 text-xs text-text-primary">
+          {deliverables.slice(0, 3).map((item) => (
+            <li class="flex items-start gap-2">
+              <span class="text-brand-gold mt-0.5" aria-hidden="true">✓</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+
+  <!-- Bottom Action Hint -->
+  {href && (
+    <div class="pt-4 border-t border-border-subtle flex items-center justify-between text-xs font-semibold text-brand-navy group-hover:text-brand-gold transition-colors">
+      <span>Explore Discipline</span>
+      <span aria-hidden="true" class="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+    </div>
+  )}
+  </div>
+</CardElement>

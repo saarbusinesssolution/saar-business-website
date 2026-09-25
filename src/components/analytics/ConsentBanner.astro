@@ -1,0 +1,99 @@
+---
+/**
+ * Accessible, privacy-preserving consent banner for SAAR Business Support Solution.
+ * Strictly non-blocking: allows visitors to read, navigate, and enquire without friction.
+ * Hidden by default until JavaScript verifies an 'unset' consent preference.
+ */
+---
+
+<div
+  id="saar-consent-banner"
+  class="hidden fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-modal bg-surface-elevated border border-brand-gold/40 shadow-elevated rounded-sm p-5 transition-all duration-300 transform translate-y-0"
+  role="region"
+  aria-label="Privacy & Analytics Preferences"
+>
+  <div class="flex items-start gap-3 mb-3">
+    <div class="w-8 h-8 rounded-sm bg-surface-goldWash text-brand-gold flex items-center justify-center flex-shrink-0 mt-0.5">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+      </svg>
+    </div>
+    <div>
+      <h3 class="font-serif text-base font-semibold text-text-navy leading-snug">
+        Analytics & Privacy
+      </h3>
+      <p class="text-xs text-text-muted mt-1 leading-relaxed">
+        We use privacy-first analytics to measure navigation and refine spatial planning tools. No advertising cookies, cross-site tracking, or personal details are collected.
+      </p>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between gap-3 pt-3 border-t border-border-subtle/80 mt-2">
+    <a
+      href="/privacy/"
+      class="text-xs font-semibold text-brand-navy hover:text-brand-gold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-brand-navy"
+    >
+      Privacy Policy
+    </a>
+
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        id="saar-consent-decline-btn"
+        class="text-xs font-medium py-1.5 px-3 rounded-sm text-text-muted hover:text-text-navy hover:bg-surface-subtle transition-colors focus-visible:outline-2 focus-visible:outline-brand-navy"
+      >
+        Decline
+      </button>
+
+      <button
+        type="button"
+        id="saar-consent-accept-btn"
+        class="text-xs font-semibold py-1.5 px-4 rounded-sm bg-brand-navy text-brand-softwhite hover:bg-brand-gold hover:text-brand-navy transition-colors shadow-sm focus-visible:outline-2 focus-visible:outline-brand-navy"
+      >
+        Accept
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { getConsentStatus, setConsentStatus } from '../../lib/analytics/consent';
+  import { initAnalytics } from '../../lib/analytics/client';
+
+  const banner = document.getElementById('saar-consent-banner');
+  const acceptBtn = document.getElementById('saar-consent-accept-btn');
+  const declineBtn = document.getElementById('saar-consent-decline-btn');
+
+  function checkBannerVisibility() {
+    if (!banner) return;
+    const status = getConsentStatus();
+    if (status === 'unset') {
+      banner.classList.remove('hidden');
+    } else {
+      banner.classList.add('hidden');
+    }
+  }
+
+  acceptBtn?.addEventListener('click', () => {
+    setConsentStatus('granted');
+    banner?.classList.add('hidden');
+    initAnalytics();
+  });
+
+  declineBtn?.addEventListener('click', () => {
+    setConsentStatus('denied');
+    banner?.classList.add('hidden');
+  });
+
+  // Allow external triggers (e.g. from the Privacy page) to show the banner again
+  window.addEventListener('saar:open-consent-preferences', () => {
+    if (banner) {
+      banner.classList.remove('hidden');
+      banner.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      acceptBtn?.focus();
+    }
+  });
+
+  // Initial check upon load
+  checkBannerVisibility();
+</script>

@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectDetail from '../../components/projects/ProjectDetail.astro';
+import {
+  getPublishedProjects,
+  getRelatedServicesForProject,
+} from '../../lib/content';
+import { getProjectUrl } from '../../config/routes';
+import type { PublicProject, ServiceData } from '../../types/content';
+import { getWebPageSchema, getBreadcrumbListSchema } from '../../lib/seo/schema';
+import { SITE_URL } from '../../lib/seo/metadata';
+
+export async function getStaticPaths() {
+  const publishedProjects = await getPublishedProjects();
+
+  return Promise.all(
+    publishedProjects.map(async (project) => {
+      const relatedServices = await getRelatedServicesForProject(project);
+      const allProjects = await getPublishedProjects();
+      const relatedProjects = allProjects.filter((p) => p.id !== project.id);
+
+      return {
+        params: { slug: project.slug },
+        props: {
+          project,
+          relatedServices,
+          relatedProjects,
+        },
+      };
+    })
+  );
+}
+
+interface Props {
+  project: PublicProject;
+  relatedServices: ServiceData[];
+  relatedProjects: PublicProject[];
+}
+
+const { project, relatedServices, relatedProjects } = Astro.props;
+
+const canonicalPath = getProjectUrl(project.slug);
+const canonicalUrl = `${SITE_URL}${canonicalPath}`;
+
+const breadcrumbs = [
+  { label: 'Projects', href: '/projects/' },
+  { label: project.title, current: true },
+];
+
+const structuredData = [
+  getWebPageSchema({
+    canonicalUrl,
+    title: project.seoTitle,
+    description: project.seoDescription,
+    type: 'WebPage',
+  }),
+  getBreadcrumbListSchema([
+    { label: 'Home', href: '/' },
+    { label: 'Projects', href: '/projects/' },
+    { label: project.title, href: canonicalPath },
+  ]),
+];
+---
+
+<BaseLayout
+  title={project.seoTitle}
+  description={project.seoDescription}
+  breadcrumbs={breadcrumbs}
+  currentPath={canonicalPath}
+  structuredData={structuredData}
+>
+  <div data-project-id={project.id} data-project-nature="concept">
+    <ProjectDetail
+      project={project}
+      relatedServices={relatedServices}
+      relatedProjects={relatedProjects}
+    />
+  </div>
+
+  <script>
+    import { trackEvent } from '../../lib/analytics/client';
+    const el = document.querySelector<HTMLElement>('[data-project-id]');
+    const projectId = el?.dataset.projectId;
+    const projectNature = (el?.dataset.projectNature || 'concept') as 'actual' | 'concept';
+    if (projectId) {
+      trackEvent('project_view', { project_id: projectId, project_nature: projectNature });
+    }
+  </script>
+</BaseLayout>

@@ -1,0 +1,47 @@
+---
+interface Props {
+  step: number;
+  title: string;
+  subtitle?: string;
+  description: string;
+  isLast?: boolean;
+  class?: string;
+}
+
+const {
+  step,
+  title,
+  subtitle,
+  description,
+  isLast = false,
+  class: className = '',
+} = Astro.props;
+
+const stepFormatted = step < 10 ? `0${step}` : step.toString();
+---
+
+<div class:list={['flex flex-col relative', className]}>
+  <!-- Step Identifier Circle -->
+  <div class="flex items-center gap-4 mb-4">
+    <div class="w-12 h-12 rounded-sm bg-surface-elevated border border-brand-gold/60 flex items-center justify-center text-brand-navy font-mono font-bold text-sm shadow-subtle flex-shrink-0">
+      <span class="text-brand-gold mr-0.5">#</span>{stepFormatted}
+    </div>
+    {!isLast && (
+      <div class="hidden lg:block flex-grow h-[1px] bg-border-subtle" aria-hidden="true" />
+    )}
+  </div>
+
+  <!-- Content -->
+  <h3 class="font-serif text-xl font-semibold text-text-navy mb-1">
+    {title}
+  </h3>
+  {subtitle && (
+    <p class="text-xs font-mono uppercase tracking-wider text-brand-gold mb-2">
+      {subtitle}
+    </p>
+  )}
+
+  <p class="text-sm text-text-muted leading-relaxed">
+    {description}
+  </p>
+</div>

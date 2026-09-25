@@ -1,0 +1,57 @@
+---
+interface Props {
+  id: string;
+  name: string;
+  label: string;
+  checked?: boolean;
+  required?: boolean;
+  disabled?: boolean;
+  helpText?: string;
+  class?: string;
+}
+
+const {
+  id,
+  name,
+  label,
+  checked = false,
+  required = false,
+  disabled = false,
+  helpText,
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+const helpId = helpText ? `${id}-help` : undefined;
+---
+
+<div class:list={['flex items-start gap-3 py-1 select-none', className]}>
+  <div class="flex items-center h-6">
+    <input
+      id={id}
+      name={name}
+      type="checkbox"
+      checked={checked}
+      required={required}
+      disabled={disabled}
+      aria-describedby={helpId}
+      class:list={[
+        'w-5 h-5 rounded-xs border border-border-medium bg-surface-elevated text-brand-navy',
+        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy',
+        'disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors',
+      ]}
+      {...rest}
+    />
+  </div>
+  <div class="text-sm leading-6">
+    <label for={id} class="font-medium text-text-primary cursor-pointer">
+      {label}
+      {required && <span class="text-status-error ml-0.5" aria-hidden="true">*</span>}
+    </label>
+    {helpText && (
+      <p id={helpId} class="text-xs text-text-muted mt-0.5">
+        {helpText}
+      </p>
+    )}
+  </div>
+</div>

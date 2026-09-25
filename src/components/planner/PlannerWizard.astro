@@ -1,0 +1,1334 @@
+---
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+import FormField from '../ui/FormField.astro';
+import TextInput from '../ui/TextInput.astro';
+import TextArea from '../ui/TextArea.astro';
+import Select from '../ui/Select.astro';
+import {
+  CATEGORY_OPTIONS,
+  SERVICE_OPTIONS,
+  PROJECT_STAGE_OPTIONS,
+  STYLE_OPTIONS,
+  BUDGET_OPTIONS,
+  TIMING_OPTIONS,
+} from '../../lib/planner/schema';
+import { hasVerifiedWhatsApp } from '../../config/site';
+import EnquiryForm from '../forms/EnquiryForm.astro';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+const whatsappVerified = hasVerifiedWhatsApp();
+---
+
+<div id="planner-app" class:list={['w-full max-w-4xl mx-auto', className]}>
+  {/* Progress Header */}
+  <header class="mb-8 p-6 bg-surface-elevated rounded-sm border border-border-subtle shadow-subtle">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span id="planner-step-badge"><Badge variant="category">Step 1 of 5</Badge></span>
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-semibold">
+            Guided Spatial Planner
+          </span>
+        </div>
+        <h2 id="planner-step-title" class="font-serif text-2xl sm:text-3xl font-semibold text-text-navy">
+          Your Space
+        </h2>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          id="planner-reset-btn"
+          class="text-xs font-mono text-text-muted hover:text-brand-navy underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
+          title="Reset all fields and restart planning"
+        >
+          Restart Planning
+        </button>
+      </div>
+    </div>
+
+    {/* Visual Progress Bar */}
+    <div
+      class="w-full h-1.5 bg-surface-page rounded-full overflow-hidden border border-border-subtle/50"
+      role="progressbar"
+      id="planner-progress-bar"
+      aria-valuenow="20"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-label="Planning progress"
+    >
+      <div
+        id="planner-progress-fill"
+        class="h-full bg-brand-gold transition-all duration-300 ease-out"
+        style="width: 20%;"
+      />
+    </div>
+  </header>
+
+  {/* Accessible Live Error Summary Box */}
+  <div
+    id="planner-error-summary"
+    class="hidden mb-6 p-4 rounded-sm bg-red-50 border border-status-error/40 text-status-error text-sm font-sans"
+    role="alert"
+    aria-live="polite"
+  >
+    <div class="flex items-center gap-2 font-semibold mb-1">
+      <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+      </svg>
+      <span>Please review the highlighted details:</span>
+    </div>
+    <ul id="planner-error-list" class="list-disc list-inside space-y-1 text-xs"></ul>
+  </div>
+
+  {/* Form Container */}
+  <form id="planner-form" novalidate onsubmit="return false;">
+    {/* ========================================================================= */}
+    {/* STAGE 1: YOUR SPACE */}
+    {/* ========================================================================= */}
+    <section id="step-1" class="planner-step-panel bg-surface-elevated p-6 sm:p-10 rounded-sm border border-border-subtle shadow-subtle space-y-8">
+      <div>
+        <h3 class="font-serif text-xl sm:text-2xl font-semibold text-text-navy mb-2">
+          Select Your Project Category
+        </h3>
+        <p class="text-sm text-text-muted leading-relaxed">
+          Choose the general category that best matches your space. We adapt specific property options to your selection.
+        </p>
+      </div>
+
+      <fieldset class="space-y-4">
+        <legend class="sr-only">Project Category</legend>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {CATEGORY_OPTIONS.map((cat) => (
+            <label class="category-card relative flex flex-col p-5 rounded-sm border border-border-subtle bg-surface-page cursor-pointer transition-all duration-200 hover:border-brand-gold/60 focus-within:ring-2 focus-within:ring-brand-gold">
+              <div class="flex items-start justify-between">
+                <span class="font-serif text-lg font-semibold text-text-navy category-title">
+                  {cat.label}
+                </span>
+                <input
+                  type="radio"
+                  name="category"
+                  value={cat.id}
+                  class="sr-only category-radio"
+                  data-label={cat.label}
+                />
+                <span class="custom-radio w-5 h-5 rounded-full border border-border-subtle bg-surface-pure flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-brand-gold opacity-0 transition-opacity" />
+                </span>
+              </div>
+              <p class="mt-2 text-xs text-text-muted leading-relaxed">
+                {cat.description}
+              </p>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      {/* Property Type Selection (Dynamically populated based on category) */}
+      <div id="property-type-container" class="hidden pt-6 border-t border-border-subtle space-y-4">
+        <h4 class="font-serif text-lg font-semibold text-text-navy">
+          Select Specific Space or Property Typology
+        </h4>
+        <div id="property-type-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Dynamically populated via client script */}
+        </div>
+      </div>
+
+      {/* Optional Short Description for Custom Typology */}
+      <div id="other-description-container" class="hidden pt-4 border-t border-border-subtle">
+        <FormField
+          id="custom-space-desc"
+          label="Optional Space Description"
+          helpText="Briefly describe the layout, current use, or spatial constraints."
+        >
+          <TextInput
+            id="custom-space-desc"
+            name="customSpaceDesc"
+            placeholder="e.g., Adaptive reuse of heritage mill with 18-foot ceilings"
+            maxlength={200}
+          />
+        </FormField>
+      </div>
+    </section>
+
+    {/* ========================================================================= */}
+    {/* STAGE 2: WHAT YOU NEED */}
+    {/* ========================================================================= */}
+    <section id="step-2" class="planner-step-panel hidden bg-surface-elevated p-6 sm:p-10 rounded-sm border border-border-subtle shadow-subtle space-y-8">
+      <div>
+        <h3 class="font-serif text-xl sm:text-2xl font-semibold text-text-navy mb-2">
+          What Services Do You Require?
+        </h3>
+        <p class="text-sm text-text-muted leading-relaxed">
+          Select the confirmed disciplines you are exploring. You may select multiple capabilities, or choose guidance if you are assessing whether you need design documentation alone or full turnkey execution.
+        </p>
+      </div>
+
+      <fieldset class="space-y-4">
+        <legend class="sr-only">Services Required</legend>
+        <div class="space-y-3">
+          {SERVICE_OPTIONS.map((srv) => (
+            <label class="service-card relative flex items-start gap-4 p-5 rounded-sm border border-border-subtle bg-surface-page cursor-pointer transition-all duration-200 hover:border-brand-gold/60 focus-within:ring-2 focus-within:ring-brand-gold">
+              <input
+                type="checkbox"
+                name="services"
+                value={srv.id}
+                data-label={srv.label}
+                data-exclusive={srv.isExclusive ? 'true' : 'false'}
+                class="service-checkbox mt-1 w-5 h-5 rounded-sm border-border-subtle text-brand-navy focus:ring-brand-gold"
+              />
+              <div class="flex-grow">
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                  <span class="font-serif text-lg font-semibold text-text-navy">
+                    {srv.label}
+                  </span>
+                  {srv.statusBadge && (
+                    <Badge variant={srv.statusBadge.includes('Staged') ? 'neutral' : 'verified'}>
+                      {srv.statusBadge}
+                    </Badge>
+                  )}
+                </div>
+                <p class="mt-1 text-xs text-text-muted leading-relaxed">
+                  {srv.subtitle}
+                </p>
+              </div>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <div class="pt-4 border-t border-border-subtle">
+        <FormField
+          id="additional-notes"
+          label="Optional Requirements or Focus Areas"
+          helpText="Any particular priorities such as acoustic isolation, custom joinery, natural light preservation, or HVAC coordination."
+        >
+          <TextArea
+            id="additional-notes"
+            name="additionalNotes"
+            rows={3}
+            placeholder="e.g., We require extensive fluted timber millwork and integrated smart lighting."
+            maxlength={400}
+          />
+        </FormField>
+      </div>
+    </section>
+
+    {/* ========================================================================= */}
+    {/* STAGE 3: PROJECT DETAILS */}
+    {/* ========================================================================= */}
+    <section id="step-3" class="planner-step-panel hidden bg-surface-elevated p-6 sm:p-10 rounded-sm border border-border-subtle shadow-subtle space-y-8">
+      <div>
+        <h3 class="font-serif text-xl sm:text-2xl font-semibold text-text-navy mb-2">
+          Location, Area & Current Stage
+        </h3>
+        <p class="text-sm text-text-muted leading-relaxed">
+          Broad spatial coordinates allow us to calibrate trade logistics and milestone scheduling. Full private addresses are never required at this stage.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* City/Locality */}
+        <div class="md:col-span-2">
+          <FormField
+            id="locality"
+            label="City or Locality"
+            required={true}
+            helpText="e.g. Greater Kailash, South Delhi or DLF Phase 5, Gurgaon. (Does not commit service availability outside regional markets)."
+          >
+            <TextInput
+              id="locality"
+              name="locality"
+              placeholder="e.g., South Delhi / DLF Gurgaon"
+              required={true}
+              maxlength={100}
+            />
+          </FormField>
+        </div>
+
+        {/* Approximate Area */}
+        <div>
+          <FormField
+            id="approximate-area"
+            label="Approximate Carpet Area (Optional)"
+            helpText="Numerical area only (e.g. 2800). Leave blank if unsure."
+          >
+            <TextInput
+              id="approximate-area"
+              name="approximateArea"
+              type="number"
+              min="1"
+              max="500000"
+              placeholder="e.g., 3200"
+            />
+          </FormField>
+        </div>
+
+        {/* Area Unit */}
+        <div>
+          <FormField
+            id="area-unit"
+            label="Measurement Unit"
+            helpText="Preserved exactly as selected; no silent conversion."
+          >
+            <Select
+              id="area-unit"
+              name="areaUnit"
+              value="sq ft"
+              options={[
+                { value: 'sq ft', label: 'Square Feet (sq ft)' },
+                { value: 'sq m', label: 'Square Meters (sq m)' },
+              ]}
+            />
+          </FormField>
+        </div>
+      </div>
+
+      {/* Project Stage */}
+      <div class="pt-6 border-t border-border-subtle space-y-4">
+        <h4 class="font-serif text-lg font-semibold text-text-navy">
+          What Stage is Your Project Currently In?
+        </h4>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {PROJECT_STAGE_OPTIONS.map((stg) => (
+            <label class="stage-card relative flex items-start gap-3 p-4 rounded-sm border border-border-subtle bg-surface-page cursor-pointer transition-all duration-200 hover:border-brand-gold/60 focus-within:ring-2 focus-within:ring-brand-gold">
+              <input
+                type="radio"
+                name="stage"
+                value={stg.id}
+                data-label={stg.label}
+                class="stage-radio mt-1 text-brand-navy focus:ring-brand-gold"
+              />
+              <div>
+                <span class="font-serif text-base font-semibold text-text-navy block">
+                  {stg.label}
+                </span>
+                <span class="text-xs text-text-muted leading-tight block mt-0.5">
+                  {stg.description}
+                </span>
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* ========================================================================= */}
+    {/* STAGE 4: PREFERENCES (OPTIONAL) */}
+    {/* ========================================================================= */}
+    <section id="step-4" class="planner-step-panel hidden bg-surface-elevated p-6 sm:p-10 rounded-sm border border-border-subtle shadow-subtle space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h3 class="font-serif text-xl sm:text-2xl font-semibold text-text-navy mb-1">
+            Design & Budget Expectations (Optional)
+          </h3>
+          <p class="text-sm text-text-muted leading-relaxed">
+            All fields in this step are optional. You may skip this step entirely or specify your initial expectations.
+          </p>
+        </div>
+        <button
+          type="button"
+          id="skip-preferences-btn"
+          class="text-xs font-mono text-brand-gold hover:text-brand-navy uppercase tracking-wider underline underline-offset-4 self-start sm:self-center"
+        >
+          Skip Preferences &rarr;
+        </button>
+      </div>
+
+      {/* Style Preference */}
+      <div class="space-y-4">
+        <h4 class="font-serif text-lg font-semibold text-text-navy">
+          Aesthetic & Style Direction
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {STYLE_OPTIONS.map((style) => (
+            <label class="style-card relative flex items-start gap-3 p-4 rounded-sm border border-border-subtle bg-surface-page cursor-pointer transition-all duration-200 hover:border-brand-gold/60 focus-within:ring-2 focus-within:ring-brand-gold">
+              <input
+                type="radio"
+                name="stylePreference"
+                value={style.id}
+                data-label={style.label}
+                class="style-radio mt-1 text-brand-navy focus:ring-brand-gold"
+              />
+              <div>
+                <span class="font-serif text-base font-semibold text-text-navy block">
+                  {style.label}
+                </span>
+                <span class="text-xs text-text-muted leading-tight block mt-0.5">
+                  {style.description}
+                </span>
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Budget Expectation */}
+      <div class="pt-6 border-t border-border-subtle space-y-3">
+        <div>
+          <h4 class="font-serif text-lg font-semibold text-text-navy">
+            Target Investment Horizon (Visitor Expectation)
+          </h4>
+          <p class="text-xs text-text-muted">
+            This indicates your target budget framework to help us calibrate material palettes. It is not an automated quote or quotation commitment.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          {BUDGET_OPTIONS.map((bgt) => (
+            <label class="budget-card relative flex flex-col p-4 rounded-sm border border-border-subtle bg-surface-page cursor-pointer transition-all duration-200 hover:border-brand-gold/60 focus-within:ring-2 focus-within:ring-brand-gold">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-serif text-base font-semibold text-text-navy">
+                  {bgt.label}
+                </span>
+                <input
+                  type="radio"
+                  name="budgetExpectation"
+                  value={bgt.id}
+                  data-label={bgt.label}
+                  class="budget-radio text-brand-navy focus:ring-brand-gold"
+                />
+              </div>
+              <span class="text-xs text-text-muted leading-tight">
+                {bgt.sublabel}
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Desired Start Timing */}
+      <div class="pt-6 border-t border-border-subtle space-y-3">
+        <h4 class="font-serif text-lg font-semibold text-text-navy">
+          Desired Engagement Timeline
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {TIMING_OPTIONS.map((tim) => (
+            <label class="timing-card relative flex items-center gap-3 p-4 rounded-sm border border-border-subtle bg-surface-page cursor-pointer transition-all duration-200 hover:border-brand-gold/60 focus-within:ring-2 focus-within:ring-brand-gold">
+              <input
+                type="radio"
+                name="desiredTiming"
+                value={tim.id}
+                data-label={tim.label}
+                class="timing-radio text-brand-navy focus:ring-brand-gold"
+              />
+              <span class="text-sm font-medium text-text-navy">
+                {tim.label}
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* ========================================================================= */}
+    {/* STAGE 5: REVIEW YOUR PROJECT SUMMARY */}
+    {/* ========================================================================= */}
+    <section id="step-5" class="planner-step-panel hidden space-y-8">
+      {/* Review Box */}
+      <div class="bg-surface-elevated p-6 sm:p-10 rounded-sm border border-border-subtle shadow-subtle space-y-8">
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-border-subtle">
+          <div>
+            <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-semibold block mb-1">
+              Project Brief Formulated
+            </span>
+            <h3 class="font-serif text-2xl sm:text-3xl font-semibold text-text-navy">
+              Review Your Project Summary
+            </h3>
+            <p class="text-sm text-text-muted mt-1">
+              Verify your space details below. You can edit any section before copying or exporting your brief.
+            </p>
+          </div>
+          <Badge variant="verified">Review Stage</Badge>
+        </div>
+
+        {/* Structured Grid of Summary Cards */}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Card 1: Space & Typology */}
+          <div class="bg-surface-page p-5 rounded-sm border border-border-subtle flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-mono uppercase tracking-wider text-brand-gold font-bold">
+                  1. Space Typology
+                </span>
+                <button
+                  type="button"
+                  class="edit-step-btn text-xs font-semibold text-brand-navy hover:text-brand-gold underline underline-offset-2"
+                  data-target-step="1"
+                >
+                  Edit
+                </button>
+              </div>
+              <h4 id="summary-space-title" class="font-serif text-lg font-semibold text-text-navy">
+                Residential (Villa)
+              </h4>
+              <p id="summary-space-desc" class="text-xs text-text-muted mt-1 italic hidden"></p>
+            </div>
+          </div>
+
+          {/* Card 2: Services Scope */}
+          <div class="bg-surface-page p-5 rounded-sm border border-border-subtle flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-mono uppercase tracking-wider text-brand-gold font-bold">
+                  2. Required Scope
+                </span>
+                <button
+                  type="button"
+                  class="edit-step-btn text-xs font-semibold text-brand-navy hover:text-brand-gold underline underline-offset-2"
+                  data-target-step="2"
+                >
+                  Edit
+                </button>
+              </div>
+              <h4 id="summary-services-title" class="font-serif text-lg font-semibold text-text-navy">
+                Interior Design & Space Planning
+              </h4>
+              <p id="summary-services-notes" class="text-xs text-text-muted mt-1 italic hidden"></p>
+            </div>
+          </div>
+
+          {/* Card 3: Location & Stage */}
+          <div class="bg-surface-page p-5 rounded-sm border border-border-subtle flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-mono uppercase tracking-wider text-brand-gold font-bold">
+                  3. Location & Stage
+                </span>
+                <button
+                  type="button"
+                  class="edit-step-btn text-xs font-semibold text-brand-navy hover:text-brand-gold underline underline-offset-2"
+                  data-target-step="3"
+                >
+                  Edit
+                </button>
+              </div>
+              <div class="text-sm text-text-navy font-medium space-y-1">
+                <p>Location: <strong id="summary-locality" class="text-brand-navy">South Delhi</strong></p>
+                <p>Area: <strong id="summary-area" class="text-brand-navy">3,200 sq ft</strong></p>
+                <p>Stage: <strong id="summary-stage" class="text-brand-navy">Planning & Brief</strong></p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 4: Preferences & Budget */}
+          <div class="bg-surface-page p-5 rounded-sm border border-border-subtle flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-mono uppercase tracking-wider text-brand-gold font-bold">
+                  4. Preferences
+                </span>
+                <button
+                  type="button"
+                  class="edit-step-btn text-xs font-semibold text-brand-navy hover:text-brand-gold underline underline-offset-2"
+                  data-target-step="4"
+                >
+                  Edit
+                </button>
+              </div>
+              <div class="text-sm text-text-navy font-medium space-y-1">
+                <p>Style: <strong id="summary-style" class="text-brand-navy">Warm Minimalist</strong></p>
+                <p>Budget Expectation: <strong id="summary-budget" class="text-brand-navy">₹50L – ₹1Cr</strong></p>
+                <p>Timeline: <strong id="summary-timing" class="text-brand-navy">1 to 3 Months</strong></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mandatory Transparency Disclaimer */}
+        <div class="p-4 rounded-sm bg-surface-page border border-border-subtle text-xs text-text-muted leading-relaxed">
+          <strong class="text-brand-navy block mb-1">Scope & Budget Clarification:</strong>
+          This summary represents your self-reported spatial brief. It does not constitute a quotation, cost commitment, or verified structural assessment. Generating this brief does not automatically submit an enquiry to SAAR.
+        </div>
+
+        {/* Export & Handoff Actions */}
+        <div class="pt-6 border-t border-border-subtle space-y-4">
+          <h4 class="font-serif text-lg font-semibold text-text-navy">
+            Choose Your Next Step
+          </h4>
+
+          <div class="flex flex-wrap items-center gap-4">
+            {/* Copy Action */}
+            <Button
+              id="copy-summary-btn"
+              variant="primary"
+              size="md"
+              class="flex items-center gap-2"
+            >
+              <svg class="w-4 h-4 text-brand-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <span>Copy Project Summary</span>
+            </Button>
+
+            {/* Download Text Action */}
+            <Button
+              id="download-summary-btn"
+              variant="secondary"
+              size="md"
+              class="flex items-center gap-2"
+            >
+              <svg class="w-4 h-4 text-brand-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span>Download Summary (.txt)</span>
+            </Button>
+
+            {/* WhatsApp Handoff (Conditionally active if verified) */}
+            {whatsappVerified ? (
+              <Button
+                id="whatsapp-handoff-btn"
+                variant="gold"
+                size="md"
+                class="flex items-center gap-2"
+              >
+                <span>Open in WhatsApp &rarr;</span>
+              </Button>
+            ) : (
+              <div class="p-2.5 rounded-sm bg-surface-page border border-border-subtle text-xs text-text-muted italic">
+                Direct WhatsApp channel pending official number sign-off. Please use Copy or Download.
+              </div>
+            )}
+
+            {/* Direct Consultation Handoff Action */}
+            <Button
+              id="submit-brief-online-btn"
+              variant="gold"
+              size="md"
+              class="flex items-center gap-2"
+            >
+              <span>Submit Brief for Direct Consultation &darr;</span>
+            </Button>
+          </div>
+
+          {/* Copy Feedback Announcement */}
+          <div
+            id="copy-feedback-toast"
+            class="hidden text-xs font-mono text-status-success font-semibold flex items-center gap-1.5"
+            role="status"
+            aria-live="polite"
+          >
+            <span>✓ Project summary copied to clipboard successfully!</span>
+          </div>
+
+          {/* Direct Lead Delivery Consultation Handoff Panel */}
+          <div id="planner-enquiry-panel" class="hidden pt-6 border-t border-border-subtle space-y-4 animate-fade-in">
+            <div class="border-b border-border-subtle pb-3">
+              <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-semibold block mb-0.5">
+                Direct Studio Submission
+              </span>
+              <h4 class="font-serif text-2xl font-semibold text-text-navy">
+                Submit Your Brief to SAAR
+              </h4>
+              <p class="text-xs text-text-muted mt-0.5 leading-relaxed">
+                Provide your contact details below. Your structured spatial brief will be securely transmitted directly to our studio team for feasibility review.
+              </p>
+            </div>
+
+            <EnquiryForm id="planner-direct-form" mode="planner" />
+          </div>
+        </div>
+      </div>
+
+      {/* Deterministic Relevant Service Suggestions ("Services to Explore") */}
+      <div id="recommended-services-container" class="bg-surface-elevated p-6 sm:p-8 rounded-sm border border-border-subtle shadow-subtle space-y-6">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-semibold block mb-1">
+            Tailored Reading
+          </span>
+          <h4 class="font-serif text-xl sm:text-2xl font-semibold text-text-navy">
+            Services to Explore Based on Your Space
+          </h4>
+          <p class="text-xs text-text-muted mt-1">
+            Explore specifications and deliverables directly relevant to your selected requirements.
+          </p>
+        </div>
+
+        <div id="recommended-services-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Dynamically populated */}
+        </div>
+      </div>
+    </section>
+
+    {/* ========================================================================= */}
+    {/* NAVIGATION CONTROLS */}
+    {/* ========================================================================= */}
+    <div id="planner-nav-bar" class="mt-8 flex items-center justify-between gap-4 pt-6 border-t border-border-subtle">
+      <Button
+        id="planner-back-btn"
+        variant="secondary"
+        size="md"
+        class="hidden"
+      >
+        &larr; Back
+      </Button>
+
+      <div class="ml-auto flex items-center gap-4">
+        <Button
+          id="planner-next-btn"
+          variant="gold"
+          size="md"
+        >
+          Continue &rarr;
+        </Button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  import {
+    PROPERTY_TYPES_BY_CATEGORY,
+    validateStage1,
+    validateStage2,
+    validateStage3,
+  } from '../../lib/planner/schema';
+  import { getRecommendedServices } from '../../lib/planner/recommendations';
+  import { formatBriefText, formatWhatsAppMessage, copyToClipboard, downloadAsTextFile } from '../../lib/planner/summary';
+  import type { ProjectBriefV1, ProjectCategory, AreaUnit, ProjectStage, ServiceOptionId } from '../../types/project-brief';
+  import { trackEvent } from '../../lib/analytics/client';
+
+  // In-memory state (Zero localStorage / zero persistent session storage)
+  let currentStep = 1;
+  let isEditingFromReview = false;
+
+  // In-memory tracking deduplication for the active planner run
+  let hasFiredPlannerStart = false;
+  let hasFiredPlannerComplete = false;
+  const completedSteps = new Set<1 | 2 | 3 | 4>();
+
+  function markPlannerStarted() {
+    if (!hasFiredPlannerStart) {
+      hasFiredPlannerStart = true;
+      trackEvent('planner_start', { form_origin: 'planner' });
+    }
+  }
+
+  const briefState: ProjectBriefV1 = {
+    version: '1.0',
+    timestamp: new Date().toISOString(),
+    space: {
+      category: 'residential',
+      categoryLabel: 'Residential Space',
+      propertyType: '',
+      propertyTypeLabel: '',
+    },
+    requirements: {
+      services: [],
+      serviceLabels: [],
+      isGuidanceOnly: false,
+    },
+    details: {
+      locality: '',
+      approximateArea: undefined,
+      areaUnit: 'sq ft',
+      stage: 'planning',
+      stageLabel: 'Formulating Brief',
+    },
+    preferences: {
+      stylePreference: '',
+      budgetExpectation: '',
+      desiredTiming: '',
+      skipped: false,
+    },
+  };
+
+  // DOM Elements
+  const form = document.getElementById('planner-form') as HTMLFormElement;
+  const stepBadge = document.getElementById('planner-step-badge');
+  const stepTitle = document.getElementById('planner-step-title');
+  const progressFill = document.getElementById('planner-progress-fill');
+  const progressBar = document.getElementById('planner-progress-bar');
+  const errorSummary = document.getElementById('planner-error-summary');
+  const errorList = document.getElementById('planner-error-list');
+  const backBtn = document.getElementById('planner-back-btn');
+  const nextBtn = document.getElementById('planner-next-btn');
+  const resetBtn = document.getElementById('planner-reset-btn');
+
+  const stepTitles = [
+    'Your Space',
+    'What You Need',
+    'Project Details',
+    'Preferences',
+    'Review Your Project',
+  ];
+
+  function updateProgressUI() {
+    if (stepBadge) stepBadge.textContent = `Step ${currentStep} of 5`;
+    if (stepTitle) stepTitle.textContent = stepTitles[currentStep - 1];
+
+    const pct = (currentStep / 5) * 100;
+    if (progressFill) progressFill.style.width = `${pct}%`;
+    if (progressBar) progressBar.setAttribute('aria-valuenow', pct.toString());
+
+    // Back button visibility
+    if (backBtn) {
+      if (currentStep === 1 || currentStep === 5) {
+        backBtn.classList.add('hidden');
+      } else {
+        backBtn.classList.remove('hidden');
+      }
+    }
+
+    // Next button label / visibility
+    if (nextBtn) {
+      if (currentStep === 4) {
+        nextBtn.textContent = 'Review Project Brief \u2192';
+      } else if (currentStep === 5) {
+        nextBtn.classList.add('hidden');
+      } else {
+        nextBtn.textContent = 'Continue \u2192';
+        nextBtn.classList.remove('hidden');
+      }
+    }
+
+    // Step panels visibility
+    document.querySelectorAll('.planner-step-panel').forEach((panel, idx) => {
+      if (idx + 1 === currentStep) {
+        panel.classList.remove('hidden');
+      } else {
+        panel.classList.add('hidden');
+      }
+    });
+
+    // Clear errors upon step change
+    clearErrors();
+
+    // Scroll to top of planner & focus heading
+    stepTitle?.focus();
+  }
+
+  function clearErrors() {
+    if (errorSummary) errorSummary.classList.add('hidden');
+    if (errorList) errorList.innerHTML = '';
+  }
+
+  function showErrors(errors: Record<string, string>) {
+    if (!errorSummary || !errorList) return;
+    errorList.innerHTML = '';
+
+    Object.values(errors).forEach((msg) => {
+      const li = document.createElement('li');
+      li.textContent = msg;
+      errorList.appendChild(li);
+    });
+
+    errorSummary.classList.remove('hidden');
+    errorSummary.focus();
+  }
+
+  // ==========================================
+  // STAGE 1 LOGIC
+  // ==========================================
+  const categoryRadios = document.querySelectorAll<HTMLInputElement>('.category-radio');
+  const propertyTypeContainer = document.getElementById('property-type-container');
+  const propertyTypeOptions = document.getElementById('property-type-options');
+  const otherDescContainer = document.getElementById('other-description-container');
+
+  function renderPropertyTypes(category: ProjectCategory) {
+    if (!propertyTypeOptions) return;
+    propertyTypeOptions.innerHTML = '';
+
+    const list = PROPERTY_TYPES_BY_CATEGORY[category] || [];
+    list.forEach((pt) => {
+      const label = document.createElement('label');
+      label.className =
+        'property-type-card relative flex items-center gap-3 p-3.5 rounded-sm border border-border-subtle bg-surface-page cursor-pointer transition-all duration-200 hover:border-brand-gold/60 focus-within:ring-2 focus-within:ring-brand-gold';
+
+      const isChecked = briefState.space.propertyType === pt.id;
+
+      label.innerHTML = `
+        <input
+          type="radio"
+          name="propertyType"
+          value="${pt.id}"
+          data-label="${pt.label}"
+          ${isChecked ? 'checked' : ''}
+          class="property-type-radio text-brand-navy focus:ring-brand-gold"
+        />
+        <span class="text-sm font-medium text-text-navy">${pt.label}</span>
+      `;
+      propertyTypeOptions.appendChild(label);
+    });
+
+    if (propertyTypeContainer) {
+      propertyTypeContainer.classList.remove('hidden');
+    }
+
+    if (otherDescContainer) {
+      if (category === 'other') {
+        otherDescContainer.classList.remove('hidden');
+      } else {
+        otherDescContainer.classList.add('hidden');
+      }
+    }
+  }
+
+  categoryRadios.forEach((radio) => {
+    radio.addEventListener('change', () => {
+      markPlannerStarted();
+      const cat = radio.value as ProjectCategory;
+      const previousCategory = briefState.space.category;
+
+      briefState.space.category = cat;
+      briefState.space.categoryLabel = radio.dataset.label || cat;
+
+      // If category changed, clear dependent property type
+      if (previousCategory !== cat) {
+        briefState.space.propertyType = '';
+        briefState.space.propertyTypeLabel = '';
+      }
+
+      // Update custom radio visual style
+      document.querySelectorAll('.category-card').forEach((card) => {
+        card.classList.remove('border-brand-gold', 'bg-surface-elevated');
+      });
+      const parentCard = radio.closest('.category-card');
+      parentCard?.classList.add('border-brand-gold', 'bg-surface-elevated');
+
+      renderPropertyTypes(cat);
+    });
+  });
+
+  propertyTypeOptions?.addEventListener('change', (e) => {
+    markPlannerStarted();
+    const target = e.target as HTMLInputElement;
+    if (target && target.name === 'propertyType') {
+      briefState.space.propertyType = target.value;
+      briefState.space.propertyTypeLabel = target.dataset.label || target.value;
+    }
+  });
+
+  const customSpaceInput = document.getElementById('custom-space-desc');
+  customSpaceInput?.addEventListener('input', markPlannerStarted);
+
+  // ==========================================
+  // STAGE 2 LOGIC (Mutual Exclusivity)
+  // ==========================================
+  const serviceCheckboxes = document.querySelectorAll<HTMLInputElement>('.service-checkbox');
+  const additionalNotesInput = document.getElementById('additional-notes') as HTMLTextAreaElement;
+
+  serviceCheckboxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', () => {
+      const isExclusive = checkbox.dataset.exclusive === 'true';
+
+      if (checkbox.checked) {
+        if (isExclusive) {
+          // Uncheck all other checkboxes
+          serviceCheckboxes.forEach((other) => {
+            if (other !== checkbox) other.checked = false;
+          });
+        } else {
+          // Uncheck exclusive option if another option is checked
+          serviceCheckboxes.forEach((other) => {
+            if (other.dataset.exclusive === 'true') other.checked = false;
+          });
+        }
+      }
+
+      // Recompute selected services
+      const selected: ServiceOptionId[] = [];
+      const labels: string[] = [];
+      let isGuidance = false;
+
+      serviceCheckboxes.forEach((cb) => {
+        if (cb.checked) {
+          selected.push(cb.value as ServiceOptionId);
+          labels.push(cb.dataset.label || cb.value);
+          if (cb.dataset.exclusive === 'true') isGuidance = true;
+        }
+      });
+
+      briefState.requirements.services = selected;
+      briefState.requirements.serviceLabels = labels;
+      briefState.requirements.isGuidanceOnly = isGuidance;
+    });
+  });
+
+  // ==========================================
+  // STAGE 3 LOGIC
+  // ==========================================
+  const localityInput = document.getElementById('locality') as HTMLInputElement;
+  const areaInput = document.getElementById('approximate-area') as HTMLInputElement;
+  const unitSelect = document.getElementById('area-unit') as HTMLSelectElement;
+  const stageRadios = document.querySelectorAll<HTMLInputElement>('.stage-radio');
+
+  stageRadios.forEach((radio) => {
+    radio.addEventListener('change', () => {
+      briefState.details.stage = radio.value as ProjectStage;
+      briefState.details.stageLabel = radio.dataset.label || radio.value;
+    });
+  });
+
+  // ==========================================
+  // STAGE 4 LOGIC
+  // ==========================================
+  const skipPreferencesBtn = document.getElementById('skip-preferences-btn');
+  const styleRadios = document.querySelectorAll<HTMLInputElement>('.style-radio');
+  const budgetRadios = document.querySelectorAll<HTMLInputElement>('.budget-radio');
+  const timingRadios = document.querySelectorAll<HTMLInputElement>('.timing-radio');
+
+  skipPreferencesBtn?.addEventListener('click', () => {
+    briefState.preferences.skipped = true;
+    briefState.preferences.stylePreference = '';
+    briefState.preferences.budgetExpectation = '';
+    briefState.preferences.desiredTiming = '';
+
+    // Clear checked radio controls
+    styleRadios.forEach((r) => (r.checked = false));
+    budgetRadios.forEach((r) => (r.checked = false));
+    timingRadios.forEach((r) => (r.checked = false));
+
+    if (!completedSteps.has(4)) {
+      completedSteps.add(4);
+      trackEvent('planner_step_complete', { step_id: 4 });
+    }
+
+    goToStep(5);
+  });
+
+  styleRadios.forEach((r) => {
+    r.addEventListener('change', () => {
+      briefState.preferences.stylePreference = r.dataset.label || r.value;
+      briefState.preferences.skipped = false;
+    });
+  });
+
+  budgetRadios.forEach((r) => {
+    r.addEventListener('change', () => {
+      briefState.preferences.budgetExpectation = r.dataset.label || r.value;
+      briefState.preferences.skipped = false;
+    });
+  });
+
+  timingRadios.forEach((r) => {
+    r.addEventListener('change', () => {
+      briefState.preferences.desiredTiming = r.dataset.label || r.value;
+      briefState.preferences.skipped = false;
+    });
+  });
+
+  // ==========================================
+  // STAGE 5 POPULATION
+  // ==========================================
+  function populateReviewSummary() {
+    const spaceTitle = document.getElementById('summary-space-title');
+    const spaceDesc = document.getElementById('summary-space-desc');
+    const servicesTitle = document.getElementById('summary-services-title');
+    const servicesNotes = document.getElementById('summary-services-notes');
+    const summaryLocality = document.getElementById('summary-locality');
+    const summaryArea = document.getElementById('summary-area');
+    const summaryStage = document.getElementById('summary-stage');
+    const summaryStyle = document.getElementById('summary-style');
+    const summaryBudget = document.getElementById('summary-budget');
+    const summaryTiming = document.getElementById('summary-timing');
+
+    // 1. Space
+    if (spaceTitle) {
+      spaceTitle.textContent = `${briefState.space.categoryLabel} (${briefState.space.propertyTypeLabel || 'Typology to be clarified'})`;
+    }
+    if (spaceDesc) {
+      if (briefState.space.customDescription) {
+        spaceDesc.textContent = briefState.space.customDescription;
+        spaceDesc.classList.remove('hidden');
+      } else {
+        spaceDesc.classList.add('hidden');
+      }
+    }
+
+    // 2. Services
+    if (servicesTitle) {
+      if (briefState.requirements.isGuidanceOnly) {
+        servicesTitle.textContent = 'Guidance Requested (Assessing Design vs. Turnkey)';
+      } else {
+        servicesTitle.textContent = briefState.requirements.serviceLabels.join(', ') || 'Not specified';
+      }
+    }
+    if (servicesNotes) {
+      if (briefState.requirements.additionalNotes) {
+        servicesNotes.textContent = `Notes: "${briefState.requirements.additionalNotes}"`;
+        servicesNotes.classList.remove('hidden');
+      } else {
+        servicesNotes.classList.add('hidden');
+      }
+    }
+
+    // 3. Location & Stage
+    if (summaryLocality) summaryLocality.textContent = briefState.details.locality || 'Not specified';
+    if (summaryArea) {
+      summaryArea.textContent = briefState.details.approximateArea
+        ? `${briefState.details.approximateArea} ${briefState.details.areaUnit}`
+        : 'Not specified';
+    }
+    if (summaryStage) summaryStage.textContent = briefState.details.stageLabel || 'Not specified';
+
+    // 4. Preferences
+    if (summaryStyle) {
+      summaryStyle.textContent = briefState.preferences.stylePreference || (briefState.preferences.skipped ? 'Skipped (Open)' : 'Not specified');
+    }
+    if (summaryBudget) {
+      summaryBudget.textContent = briefState.preferences.budgetExpectation || (briefState.preferences.skipped ? 'Skipped' : 'Not specified');
+    }
+    if (summaryTiming) {
+      summaryTiming.textContent = briefState.preferences.desiredTiming || (briefState.preferences.skipped ? 'Skipped' : 'Not specified');
+    }
+
+    // 5. Populate Deterministic Service Recommendations
+    const recContainer = document.getElementById('recommended-services-grid');
+    if (recContainer) {
+      const recommendations = getRecommendedServices(briefState);
+      recContainer.innerHTML = '';
+
+      recommendations.forEach((rec) => {
+        const item = document.createElement('div');
+        item.className = 'p-4 rounded-sm bg-surface-page border border-border-subtle flex flex-col justify-between';
+        item.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-6 h-6 rounded-sm bg-brand-navy text-brand-gold text-xs font-mono font-bold flex items-center justify-center">0${rec.orderNumber}</span>
+              <h5 class="font-serif text-base font-semibold text-text-navy">${rec.title}</h5>
+            </div>
+            <p class="text-xs text-text-muted leading-relaxed">${rec.rationale}</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-border-subtle">
+            <a href="${rec.href}" class="text-xs font-semibold text-brand-navy hover:text-brand-gold transition-colors inline-flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold">
+              Explore Discipline &rarr;
+            </a>
+          </div>
+        `;
+        recContainer.appendChild(item);
+      });
+    }
+
+    // 6. Expose active brief globally for embedded EnquiryForm
+    (window as any).__SAAR_ACTIVE_BRIEF__ = {
+      version: '1.0',
+      timestamp: new Date().toISOString(),
+      space: {
+        category: briefState.space.category,
+        categoryLabel: briefState.space.categoryLabel,
+        propertyType: briefState.space.propertyType,
+        propertyTypeLabel: briefState.space.propertyTypeLabel,
+        customDescription: briefState.space.customDescription,
+      },
+      requirements: {
+        services: briefState.requirements.services,
+        serviceLabels: briefState.requirements.serviceLabels,
+        isGuidanceOnly: briefState.requirements.isGuidanceOnly,
+        additionalNotes: briefState.requirements.additionalNotes,
+      },
+      details: {
+        locality: briefState.details.locality,
+        approximateArea: briefState.details.approximateArea,
+        areaUnit: briefState.details.areaUnit,
+        stage: briefState.details.stage,
+        stageLabel: briefState.details.stageLabel,
+      },
+      preferences: {
+        stylePreference: briefState.preferences.stylePreference,
+        budgetExpectation: briefState.preferences.budgetExpectation,
+        desiredTiming: briefState.preferences.desiredTiming,
+        skipped: briefState.preferences.skipped,
+      },
+    };
+
+    // Update embedded form attached brief summary and prefilled location
+    const attachedBriefEl = document.getElementById('planner-direct-form-attached-brief-summary');
+    if (attachedBriefEl) {
+      attachedBriefEl.textContent = `${briefState.space.categoryLabel} (${briefState.space.propertyTypeLabel || 'Custom'}) · ${briefState.requirements.serviceLabels.join(', ') || 'Guidance'} · ${briefState.details.locality || 'Locality pending'}`;
+    }
+    const directFormLoc = document.getElementById('planner-direct-form-location') as HTMLInputElement;
+    if (directFormLoc && (!directFormLoc.value || directFormLoc.value === '')) {
+      directFormLoc.value = briefState.details.locality || '';
+    }
+  }
+
+  // ==========================================
+  // NAVIGATION CONTROLLER
+  // ==========================================
+  function goToStep(target: number) {
+    currentStep = target;
+    if (currentStep === 5) {
+      populateReviewSummary();
+      if (!hasFiredPlannerComplete) {
+        hasFiredPlannerComplete = true;
+        trackEvent('planner_complete', {});
+      }
+    }
+    updateProgressUI();
+  }
+
+  function validateCurrentStep(): boolean {
+    if (currentStep === 1) {
+      const customDesc = document.getElementById('custom-space-desc') as HTMLInputElement;
+      if (customDesc) briefState.space.customDescription = customDesc.value.trim();
+
+      const res = validateStage1(briefState.space);
+      if (!res.isValid) {
+        showErrors(res.errors);
+        return false;
+      }
+    } else if (currentStep === 2) {
+      if (additionalNotesInput) {
+        briefState.requirements.additionalNotes = additionalNotesInput.value.trim();
+      }
+      const res = validateStage2(briefState.requirements);
+      if (!res.isValid) {
+        showErrors(res.errors);
+        return false;
+      }
+    } else if (currentStep === 3) {
+      briefState.details.locality = localityInput?.value.trim() || '';
+      const rawArea = areaInput?.value.trim();
+      briefState.details.approximateArea = rawArea ? Number(rawArea) : undefined;
+      briefState.details.areaUnit = (unitSelect?.value as AreaUnit) || 'sq ft';
+
+      const res = validateStage3(briefState.details);
+      if (!res.isValid) {
+        showErrors(res.errors);
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  nextBtn?.addEventListener('click', () => {
+    if (!validateCurrentStep()) return;
+
+    // Track step completion before transitioning
+    if (currentStep >= 1 && currentStep <= 4) {
+      const stepNum = currentStep as 1 | 2 | 3 | 4;
+      if (!completedSteps.has(stepNum)) {
+        completedSteps.add(stepNum);
+        trackEvent('planner_step_complete', { step_id: stepNum });
+      }
+    }
+
+    if (isEditingFromReview) {
+      isEditingFromReview = false;
+      goToStep(5);
+      return;
+    }
+
+    if (currentStep < 5) {
+      goToStep(currentStep + 1);
+    }
+  });
+
+  backBtn?.addEventListener('click', () => {
+    if (currentStep > 1) {
+      goToStep(currentStep - 1);
+    }
+  });
+
+  // Edit buttons from Step 5
+  document.querySelectorAll<HTMLButtonElement>('.edit-step-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = Number(btn.dataset.targetStep);
+      if (target >= 1 && target <= 4) {
+        isEditingFromReview = true;
+        goToStep(target);
+      }
+    });
+  });
+
+  // Reset button
+  resetBtn?.addEventListener('click', () => {
+    if (window.confirm('Restart planning? All entered information will be cleared.')) {
+      form?.reset();
+      briefState.space.category = 'residential';
+      briefState.space.categoryLabel = 'Residential Space';
+      briefState.space.propertyType = '';
+      briefState.space.propertyTypeLabel = '';
+      briefState.space.customDescription = '';
+      briefState.requirements.services = [];
+      briefState.requirements.serviceLabels = [];
+      briefState.requirements.isGuidanceOnly = false;
+      briefState.requirements.additionalNotes = '';
+      briefState.details.locality = '';
+      briefState.details.approximateArea = undefined;
+      briefState.details.stage = 'planning';
+      briefState.details.stageLabel = 'Formulating Brief';
+      briefState.preferences.stylePreference = '';
+      briefState.preferences.budgetExpectation = '';
+      briefState.preferences.desiredTiming = '';
+      briefState.preferences.skipped = false;
+
+      // Reset in-memory run tracking state
+      hasFiredPlannerStart = false;
+      hasFiredPlannerComplete = false;
+      completedSteps.clear();
+
+      isEditingFromReview = false;
+      goToStep(1);
+    }
+  });
+
+  // ==========================================
+  // EXPORT & COPY ACTIONS
+  // ==========================================
+  const copyBtn = document.getElementById('copy-summary-btn');
+  const copyToast = document.getElementById('copy-feedback-toast');
+  const downloadBtn = document.getElementById('download-summary-btn');
+  const whatsappBtn = document.getElementById('whatsapp-handoff-btn');
+
+  copyBtn?.addEventListener('click', async () => {
+    const text = formatBriefText(briefState);
+    const ok = await copyToClipboard(text);
+
+    if (ok) {
+      trackEvent('project_summary_copy', {});
+      if (copyToast) {
+        copyToast.classList.remove('hidden');
+        setTimeout(() => {
+          copyToast.classList.add('hidden');
+        }, 4000);
+      }
+    }
+  });
+
+  downloadBtn?.addEventListener('click', () => {
+    const text = formatBriefText(briefState);
+    downloadAsTextFile('saar-project-summary.txt', text);
+    trackEvent('project_summary_download', {});
+  });
+
+  whatsappBtn?.addEventListener('click', () => {
+    // Generates encoded WhatsApp link if configured
+    const msg = formatWhatsAppMessage(briefState);
+    const cleanNumber = (window as any).SAAR_WHATSAPP_NUMBER || '';
+    if (cleanNumber) {
+      const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+      trackEvent('whatsapp_click', { placement: 'planner' });
+    }
+  });
+
+  // Online consultation submission panel toggle
+  const submitOnlineBtn = document.getElementById('submit-brief-online-btn');
+  const plannerEnquiryPanel = document.getElementById('planner-enquiry-panel');
+  submitOnlineBtn?.addEventListener('click', () => {
+    if (plannerEnquiryPanel) {
+      plannerEnquiryPanel.classList.remove('hidden');
+      plannerEnquiryPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+
+  // Edit brief button from within the embedded form
+  const editBriefBtn = document.getElementById('planner-direct-form-edit-brief-btn');
+  editBriefBtn?.addEventListener('click', () => {
+    isEditingFromReview = true;
+    goToStep(1);
+  });
+
+  // Initial render
+  renderPropertyTypes('residential');
+  updateProgressUI();
+</script>

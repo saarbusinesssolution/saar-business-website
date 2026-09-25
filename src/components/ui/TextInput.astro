@@ -1,0 +1,60 @@
+---
+interface Props {
+  id: string;
+  name: string;
+  type?: 'text' | 'email' | 'tel' | 'number';
+  placeholder?: string;
+  value?: string;
+  required?: boolean;
+  disabled?: boolean;
+  describedBy?: string;
+  invalid?: boolean;
+  autocomplete?: string;
+  inputmode?: 'text' | 'email' | 'tel' | 'numeric' | 'decimal';
+  min?: string | number;
+  max?: string | number;
+  maxlength?: number;
+  class?: string;
+}
+
+const {
+  id,
+  name,
+  type = 'text',
+  placeholder,
+  value,
+  required = false,
+  disabled = false,
+  describedBy,
+  invalid = false,
+  autocomplete,
+  inputmode,
+  class: className = '',
+  ...rest
+} = Astro.props;
+---
+
+<input
+  id={id}
+  name={name}
+  type={type}
+  placeholder={placeholder}
+  value={value}
+  required={required}
+  disabled={disabled}
+  aria-describedby={describedBy}
+  aria-invalid={invalid ? 'true' : undefined}
+  autocomplete={autocomplete}
+  inputmode={inputmode}
+  class:list={[
+    'w-full min-h-[44px] px-3.5 py-2.5 text-base sm:text-sm bg-surface-elevated text-text-primary border rounded-sm transition-colors duration-150',
+    'placeholder:text-text-muted/60',
+    'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-navy',
+    invalid
+      ? 'border-status-error focus-visible:outline-status-error'
+      : 'border-border-subtle hover:border-border-medium',
+    disabled ? 'bg-surface-subtle opacity-60 cursor-not-allowed' : '',
+    className,
+  ]}
+  {...rest}
+/>

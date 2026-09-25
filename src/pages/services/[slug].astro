@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ServiceDetail from '../../components/services/ServiceDetail.astro';
+import {
+  getPublishedServices,
+  getRelatedServices,
+  getRelatedProjectsForService,
+} from '../../lib/content';
+import { getServiceUrl } from '../../config/routes';
+import type { ServiceData, PublicProject } from '../../types/content';
+import { getServiceSchema, getBreadcrumbListSchema } from '../../lib/seo/schema';
+import { SITE_URL } from '../../lib/seo/metadata';
+
+export async function getStaticPaths() {
+  const publishedServices = await getPublishedServices();
+
+  return Promise.all(
+    publishedServices.map(async (service) => {
+      const relatedServices = await getRelatedServices(service.id);
+      const relatedProjects = await getRelatedProjectsForService(service.id);
+
+      return {
+        params: { slug: service.slug },
+        props: {
+          service,
+          relatedServices,
+          relatedProjects,
+        },
+      };
+    })
+  );
+}
+
+interface Props {
+  service: ServiceData;
+  relatedServices: ServiceData[];
+  relatedProjects: PublicProject[];
+}
+
+const { service, relatedServices, relatedProjects } = Astro.props;
+
+const canonicalPath = getServiceUrl(service.slug);
+const canonicalUrl = `${SITE_URL}${canonicalPath}`;
+
+const breadcrumbs = [
+  { label: 'Services', href: '/services/' },
+  { label: service.title, current: true },
+];
+
+const structuredData = [
+  getServiceSchema({
+    canonicalUrl,
+    name: service.title,
+    description: service.shortSummary || service.seoDescription,
+    serviceType: service.title,
+  }),
+  getBreadcrumbListSchema([
+    { label: 'Home', href: '/' },
+    { label: 'Services', href: '/services/' },
+    { label: service.title, href: canonicalPath },
+  ]),
+];
+---
+
+<BaseLayout
+  title={service.seoTitle}
+  description={service.seoDescription}
+  breadcrumbs={breadcrumbs}
+  currentPath={canonicalPath}
+  structuredData={structuredData}
+>
+  <div data-service-id={service.id}>
+    <ServiceDetail
+      service={service}
+      relatedServices={relatedServices}
+      relatedProjects={relatedProjects}
+    />
+  </div>
+
+  <script>
+    import { trackEvent } from '../../lib/analytics/client';
+    const el = document.querySelector<HTMLElement>('[data-service-id]');
+    const serviceId = el?.dataset.serviceId;
+    if (serviceId) {
+      trackEvent('service_view', { service_id: serviceId });
+    }
+  </script>
+</BaseLayout>

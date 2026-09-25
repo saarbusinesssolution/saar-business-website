@@ -1,0 +1,84 @@
+# SAAR Business Support Solution — Web Platform
+
+The official web platform for **Saar Business Support Solution**, an architectural, interior design, turnkey contracting, and spatial solutions firm.
+
+> *“Designed with Purpose. Executed with Precision.”*
+
+---
+
+## 1. Project Overview & Scope
+
+* **Status:** **Step 16 — Production Launch & Handover (Complete ✅)**
+* **Framework:** [Astro 5](https://astro.build/) (Static Output)
+* **Styling:** [Tailwind CSS 3.4](https://tailwindcss.com/) with semantic architectural design tokens
+* **Language:** TypeScript (Strict checking enabled)
+* **Hosting Target:** Cloudflare Pages (with Pages Functions for `/api/enquiry`)
+* **Domain:** `https://saarbusiness.com`
+* **Canonical URL Policy:** Strict trailing-slash policy (`trailingSlash: 'always'`)
+
+### Implemented Pages & Features
+- **Homepage (`/`)**: Hero section, confirmed capabilities, 5-stage methodology, trust commitments, FAQs, and contact CTA.
+- **Services Overview & Detail Pages (`/services/`, `/services/[slug]/`)**: Detailed scope, deliverables, and FAQs for verified disciplines (`interior-design`, `turnkey-contracting`).
+- **Portfolio & Case Study Pages (`/projects/`, `/projects/[slug]/`)**: Architectural concept studies, accessible filters, and native HTML5 `<dialog>` lightbox gallery.
+- **About & Process Pages (`/about/`, `/process/`)**: Ethos, single-point accountability, 5-stage spatial delivery framework, and client preparation guidelines.
+- **Plan My Project (`/plan-my-project/`)**: Guided 5-stage interactive spatial qualification wizard with review, jump-to-edit, and direct enquiry handoff.
+- **Contact Page (`/contact/`)**: Reusable consultation enquiry form, studio coordinates, consultation guide, and privacy safeguards.
+- **Privacy Policy (`/privacy/`)**: Opt-in analytics disclosures and live preference controls with instant cookie cleanup.
+- **Lead Delivery Pipeline (`POST /api/enquiry`)**: Serverless Cloudflare Pages Function with Resend email relay, rate limiting, and honeypot protection.
+- **Privacy-Aware Analytics**: Direct GA4 integration with opt-in consent banner, zero-PII sanitization, and preview environment isolation.
+- **Search Foundation (SEO & AEO)**: Automated XML sitemap (`/sitemap.xml`), production `robots.txt`, edge headers (`_headers`), and Schema.org JSON-LD structured data.
+
+---
+
+## 2. Prerequisites & Environment
+
+* **Node.js:** `^18.17.0` or `>=20.0.0` (Tested on Node v24.18.0)
+* **Package Manager:** `npm` (v10+ / v11+)
+* **Environment Variables:** Documented in `.env.example`.
+
+### Server Environment Variables (Cloudflare Pages)
+| Variable | Description |
+| :--- | :--- |
+| `RESEND_API_KEY` | API key from Resend for transactional email dispatch (`re_...`) |
+| `ENQUIRY_SENDER_EMAIL` | Verified sender address (e.g., `SAAR Studio <notifications@saarbusiness.com>`) |
+| `ENQUIRY_RECIPIENT_EMAIL` | Studio destination for incoming enquiries (`hello@saarbusiness.com`) |
+| `PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4 Measurement ID (`G-XXXXXXXXXX`) |
+| `TURNSTILE_SITE_KEY` | Cloudflare Turnstile public site key for bot verification |
+| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key for server validation |
+| `ENABLE_TEST_MOCK_DELIVERY` | Set to `"true"` exclusively during local automated testing |
+
+---
+
+## 3. Development & Verification Commands
+
+| Command | Description |
+| :--- | :--- |
+| `npm run dev` | Starts Astro development server at `http://localhost:4321`. Injects dev preview. |
+| `npm run preview:pages` | Runs the full Cloudflare Pages edge runtime locally on `http://127.0.0.1:8788`. |
+| `npm run check` | Runs Astro and TypeScript diagnostics (0 errors). |
+| `npm run validate` | Runs 390 automated checks for schemas, routes, SEO tags, and zero-PII rules. |
+| `npm run test:api` | Runs 32 automated tests for serverless form processing and anti-spam gates. |
+| `npm run test:qa` | Runs 695 assertions auditing DOM landmarks, links, images, and secret leaks. |
+| `npm run test:journeys` | Runs 44 assertions verifying all 6 end-to-end visitor flows. |
+| `npm run test:hosted` | Runs 23 assertions verifying routes, headers, and functions on Cloudflare Pages runtime. |
+| `npm run build` | Compiles production assets into `dist/` with canonical `index, follow` tags. |
+| `npm run build:staging` | Compiles staging assets into `dist/` with site-wide `noindex, nofollow` protection. |
+
+---
+
+## 4. Documentation Directory
+
+All architectural blueprints, content guidelines, operational manuals, and reports reside in `docs/`:
+
+* [`docs/HANDOVER.md`](docs/HANDOVER.md): Operations manual, content editing guides, and maintenance checklist.
+* [`docs/LAUNCH_REPORT.md`](docs/LAUNCH_REPORT.md): Step 16 production release and verification report.
+* [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md): Production deployment gates, secrets list, and rollback plan.
+* [`docs/STAGING_REPORT.md`](docs/STAGING_REPORT.md): Step 15 staging runtime results and delivery levels.
+* [`docs/QA_REPORT.md`](docs/QA_REPORT.md): Comprehensive quality assurance audit and accessibility evaluation.
+* [`docs/ANALYTICS_PLAN.md`](docs/ANALYTICS_PLAN.md): Event taxonomy, consent controls, and zero-PII sanitization.
+* [`docs/SEO_GUIDE.md`](docs/SEO_GUIDE.md): Technical SEO, AEO, Schema.org structured data, and Search Console tasks.
+* [`docs/LEAD_DELIVERY.md`](docs/LEAD_DELIVERY.md): Serverless lead delivery pipeline, Resend relay, and security controls.
+* [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): System architecture, rendering model, and serverless backend.
+* [`docs/SITE_MAP.md`](docs/SITE_MAP.md): Central route registry, trailing-slash policy, and navigation.
+* [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md): Semantic tokens, WCAG AAA contrast, and component specifications.
+* [`docs/PROGRESS.md`](docs/PROGRESS.md): Live phase tracker and verification scorecard.

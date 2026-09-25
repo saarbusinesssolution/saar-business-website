@@ -1,0 +1,34 @@
+{
+  "name": "saar-business-website",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "build:staging": "node scripts/build-staging.mjs",
+    "preview": "astro preview",
+    "check": "astro check",
+    "validate": "node scripts/validate-content.mjs",
+    "test:api": "node scripts/test-enquiry-api.mjs",
+    "test:qa": "node scripts/audit-qa.mjs",
+    "test:journeys": "node scripts/test-visitor-journeys.mjs",
+    "test:hosted": "node scripts/test-hosted-runtime.mjs",
+    "preview:pages": "wrangler pages dev dist",
+    "preview:worker": "wrangler dev",
+    "deploy:worker": "wrangler versions upload"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/tailwind": "^6.0.2",
+    "astro": "^5.4.2",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "wrangler": "^4.140.0"
+  }
+}

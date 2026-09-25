@@ -1,0 +1,33 @@
+---
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+import SectionHeader from '../layout/SectionHeader.astro';
+import Accordion from '../ui/Accordion.astro';
+import { homepageFaqs } from '../../data/home';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<Section
+  id="faqs"
+  bg="page"
+  padding="md"
+  class:list={['scroll-mt-24', className]}
+>
+  <Container size="content">
+    <SectionHeader
+      eyebrow="Common Inquiries"
+      title="Frequently Asked Questions"
+      lead="Clear, factual answers regarding our architectural disciplines, turnkey management, and consultation workflow."
+      align="center"
+    />
+
+    <div class="max-w-3xl mx-auto">
+      <Accordion items={homepageFaqs} />
+    </div>
+  </Container>
+</Section>

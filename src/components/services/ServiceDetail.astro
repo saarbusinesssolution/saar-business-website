@@ -1,0 +1,247 @@
+---
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+import Accordion from '../ui/Accordion.astro';
+import CTASection from '../sections/CTASection.astro';
+import ContactActions from '../ui/ContactActions.astro';
+import ServiceScope from './ServiceScope.astro';
+import ServiceProcess from './ServiceProcess.astro';
+import RelatedServices from './RelatedServices.astro';
+import ProjectCard from '../cards/ProjectCard.astro';
+import { resolveImageMetadata } from '../../lib/content';
+import { getProjectUrl } from '../../config/routes';
+import { siteConfig } from '../../config/site';
+import type { ServiceData, PublicProject } from '../../types/content';
+
+interface Props {
+  service: ServiceData;
+  relatedServices?: ServiceData[];
+  relatedProjects?: PublicProject[];
+  isMockPreview?: boolean;
+}
+
+const {
+  service,
+  relatedServices = [],
+  relatedProjects = [],
+  isMockPreview = false,
+} = Astro.props;
+
+const imageMeta = service.heroImageId ? resolveImageMetadata(service.heroImageId) : null;
+const hasHeroImage = imageMeta && imageMeta.readiness === 'available';
+const isConcept = imageMeta?.classification === 'concept';
+
+const hasAnyContact = Boolean(
+  (siteConfig.phone && siteConfig.phone.trim().length > 5) ||
+  (siteConfig.email && siteConfig.email.trim().length > 5) ||
+  (siteConfig.whatsappNumber && siteConfig.whatsappNumber.trim().length > 5)
+);
+
+const whatsappEnquiryText = `Hello SAAR, I would like to discuss ${service.title} for my project.`;
+---
+
+<!-- 1. Hero Introduction Section -->
+<Section bg="elevated" padding="lg" class="border-b border-border-subtle pt-8 sm:pt-12">
+  <Container size="content">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+      <!-- Intro Copy Column -->
+      <div class:list={[hasHeroImage ? 'lg:col-span-7' : 'lg:col-span-10 max-w-3xl']}>
+        <div class="flex items-center gap-3 mb-4">
+          <Badge variant="category">Pillar Discipline</Badge>
+          <span class="text-xs font-mono text-brand-gold font-bold tracking-wider">
+            DISCIPLINE 0{service.order}
+          </span>
+        </div>
+
+        <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-brand-navy tracking-tight mb-6 leading-[1.15]">
+          {service.title}
+        </h1>
+
+        <p class="text-base sm:text-lg text-brand-charcoal/85 leading-relaxed mb-6 font-normal">
+          {service.overview}
+        </p>
+
+        <!-- Summary Highlights -->
+        <div class="p-4 rounded-sm bg-surface-subtle/80 border border-border-subtle mb-8 max-w-xl">
+          <p class="text-xs sm:text-sm text-brand-charcoal/80 leading-normal m-0">
+            <strong class="text-brand-navy font-semibold">Core Focus:</strong> {service.shortSummary}
+          </p>
+        </div>
+
+        <!-- Primary Action -->
+        <div class="flex flex-wrap items-center gap-4">
+          <Button
+            variant="gold"
+            size="md"
+            href="#enquire"
+            class="font-semibold shadow-sm"
+          >
+            Discuss {service.title}
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="md"
+            href="/services/"
+          >
+            All Services
+          </Button>
+        </div>
+      </div>
+
+      <!-- Hero Visual Column (when available) -->
+      {hasHeroImage && (
+        <div class="lg:col-span-5">
+          <div class="relative rounded-md overflow-hidden border border-border-subtle shadow-card bg-surface-subtle aspect-[4/3] group">
+            <img
+              src={imageMeta.assetPath}
+              alt={imageMeta.altText || service.title}
+              width={imageMeta.dimensions?.width || 1200}
+              height={imageMeta.dimensions?.height || 900}
+              class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
+              loading="eager"
+              fetchpriority="high"
+            />
+            {isConcept && (
+              <div class="absolute bottom-3 left-3 z-10">
+                <Badge variant="concept">Design Concept</Badge>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  </Container>
+</Section>
+
+<!-- 2. Scope & Deliverables Section -->
+<ServiceScope
+  suitableProjectTypes={service.suitableProjectTypes}
+  deliverables={service.deliverables}
+  exclusions={service.exclusions}
+/>
+
+<!-- 3. Methodology & Process Stages Section -->
+<ServiceProcess
+  processSteps={service.processSteps}
+  serviceTitle={service.title}
+/>
+
+<!-- 4. Related Projects (Omitted cleanly if none are published) -->
+{relatedProjects.length > 0 && (
+  <Section bg="page" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold">
+          Proven Execution
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brand-navy mt-2 mb-3">
+          Selected {service.title} Case Studies
+        </h2>
+        <p class="text-sm text-brand-charcoal/80">
+          Built projects and conceptual architectural inquiries reflecting our material discipline.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        {relatedProjects.map((project) => {
+          const coverMeta = project.coverImageId ? resolveImageMetadata(project.coverImageId) : null;
+          return (
+            <ProjectCard
+              title={project.title}
+              category={project.category}
+              projectNature={project.projectNature}
+              spaceType={project.spaceType}
+              location={project.location}
+              imagePath={coverMeta?.readiness === 'available' ? coverMeta.assetPath : undefined}
+              imageAlt={coverMeta?.altText || project.title}
+              href={getProjectUrl(project.slug)}
+            />
+          );
+        })}
+      </div>
+    </Container>
+  </Section>
+)}
+
+<!-- 5. Service FAQs Section -->
+{service.faqs && service.faqs.length > 0 && (
+  <Section bg="page" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-10">
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold">
+            Project Clarifications
+          </span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brand-navy mt-2 mb-3">
+            {service.title} Inquiries & Scope Details
+          </h2>
+          <p class="text-sm text-brand-charcoal/80">
+            Factual answers regarding architectural deliverables, site coordination, and contractual expectations.
+          </p>
+        </div>
+
+        <Accordion items={service.faqs} />
+      </div>
+    </Container>
+  </Section>
+)}
+
+<!-- 6. Contextual Consultation CTA Section -->
+<CTASection
+  id="enquire"
+  eyebrow="Consultation Engagement"
+  heading={`Discuss Your ${service.title} Project`}
+  description={`Schedule a preliminary architectural discussion with our team to evaluate spatial requirements, site feasibility, and delivery timelines for your ${service.title.toLowerCase()} brief.`}
+  variant="navy"
+>
+  <div class="mt-6 flex flex-col items-center">
+    {hasAnyContact || isMockPreview ? (
+      <div class="w-full max-w-md mx-auto">
+        <ContactActions
+          whatsappMessage={whatsappEnquiryText}
+          isMockPreview={isMockPreview}
+          size="md"
+          class="justify-center"
+        />
+      </div>
+    ) : (
+      <div class="max-w-md mx-auto p-4 rounded-sm bg-brand-softwhite/10 border border-brand-softwhite/20 text-center">
+        <p class="text-xs text-brand-softwhite/90 leading-relaxed m-0">
+          Direct studio lines and instant WhatsApp consultation channels are currently undergoing launch verification. Submit your brief through our project qualification schedule or return to the overview.
+        </p>
+      </div>
+    )}
+
+    <div class="mt-4 flex flex-wrap gap-3 justify-center items-center">
+      <Button
+        variant="gold"
+        size="md"
+        href="/contact/"
+      >
+        Send Service Enquiry &rarr;
+      </Button>
+      <Button
+        variant="outline-gold"
+        size="md"
+        href="/plan-my-project/"
+      >
+        Plan My Project
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        href="/services/"
+      >
+        &larr; Return to All Services
+      </Button>
+    </div>
+  </div>
+</CTASection>
+
+<!-- 7. Related Services Section -->
+{relatedServices.length > 0 && (
+  <RelatedServices services={relatedServices} />
+)}

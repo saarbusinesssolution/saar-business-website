@@ -1,0 +1,107 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary' | 'gold' | 'outline-gold' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  loading?: boolean;
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  target?: string;
+  rel?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  disabled = false,
+  loading = false,
+  class: className = '',
+  id,
+  ariaLabel,
+  target,
+  rel,
+  ...rest
+} = Astro.props;
+
+const variantClasses = {
+  primary:
+    'bg-brand-navy text-brand-softwhite border border-brand-navy hover:bg-[#112c47] active:bg-[#0b1d30] shadow-sm',
+  secondary:
+    'bg-surface-elevated text-brand-navy border border-border-subtle hover:bg-surface-subtle hover:border-border-medium active:bg-[#e2ded5]',
+  gold:
+    'bg-brand-gold text-brand-navy font-semibold border border-brand-gold hover:bg-brand-goldHover active:bg-[#856633] shadow-sm',
+  'outline-gold':
+    'bg-transparent text-brand-navy border border-brand-gold hover:bg-surface-goldWash active:bg-[#f0e4d0]',
+  ghost:
+    'bg-transparent text-brand-navy border border-transparent hover:bg-surface-subtle active:bg-[#e2ded5]',
+};
+
+const sizeClasses = {
+  sm: 'min-h-[38px] px-3.5 py-1.5 text-xs',
+  md: 'min-h-[44px] px-5 py-2.5 text-sm',
+  lg: 'min-h-[52px] px-7 py-3 text-base',
+};
+
+const baseClasses =
+  'inline-flex items-center justify-center font-medium rounded-sm transition-colors duration-200 select-none relative focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy';
+
+const stateClasses = disabled || loading
+  ? 'opacity-50 cursor-not-allowed pointer-events-none'
+  : 'cursor-pointer';
+---
+
+{
+  href && !disabled ? (
+    <a
+      href={href}
+      id={id}
+      target={target}
+      rel={rel}
+      class:list={[baseClasses, variantClasses[variant], sizeClasses[size], stateClasses, className]}
+      aria-label={ariaLabel}
+      {...rest}
+    >
+      <slot />
+    </a>
+  ) : (
+    <button
+      type={type}
+      id={id}
+      disabled={disabled || loading}
+      class:list={[baseClasses, variantClasses[variant], sizeClasses[size], stateClasses, className]}
+      aria-label={ariaLabel}
+      aria-busy={loading ? 'true' : undefined}
+      {...rest}
+    >
+      {loading && (
+        <svg
+          class="animate-spin -ml-1 mr-2 h-4 w-4 text-current"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          />
+        </svg>
+      )}
+      <slot />
+    </button>
+  )
+}

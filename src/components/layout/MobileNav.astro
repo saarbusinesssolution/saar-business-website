@@ -1,0 +1,284 @@
+---
+import type { NavigationItem } from '../../types/content';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  items: NavigationItem[];
+  cta?: NavigationItem | null;
+  currentPath?: string;
+  idPrefix?: string;
+  class?: string;
+}
+
+const {
+  items,
+  cta = null,
+  currentPath = Astro.url.pathname,
+  idPrefix = 'global',
+  class: className = '',
+} = Astro.props;
+
+const triggerId = `${idPrefix}-mobile-menu-trigger`;
+const panelId = `${idPrefix}-mobile-nav-panel`;
+
+function normalize(p: string): string {
+  if (!p || p === '/') return '/';
+  return p.endsWith('/') ? p : `${p}/`;
+}
+
+const normalizedCurrent = normalize(currentPath);
+
+function isExactActive(itemPath: string): boolean {
+  return normalize(itemPath) === normalizedCurrent;
+}
+---
+
+<div class:list={['lg:hidden flex items-center', className]}>
+  <!-- Accessible Hamburger Toggle Button -->
+  <button
+    id={triggerId}
+    type="button"
+    aria-expanded="false"
+    aria-controls={panelId}
+    aria-label="Toggle navigation menu"
+    class="inline-flex items-center justify-center min-w-[44px] min-h-[44px] p-2.5 rounded-sm text-brand-navy hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-brand-navy transition-colors"
+  >
+    <!-- Hamburger Icon (visible when closed) -->
+    <svg
+      data-menu-icon="open"
+      class="w-6 h-6 block"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.75"
+      stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+    </svg>
+
+    <!-- Close Icon (visible when open) -->
+    <svg
+      data-menu-icon="close"
+      class="w-6 h-6 hidden"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.75"
+      stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+
+  <!-- Expandable Mobile Navigation Panel -->
+  <div
+    id={panelId}
+    hidden
+    class="mobile-panel fixed top-20 left-0 right-0 w-full bg-surface-pure border-b border-border-subtle shadow-elevated z-drawer max-h-[calc(100vh-5rem)] overflow-y-auto"
+  >
+    <nav aria-label="Mobile Navigation" class="p-6 flex flex-col space-y-4">
+      {items.length > 0 ? (
+        <ul class="flex flex-col divide-y divide-border-subtle/60 list-none m-0 p-0">
+          {items.map((item) => {
+            const exact = isExactActive(item.path);
+
+            return (
+              <li>
+                <a
+                  href={item.path}
+                  aria-current={exact ? 'page' : undefined}
+                  class:list={[
+                    'flex items-center justify-between min-h-[48px] py-3 px-2 text-base font-medium rounded-sm transition-colors',
+                    exact
+                      ? 'text-brand-navy font-semibold bg-surface-subtle/50'
+                      : 'text-brand-charcoal/85 hover:text-brand-navy hover:bg-surface-subtle/30',
+                  ]}
+                >
+                  <span>{item.label}</span>
+                  {exact ? (
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand-gold" aria-hidden="true" />
+                  ) : (
+                    <svg
+                      class="w-4 h-4 text-brand-charcoal/30"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                  )}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p class="text-xs text-brand-charcoal/60 italic py-2">
+          Additional site routes are in development.
+        </p>
+      )}
+
+      {cta && (
+        <div class="pt-4 border-t border-border-subtle">
+          <Button
+            variant="gold"
+            size="md"
+            href={cta.path}
+            data-analytics-cta="mobile-plan-my-project"
+            data-analytics-placement="header"
+            class="w-full justify-center shadow-sm font-semibold"
+          >
+            {cta.label}
+          </Button>
+        </div>
+      )}
+    </nav>
+  </div>
+
+  <!-- Progressive Enhancement: No-JS Fallback -->
+  <noscript>
+    <style>
+      .mobile-panel {
+        display: block !important;
+        position: static !important;
+        box-shadow: none !important;
+      }
+    </style>
+  </noscript>
+</div>
+
+<script>
+  function setupMobileNav() {
+    const triggers = document.querySelectorAll<HTMLButtonElement>('button[data-menu-initialized="false"], button[id$="-mobile-menu-trigger"]:not([data-menu-initialized="true"])');
+
+    triggers.forEach((trigger) => {
+      trigger.setAttribute('data-menu-initialized', 'true');
+      const panelId = trigger.getAttribute('aria-controls');
+      if (!panelId) return;
+
+      const panel = document.getElementById(panelId);
+      if (!panel) return;
+
+      const openIcon = trigger.querySelector<SVGElement>('[data-menu-icon="open"]');
+      const closeIcon = trigger.querySelector<SVGElement>('[data-menu-icon="close"]');
+
+      function getFocusableElements(): HTMLElement[] {
+        if (!panel) return [];
+        return Array.from(panel.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'));
+      }
+
+      function setMenuState(isOpen: boolean) {
+        trigger.setAttribute('aria-expanded', String(isOpen));
+        trigger.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+
+        if (isOpen) {
+          panel?.removeAttribute('hidden');
+          openIcon?.classList.add('hidden');
+          openIcon?.classList.remove('block');
+          closeIcon?.classList.add('block');
+          closeIcon?.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+
+          // Move opening focus to first interactive link inside panel
+          const focusable = getFocusableElements();
+          if (focusable.length > 0) {
+            focusable[0].focus();
+          }
+        } else {
+          panel?.setAttribute('hidden', '');
+          openIcon?.classList.add('block');
+          openIcon?.classList.remove('hidden');
+          closeIcon?.classList.add('hidden');
+          closeIcon?.classList.remove('block');
+          document.body.style.overflow = '';
+        }
+      }
+
+      // Toggle menu on trigger click
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isCurrentlyExpanded = trigger.getAttribute('aria-expanded') === 'true';
+        setMenuState(!isCurrentlyExpanded);
+      });
+
+      // Accessible Tab trapping between trigger and panel focusables
+      panel.addEventListener('keydown', (e) => {
+        if (e.key !== 'Tab') return;
+        const focusable = getFocusableElements();
+        if (focusable.length === 0) return;
+
+        const firstElement = focusable[0];
+        const lastElement = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            trigger.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            trigger.focus();
+          }
+        }
+      });
+
+      trigger.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab' && trigger.getAttribute('aria-expanded') === 'true') {
+          const focusable = getFocusableElements();
+          if (focusable.length === 0) return;
+
+          if (e.shiftKey) {
+            e.preventDefault();
+            focusable[focusable.length - 1].focus();
+          } else {
+            e.preventDefault();
+            focusable[0].focus();
+          }
+        }
+      });
+
+      // Close menu on link navigation
+      const navLinks = panel.querySelectorAll('a');
+      navLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+          setMenuState(false);
+        });
+      });
+
+      // Close menu on Escape key and restore focus to trigger
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && trigger.getAttribute('aria-expanded') === 'true') {
+          setMenuState(false);
+          trigger.focus();
+        }
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        if (trigger.getAttribute('aria-expanded') === 'true') {
+          const target = e.target as Node;
+          if (!panel.contains(target) && !trigger.contains(target)) {
+            setMenuState(false);
+          }
+        }
+      });
+
+      // Close cleanly when switching to desktop layout
+      const desktopQuery = window.matchMedia('(min-width: 1024px)');
+      desktopQuery.addEventListener('change', (e) => {
+        if (e.matches && trigger.getAttribute('aria-expanded') === 'true') {
+          setMenuState(false);
+        }
+      });
+    });
+  }
+
+  // Initialize on page load and Astro view transitions
+  setupMobileNav();
+  document.addEventListener('astro:page-load', setupMobileNav);
+</script>

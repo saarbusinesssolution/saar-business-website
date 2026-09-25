@@ -1,0 +1,199 @@
+---
+import { siteConfig } from '../../config/site';
+import Button from './Button.astro';
+
+interface Props {
+  phone?: string | null;
+  email?: string | null;
+  whatsappNumber?: string | null;
+  whatsappMessage?: string;
+  variant?: 'buttons' | 'links' | 'bar' | 'compact';
+  size?: 'sm' | 'md';
+  isMockPreview?: boolean;
+  class?: string;
+}
+
+const {
+  phone = siteConfig.phone,
+  email = siteConfig.email,
+  whatsappNumber = siteConfig.whatsappNumber,
+  whatsappMessage = 'Hello SAAR, I would like to discuss a project. Please share the next steps.',
+  variant = 'buttons',
+  size = 'md',
+  isMockPreview = false,
+  class: className = '',
+} = Astro.props;
+
+// Validation helpers
+const hasPhone = typeof phone === 'string' && phone.trim().length > 5;
+const hasEmail = typeof email === 'string' && email.includes('@') && email.trim().length > 5;
+const hasWa = typeof whatsappNumber === 'string' && whatsappNumber.trim().length > 5;
+
+// If zero destinations exist, output nothing to protect against synthetic placeholders
+const hasAnyValidContact = hasPhone || hasEmail || hasWa;
+
+// URL construction
+const cleanPhone = hasPhone ? phone!.replace(/[^0-9+]/g, '') : '';
+const telHref = isMockPreview ? '#mock-call' : `tel:${cleanPhone}`;
+
+const mailtoHref = isMockPreview ? '#mock-email' : `mailto:${email?.trim()}`;
+
+const cleanWa = hasWa ? whatsappNumber!.replace(/[^0-9]/g, '') : '';
+const waHref = isMockPreview
+  ? '#mock-whatsapp'
+  : `https://wa.me/${cleanWa}?text=${encodeURIComponent(whatsappMessage)}`;
+---
+
+{hasAnyValidContact && (
+  <>
+    {variant === 'bar' ? (
+      <aside
+        aria-label="Quick contact actions"
+        class:list={[
+          'fixed bottom-0 left-0 right-0 z-sticky bg-surface-pure/95 backdrop-blur-md border-t border-border-subtle p-3 flex items-center justify-around gap-3 md:hidden shadow-elevated safe-bottom',
+          className,
+        ]}
+      >
+        {hasWa && (
+          <a
+            href={waHref}
+            target={isMockPreview ? undefined : '_blank'}
+            rel={isMockPreview ? undefined : 'noopener noreferrer'}
+            aria-label="Chat with SAAR on WhatsApp"
+            data-analytics-contact="whatsapp"
+            data-analytics-placement="mobile_bar"
+            class="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] py-2 px-3 rounded-sm bg-brand-gold text-brand-navy text-xs font-semibold shadow-sm hover:bg-brand-goldHover focus-visible:outline-2 focus-visible:outline-brand-navy transition-colors"
+          >
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
+            </svg>
+            <span>WhatsApp</span>
+          </a>
+        )}
+
+        {hasPhone && (
+          <a
+            href={telHref}
+            aria-label="Call SAAR directly"
+            data-analytics-contact="phone"
+            data-analytics-placement="mobile_bar"
+            class="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] py-2 px-3 rounded-sm bg-brand-navy text-brand-softwhite text-xs font-semibold shadow-sm hover:bg-brand-navy/90 focus-visible:outline-2 focus-visible:outline-brand-navy transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+            </svg>
+            <span>Call</span>
+          </a>
+        )}
+
+        {hasEmail && !hasPhone && (
+          <a
+            href={mailtoHref}
+            aria-label="Send email to SAAR"
+            data-analytics-contact="email"
+            data-analytics-placement="mobile_bar"
+            class="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] py-2 px-3 rounded-sm bg-brand-navy text-brand-softwhite text-xs font-semibold shadow-sm hover:bg-brand-navy/90 focus-visible:outline-2 focus-visible:outline-brand-navy transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+            <span>Email</span>
+          </a>
+        )}
+      </aside>
+    ) : variant === 'links' ? (
+      <ul class:list={['space-y-2 list-none m-0 p-0 text-sm', className]}>
+        {hasPhone && (
+          <li>
+            <a
+              href={telHref}
+              data-analytics-contact="phone"
+              data-analytics-placement="contact"
+              class="inline-flex items-center gap-2 text-brand-charcoal/80 hover:text-brand-navy transition-colors min-h-[44px]"
+            >
+              <svg class="w-4 h-4 text-brand-gold shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+              </svg>
+              <span>{phone}</span>
+            </a>
+          </li>
+        )}
+
+        {hasEmail && (
+          <li>
+            <a
+              href={mailtoHref}
+              data-analytics-contact="email"
+              data-analytics-placement="contact"
+              class="inline-flex items-center gap-2 text-brand-charcoal/80 hover:text-brand-navy transition-colors min-h-[44px]"
+            >
+              <svg class="w-4 h-4 text-brand-gold shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+              </svg>
+              <span>{email}</span>
+            </a>
+          </li>
+        )}
+
+        {hasWa && (
+          <li>
+            <a
+              href={waHref}
+              target={isMockPreview ? undefined : '_blank'}
+              rel={isMockPreview ? undefined : 'noopener noreferrer'}
+              data-analytics-contact="whatsapp"
+              data-analytics-placement="contact"
+              class="inline-flex items-center gap-2 text-brand-charcoal/80 hover:text-brand-navy transition-colors min-h-[44px]"
+            >
+              <span class="w-4 h-4 text-brand-gold shrink-0 font-bold text-xs" aria-hidden="true">WA</span>
+              <span>WhatsApp Consultation</span>
+            </a>
+          </li>
+        )}
+      </ul>
+    ) : (
+      <div class:list={['flex flex-wrap items-center gap-3', className]}>
+        {hasWa && (
+          <Button
+            variant="gold"
+            size={size}
+            href={waHref}
+            target={isMockPreview ? undefined : '_blank'}
+            rel={isMockPreview ? undefined : 'noopener noreferrer'}
+            ariaLabel="Chat with SAAR on WhatsApp"
+            data-analytics-contact="whatsapp"
+            data-analytics-placement="contact"
+          >
+            Chat on WhatsApp
+          </Button>
+        )}
+
+        {hasPhone && (
+          <Button
+            variant="primary"
+            size={size}
+            href={telHref}
+            ariaLabel="Call SAAR directly"
+            data-analytics-contact="phone"
+            data-analytics-placement="contact"
+          >
+            Call Studio
+          </Button>
+        )}
+
+        {hasEmail && (
+          <Button
+            variant="secondary"
+            size={size}
+            href={mailtoHref}
+            ariaLabel="Send email to SAAR"
+            data-analytics-contact="email"
+            data-analytics-placement="contact"
+          >
+            Email Inquiry
+          </Button>
+        )}
+      </div>
+    )}
+  </>
+)}

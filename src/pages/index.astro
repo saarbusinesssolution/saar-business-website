@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSection from '../components/home/HeroSection.astro';
+import ServicesSection from '../components/home/ServicesSection.astro';
+import DesignDirections from '../components/home/DesignDirections.astro';
+import ProcessSection from '../components/home/ProcessSection.astro';
+import TrustSection from '../components/home/TrustSection.astro';
+import FaqSection from '../components/home/FaqSection.astro';
+import PlannerIntro from '../components/home/PlannerIntro.astro';
+import CTASection from '../components/sections/CTASection.astro';
+import { getPublishedProjects } from '../lib/content';
+import { getOrganizationSchema, getWebSiteSchema, getWebPageSchema } from '../lib/seo/schema';
+import { SITE_URL } from '../lib/seo/metadata';
+
+// Query published projects (strictly excludes draft entries)
+const publishedProjects = await getPublishedProjects();
+
+const homeStructuredData = [
+  getOrganizationSchema(),
+  getWebSiteSchema(),
+  getWebPageSchema({
+    canonicalUrl: `${SITE_URL}/`,
+    title: 'Architectural Interiors & Turnkey Contracting | SAAR',
+    description:
+      'Premier architectural interiors, turnkey contracting, and renovation solutions in Delhi NCR. Explore verified disciplines, transparent methodology, and design directions.',
+    type: 'WebPage',
+  }),
+];
+---
+
+<BaseLayout
+  title="Architectural Interiors & Turnkey Contracting"
+  description="Premier architectural interiors, turnkey contracting, and renovation solutions in Delhi NCR. Explore verified disciplines, transparent methodology, and design directions."
+  structuredData={homeStructuredData}
+>
+  <!-- 1. Architectural Hero Section -->
+  <HeroSection />
+
+  <!-- 2. Core Capabilities & Disciplines -->
+  <ServicesSection />
+
+  <!-- 3. Selected Work / Design Directions (Rendered only when published projects exist) -->
+  {publishedProjects.length > 0 && <DesignDirections projects={publishedProjects} />}
+
+  <!-- 4. Engagement Methodology -->
+  <ProcessSection />
+
+  <!-- 5. Architectural Standards & Trust -->
+  <TrustSection />
+
+  <!-- 6. Interactive Qualification Planner -->
+  <PlannerIntro isAvailable={true} />
+
+  <!-- 7. Frequently Asked Questions -->
+  <FaqSection />
+
+  <!-- 7. Final Consultation Next-Step Section -->
+  <CTASection
+    id="contact"
+    variant="navy"
+    eyebrow="Start the Conversation"
+    heading="Let’s Discuss Your Space"
+    description="Connect with our architectural team to discuss spatial requirements, schedule an introductory review, or structure a complete project brief."
+    primaryAction={{
+      label: 'Send Project Enquiry',
+      href: '/contact/',
+      variant: 'gold',
+    }}
+    secondaryAction={{
+      label: 'Guided Project Planner',
+      href: '/plan-my-project/',
+      variant: 'ghost',
+    }}
+  >
+    <p class="text-xs text-brand-softwhite/60 italic mt-6 m-0">
+      Official studio direct phone and WhatsApp consultation channels will activate upon completion of corporate onboarding.
+    </p>
+  </CTASection>
+</BaseLayout>

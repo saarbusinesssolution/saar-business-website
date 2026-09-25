@@ -1,0 +1,38 @@
+---
+interface Props {
+  variant?: 'concept' | 'verified' | 'category' | 'neutral' | 'gold';
+  class?: string;
+}
+
+const { variant = 'neutral', class: className = '', ...rest } = Astro.props;
+
+const variantClasses = {
+  concept:
+    'bg-surface-goldWash text-brand-navy border border-brand-gold/60 font-semibold tracking-wider uppercase',
+  verified:
+    'bg-status-successBg text-status-success border border-status-success/30 font-semibold',
+  category:
+    'bg-surface-elevated text-brand-navy border border-border-subtle font-medium',
+  neutral:
+    'bg-surface-subtle text-text-muted border border-border-subtle font-medium',
+  gold:
+    'bg-brand-gold text-brand-navy border border-brand-gold font-bold',
+};
+---
+
+<span
+  class:list={[
+    'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs select-none',
+    variantClasses[variant],
+    className,
+  ]}
+  {...rest}
+>
+  {variant === 'concept' && (
+    <span class="w-1.5 h-1.5 rounded-full bg-brand-gold" aria-hidden="true" />
+  )}
+  {variant === 'verified' && (
+    <span class="w-1.5 h-1.5 rounded-full bg-status-success" aria-hidden="true" />
+  )}
+  <slot />
+</span>

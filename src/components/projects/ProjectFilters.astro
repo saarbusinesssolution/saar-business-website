@@ -1,0 +1,145 @@
+---
+interface Props {
+  categories: string[];
+  totalCount: number;
+  class?: string;
+}
+
+const { categories, totalCount, class: className = '' } = Astro.props;
+---
+
+<div class:list={['w-full mb-10', className]}>
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-subtle">
+    <!-- Filter Buttons Bar -->
+    <div
+      role="group"
+      aria-label="Filter projects by discipline"
+      class="flex flex-wrap items-center gap-2"
+      id="portfolio-filter-group"
+    >
+      <button
+        type="button"
+        data-filter="all"
+        aria-pressed="true"
+        class="portfolio-filter-btn px-4 py-2 rounded-xs text-xs font-semibold tracking-wider transition-all select-none focus-visible:outline-2 focus-visible:outline-brand-navy bg-brand-navy text-brand-softwhite border border-brand-navy shadow-xs"
+      >
+        All Works ({totalCount})
+      </button>
+
+      {categories.map((category) => (
+        <button
+          type="button"
+          data-filter={category}
+          aria-pressed="false"
+          class="portfolio-filter-btn px-4 py-2 rounded-xs text-xs font-medium tracking-wider transition-all select-none focus-visible:outline-2 focus-visible:outline-brand-navy bg-surface-elevated text-brand-charcoal hover:border-brand-gold/60 border border-border-subtle shadow-xs"
+        >
+          {category}
+        </button>
+      ))}
+    </div>
+
+    <!-- Active Result Count Display & Screen Reader Live Region -->
+    <div class="flex items-center gap-2">
+      <span class="text-xs text-brand-charcoal/70 font-mono">
+        Viewing:
+      </span>
+      <span id="active-count-label" class="text-xs font-bold text-brand-navy font-mono">
+        {totalCount} of {totalCount}
+      </span>
+      <div id="filter-announcement" aria-live="polite" class="sr-only">
+        Showing all {totalCount} projects
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initPortfolioFiltering() {
+    const filterGroup = document.getElementById('portfolio-filter-group');
+    if (!filterGroup) return;
+
+    const filterButtons = filterGroup.querySelectorAll<HTMLButtonElement>('.portfolio-filter-btn');
+    const projectCards = document.querySelectorAll<HTMLElement>('[data-project-card]');
+    const countLabel = document.getElementById('active-count-label');
+    const announcement = document.getElementById('filter-announcement');
+    const emptyState = document.getElementById('portfolio-empty-state');
+    const resetBtn = document.getElementById('reset-filters-btn');
+
+    const totalProjects = projectCards.length;
+
+    function applyFilter(selectedCategory: string) {
+      let visibleCount = 0;
+
+      // Update button visual and accessibility states
+      filterButtons.forEach((btn) => {
+        const isMatch = btn.getAttribute('data-filter') === selectedCategory;
+        btn.setAttribute('aria-pressed', isMatch ? 'true' : 'false');
+        if (isMatch) {
+          btn.className = 'portfolio-filter-btn px-4 py-2 rounded-xs text-xs font-semibold tracking-wider transition-all select-none focus-visible:outline-2 focus-visible:outline-brand-navy bg-brand-navy text-brand-softwhite border border-brand-navy shadow-xs';
+        } else {
+          btn.className = 'portfolio-filter-btn px-4 py-2 rounded-xs text-xs font-medium tracking-wider transition-all select-none focus-visible:outline-2 focus-visible:outline-brand-navy bg-surface-elevated text-brand-charcoal hover:border-brand-gold/60 border border-border-subtle shadow-xs';
+        }
+      });
+
+      // Filter cards
+      projectCards.forEach((card) => {
+        const cardCategory = card.getAttribute('data-category') || '';
+        const matches = selectedCategory === 'all' || cardCategory === selectedCategory;
+
+        if (matches) {
+          card.removeAttribute('hidden');
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.setAttribute('hidden', '');
+          card.classList.add('hidden');
+        }
+      });
+
+      // Update counts and announcements
+      if (countLabel) {
+        countLabel.textContent = `${visibleCount} of ${totalProjects}`;
+      }
+
+      if (announcement) {
+        const categoryLabel = selectedCategory === 'all' ? 'all disciplines' : selectedCategory;
+        announcement.textContent = `Showing ${visibleCount} project${visibleCount === 1 ? '' : 's'} for ${categoryLabel}.`;
+      }
+
+      // Empty state management
+      if (emptyState) {
+        if (visibleCount === 0) {
+          emptyState.removeAttribute('hidden');
+          emptyState.classList.remove('hidden');
+        } else {
+          emptyState.setAttribute('hidden', '');
+          emptyState.classList.add('hidden');
+        }
+      }
+    }
+
+    // Attach listeners
+    filterButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const cat = btn.getAttribute('data-filter') || 'all';
+        applyFilter(cat);
+      });
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        applyFilter('all');
+        const allBtn = filterGroup.querySelector<HTMLButtonElement>('[data-filter="all"]');
+        allBtn?.focus();
+      });
+    }
+  }
+
+  // Run on initial load and View Transitions
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPortfolioFiltering);
+  } else {
+    initPortfolioFiltering();
+  }
+  document.addEventListener('astro:page-load', initPortfolioFiltering);
+</script>

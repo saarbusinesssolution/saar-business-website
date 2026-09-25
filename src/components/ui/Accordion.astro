@@ -1,0 +1,50 @@
+---
+interface AccordionItem {
+  id?: string;
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  items: AccordionItem[];
+  class?: string;
+}
+
+const { items, class: className = '' } = Astro.props;
+---
+
+<div class:list={['divide-y divide-border-subtle border-y border-border-subtle', className]}>
+  {items.map((item, index) => (
+    <details
+      class="group py-5 transition-colors duration-200 open:bg-surface-elevated/40"
+      id={item.id}
+    >
+      <summary class="flex items-center justify-between gap-4 font-serif text-lg sm:text-xl font-medium text-text-navy cursor-pointer list-none select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy">
+        <span class="flex items-center gap-3">
+          <span class="text-xs font-mono text-brand-gold font-bold">
+            {index + 1 < 10 ? `0${index + 1}` : index + 1}
+          </span>
+          <span>{item.question}</span>
+        </span>
+
+        <!-- Chevron Indicator -->
+        <span class="ml-4 flex-shrink-0 text-brand-navy group-open:text-brand-gold transition-transform duration-200 group-open:rotate-180">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </span>
+      </summary>
+
+      <div class="pt-4 pr-6 sm:pr-12 text-sm text-text-muted leading-relaxed pl-8">
+        <p>{item.answer}</p>
+      </div>
+    </details>
+  ))}
+</div>
+
+<style>
+  /* Remove default WebKit details marker */
+  details summary::-webkit-details-marker {
+    display: none;
+  }
+</style>

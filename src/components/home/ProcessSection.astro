@@ -1,0 +1,48 @@
+---
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+import SectionHeader from '../layout/SectionHeader.astro';
+import ProcessStep from '../cards/ProcessStep.astro';
+import Button from '../ui/Button.astro';
+import { methodologySteps } from '../../data/home';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<Section
+  id="process"
+  bg="page"
+  padding="md"
+  class:list={['scroll-mt-24', className]}
+>
+  <Container size="content">
+    <SectionHeader
+      eyebrow="Our Methodology"
+      title="Phased Execution, Predictable Outcomes"
+      lead="A structured 5-stage workflow designed to preserve design fidelity, cost discipline, and technical coordination from preliminary brief to final handover."
+      align="center"
+    />
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+      {methodologySteps.map((stepItem, index) => (
+        <ProcessStep
+          step={stepItem.step}
+          title={stepItem.title}
+          subtitle={stepItem.subtitle}
+          description={stepItem.description}
+          isLast={index === methodologySteps.length - 1}
+        />
+      ))}
+    </div>
+
+    <div class="mt-12 text-center">
+      <Button href="/process/" variant="outline-gold" size="md">
+        Explore Complete 5-Stage Methodology &rarr;
+      </Button>
+    </div>
+  </Container>
+</Section>

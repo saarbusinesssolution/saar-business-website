@@ -1,0 +1,124 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import Section from '../../components/layout/Section.astro';
+import SectionHeader from '../../components/layout/SectionHeader.astro';
+import ProcessTimeline from '../../components/process/ProcessTimeline.astro';
+import PreparationSection from '../../components/process/PreparationSection.astro';
+import Accordion from '../../components/ui/Accordion.astro';
+import CTASection from '../../components/sections/CTASection.astro';
+import { processStages, processFaqs } from '../../data/process';
+import { getWebPageSchema, getBreadcrumbListSchema } from '../../lib/seo/schema';
+import { SITE_URL } from '../../lib/seo/metadata';
+
+const pageTitle = 'Our Process | 5-Stage Spatial Delivery Methodology | SAAR';
+const pageDescription =
+  'Explore SAAR’s structured 5-stage spatial delivery process: Discover, Plan, Design, Execute, and Handover in Delhi NCR. Clear client involvement, deliverables, and scope boundaries.';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Our Process', href: '/process/' },
+];
+
+const structuredData = [
+  getWebPageSchema({
+    canonicalUrl: `${SITE_URL}/process/`,
+    title: pageTitle,
+    description: pageDescription,
+    type: 'WebPage',
+  }),
+  getBreadcrumbListSchema(breadcrumbs),
+];
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  breadcrumbs={breadcrumbs}
+  structuredData={structuredData}
+>
+  {/* Editorial Page Hero */}
+  <Section bg="page" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="max-w-3xl">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-semibold block mb-3">
+          Spatial Delivery Methodology
+        </span>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-text-navy tracking-tight leading-[1.15]">
+          A Disciplined 5-Stage Process from Brief to Handover
+        </h1>
+        <p class="mt-5 text-lg sm:text-xl text-text-charcoal leading-relaxed font-sans">
+          Great architecture and flawless interior execution require predictable, transparent governance. Our phased methodology eliminates costly ambiguity, preserves design intent, and establishes clear checkpoints at every milestone.
+        </p>
+
+        {/* Scope Overview Matrix */}
+        <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-sm bg-surface-elevated border border-border-subtle text-xs text-text-muted">
+          <div>
+            <span class="font-semibold text-text-navy block mb-1">
+              Interior Design Engagements:
+            </span>
+            <span>
+              Concludes at <strong class="text-brand-navy">Stage 03 (Design)</strong> with complete CAD drawings, 3D visualizations, material schedules, and itemized BoQ.
+            </span>
+          </div>
+          <div>
+            <span class="font-semibold text-text-navy block mb-1">
+              Turnkey Contracting Engagements:
+            </span>
+            <span>
+              Encompasses all five stages from <strong class="text-brand-navy">Stage 01 through Stage 05 (Handover)</strong> with single-point site execution accountability.
+            </span>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  {/* Phased Timeline Section */}
+  <Section bg="page" padding="lg">
+    <Container size="content">
+      <SectionHeader
+        eyebrow="The Workflow"
+        title="Five Stages of Execution Rigor"
+        lead="Each stage produces specific tangible outputs and clearly separates client decisions from technical delivery responsibilities."
+        align="left"
+        class="mb-12"
+      />
+
+      <ProcessTimeline stages={processStages} />
+    </Container>
+  </Section>
+
+  {/* Preparation Guidance Section */}
+  <PreparationSection />
+
+  {/* Process FAQs Section */}
+  <Section id="faqs" bg="page" padding="lg" class="border-t border-border-subtle">
+    <Container size="narrow">
+      <SectionHeader
+        eyebrow="Process Questions"
+        title="Frequently Asked Questions"
+        lead="Realistic answers regarding engagement boundaries, unexpected site findings, and transition from design to turnkey contracting."
+        align="center"
+      />
+
+      <Accordion items={processFaqs} />
+    </Container>
+  </Section>
+
+  {/* Conversion CTA */}
+  <CTASection
+    variant="navy"
+    eyebrow="Initiate Stage 01"
+    heading="Ready to Discuss Your Space?"
+    description="Begin with a structured preliminary discovery session. We will evaluate your spatial scope, discuss feasibility parameters, and outline an actionable delivery path."
+    primaryAction={{
+      label: 'Explore Our Services',
+      href: '/services/',
+    }}
+    secondaryAction={{
+      label: 'View Design Directions',
+      href: '/projects/',
+    }}
+  />
+</BaseLayout>

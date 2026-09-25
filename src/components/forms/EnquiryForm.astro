@@ -1,0 +1,524 @@
+---
+import TextInput from '../ui/TextInput.astro';
+import TextArea from '../ui/TextArea.astro';
+import Select from '../ui/Select.astro';
+import Checkbox from '../ui/Checkbox.astro';
+import RadioGroup from '../ui/RadioGroup.astro';
+import Button from '../ui/Button.astro';
+import Badge from '../ui/Badge.astro';
+import FormField from '../ui/FormField.astro';
+
+interface Props {
+  id?: string;
+  mode?: 'standalone' | 'planner';
+  class?: string;
+}
+
+const {
+  id: formId = 'saar-enquiry-form',
+  mode = 'standalone',
+  class: className = '',
+} = Astro.props;
+
+const isPlannerMode = mode === 'planner';
+---
+
+<div id={`${formId}-container`} class:list={['enquiry-form-wrapper w-full', className]}>
+  {/* Success Confirmation Container (Role status) */}
+  <div
+    id={`${formId}-success-state`}
+    class="hidden p-6 sm:p-8 rounded-sm bg-surface-elevated border border-brand-gold/40 shadow-subtle space-y-5 animate-fade-in"
+    role="status"
+    aria-live="polite"
+  >
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 border border-emerald-200">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <div>
+        <Badge variant="verified">Enquiry Submitted</Badge>
+        <h3 class="font-serif text-2xl font-semibold text-text-navy mt-1">
+          Your enquiry has been submitted.
+        </h3>
+      </div>
+    </div>
+
+    <div class="p-4 bg-surface-page rounded-sm border border-border-subtle text-sm space-y-2">
+      <p class="text-text-muted">
+        Your enquiry reference code:
+        <strong id={`${formId}-reference-display`} class="font-mono text-brand-navy ml-1 font-bold select-all"></strong>
+      </p>
+      <p class="text-text-muted leading-relaxed">
+        Our architectural team reviews project briefs sequentially. We will evaluate your requirements and reach out via your preferred contact method to discuss initial feasibility and next steps.
+      </p>
+    </div>
+
+    <div class="pt-4 border-t border-border-subtle flex flex-wrap items-center justify-between gap-4 text-xs text-text-muted">
+      <span>Need to prepare for the initial call?</span>
+      <a href="/thank-you/" class="font-semibold text-brand-navy hover:text-brand-gold underline underline-offset-4">
+        Review Consultation Next Steps &rarr;
+      </a>
+    </div>
+  </div>
+
+  {/* Active Form */}
+  <form id={formId} class="enquiry-form space-y-6" novalidate data-mode={mode}>
+    {/* Error Summary Alert */}
+    <div
+      id={`${formId}-error-summary`}
+      class="hidden p-4 rounded-sm bg-red-50 border border-status-error/40 text-status-error text-sm font-sans"
+      role="alert"
+      aria-live="polite"
+    >
+      <div class="flex items-center gap-2 font-semibold mb-1">
+        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>
+        <span id={`${formId}-error-message`}>Please review the highlighted fields:</span>
+      </div>
+      <ul id={`${formId}-error-list`} class="list-disc list-inside space-y-1 text-xs mt-2"></ul>
+    </div>
+
+    {/* Planner Mode: Attached Brief Indicator */}
+    {isPlannerMode && (
+      <div class="p-4 rounded-sm bg-surface-elevated border border-brand-gold/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-wider text-brand-gold font-bold block mb-0.5">
+            Attached Project Brief
+          </span>
+          <p id={`${formId}-attached-brief-summary`} class="text-text-navy font-medium">
+            Reviewed spatial brief will be securely delivered with your contact details.
+          </p>
+        </div>
+        <button
+          type="button"
+          id={`${formId}-edit-brief-btn`}
+          class="text-xs font-semibold text-brand-navy hover:text-brand-gold underline underline-offset-4 flex-shrink-0"
+        >
+          Edit Brief Details
+        </button>
+      </div>
+    )}
+
+    {/* Contact Information */}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <FormField id={`${formId}-name`} label="Full Name" required>
+        <TextInput
+          id={`${formId}-name`}
+          name="name"
+          required
+          autocomplete="name"
+          placeholder="e.g. Vikram Mehta"
+          maxlength={100}
+        />
+      </FormField>
+
+      <FormField id={`${formId}-location`} label="Project Locality / City" required helpText="City or neighborhood where the project is situated.">
+        <TextInput
+          id={`${formId}-location`}
+          name="location"
+          required
+          autocomplete="address-level2"
+          placeholder="e.g. South Delhi, Gurgaon Golf Course Rd"
+          maxlength={120}
+        />
+      </FormField>
+    </div>
+
+    {/* Preferred Contact Method */}
+    <RadioGroup
+      name="contactMethod"
+      legend="Preferred Contact Method"
+      required
+      selectedValue="email"
+      options={[
+        {
+          id: `${formId}-method-email`,
+          value: 'email',
+          label: 'Email Dialogue',
+          description: 'Receive written brief assessment and scheduling links via email.',
+        },
+        {
+          id: `${formId}-method-phone`,
+          value: 'phone',
+          label: 'Direct Phone Consultation',
+          description: 'Coordinate initial spatial discovery via telephone call.',
+        },
+      ]}
+    />
+
+    {/* Contact Channels */}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <FormField id={`${formId}-email`} label="Email Address" helpText="Required if email is your preferred method.">
+        <TextInput
+          id={`${formId}-email`}
+          name="email"
+          type="email"
+          autocomplete="email"
+          placeholder="name@company.com"
+          maxlength={254}
+        />
+      </FormField>
+
+      <FormField id={`${formId}-phone`} label="Telephone Number" helpText="Required if phone is your preferred method.">
+        <TextInput
+          id={`${formId}-phone`}
+          name="phone"
+          type="tel"
+          autocomplete="tel"
+          placeholder="+91 98765 43210"
+          maxlength={25}
+        />
+      </FormField>
+    </div>
+
+    {/* Standalone Mode: Discipline Selection & Overview */}
+    {!isPlannerMode && (
+      <>
+        <FormField id={`${formId}-service`} label="Primary Discipline Required" required>
+          <Select
+            id={`${formId}-service`}
+            name="service"
+            required
+            options={[
+              { value: '', label: 'Select required service...' },
+              { value: 'interior-design', label: 'Interior Design & Space Planning' },
+              { value: 'turnkey-contracting', label: 'Turnkey Contracting & Execution' },
+              { value: 'renovation', label: 'Architectural Renovation & Remodeling' },
+              { value: 'guidance_needed', label: 'Not sure — I would like guidance' },
+            ]}
+          />
+        </FormField>
+
+        <FormField id={`${formId}-message`} label="Project Overview & Requirements" required helpText="Briefly outline your space requirements so we can prepare for our initial discussion.">
+          <TextArea
+            id={`${formId}-message`}
+            name="message"
+            required
+            rows={4}
+            maxlength={2000}
+            placeholder="Please describe your space (e.g. 4BHK apartment, corporate office), approximate area, expected timeline, and key priorities (minimum 10 characters)..."
+          />
+        </FormField>
+      </>
+    )}
+
+    {/* Planner Mode: Optional Note */}
+    {isPlannerMode && (
+      <FormField id={`${formId}-message`} label="Additional Instructions / Site Notes (Optional)" helpText="Optional: Your structured spatial brief is already attached.">
+        <TextArea
+          id={`${formId}-message`}
+          name="message"
+          rows={3}
+          maxlength={2000}
+          placeholder="Any specific architectural preferences, preferred contact timings, or site handover conditions..."
+        />
+      </FormField>
+    )}
+
+    {/* Honeypot field (hidden from assistive technologies) */}
+    <div style="position: absolute; left: -9999px; top: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
+      <label for={`${formId}-website-url`}>Leave this field blank</label>
+      <input
+        type="text"
+        id={`${formId}-website-url`}
+        name="website_url"
+        tabindex="-1"
+        autocomplete="off"
+      />
+    </div>
+
+    {/* Turnstile Container (if configured) */}
+    <div id={`${formId}-turnstile-target`} class="my-2"></div>
+
+    {/* Acknowledgement Checkbox */}
+    <Checkbox
+      id={`${formId}-acknowledgement`}
+      name="acknowledgement"
+      required
+      label="I agree to SAAR using these details to respond to my project enquiry."
+      helpText="Your details are protected under our Privacy Policy and will never be shared, sold, or used for unsolicited marketing."
+    />
+
+    {/* Submission Action */}
+    <div class="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <Button
+        type="submit"
+        variant="primary"
+        size="lg"
+        id={`${formId}-submit-btn`}
+        class="w-full sm:w-auto flex items-center justify-center gap-2"
+      >
+        <span id={`${formId}-submit-text`}>
+          {isPlannerMode ? 'Submit Project Brief & Enquiry' : 'Submit Project Enquiry'}
+        </span>
+        <svg id={`${formId}-submit-spinner`} class="hidden animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+        </svg>
+      </Button>
+
+      <span class="text-xs text-text-muted">
+        Protected by <a href="/privacy/" class="text-brand-navy hover:text-brand-gold underline underline-offset-2">Privacy Policy</a>
+      </span>
+    </div>
+  </form>
+</div>
+
+<script define:vars={{ formId, isPlannerMode }}>
+  // @ts-nocheck
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    const errorSummary = document.getElementById(`${formId}-error-summary`);
+    const errorMessage = document.getElementById(`${formId}-error-message`);
+    const errorList = document.getElementById(`${formId}-error-list`);
+    const successState = document.getElementById(`${formId}-success-state`);
+    const referenceDisplay = document.getElementById(`${formId}-reference-display`);
+    const submitBtn = document.getElementById(`${formId}-submit-btn`);
+    const submitText = document.getElementById(`${formId}-submit-text`);
+    const submitSpinner = document.getElementById(`${formId}-submit-spinner`);
+
+    // Radio inputs for contact method
+    const contactMethodRadios = form.querySelectorAll('input[name="contactMethod"]');
+    const emailInput = document.getElementById(`${formId}-email`);
+    const phoneInput = document.getElementById(`${formId}-phone`);
+
+    // Handle contact method radio changes
+    function updateContactMethodLabels() {
+      const selectedMethod = form.querySelector('input[name="contactMethod"]:checked')?.value || 'email';
+
+      if (selectedMethod === 'email') {
+        if (emailInput) emailInput.setAttribute('required', 'true');
+        if (phoneInput) phoneInput.removeAttribute('required');
+      } else {
+        if (phoneInput) phoneInput.setAttribute('required', 'true');
+        if (emailInput) emailInput.removeAttribute('required');
+      }
+    }
+
+    contactMethodRadios.forEach((radio) => {
+      radio.addEventListener('change', updateContactMethodLabels);
+    });
+    updateContactMethodLabels();
+
+    // Track enquiry form start on first interaction
+    let hasFiredFormStart = false;
+    function markFormStarted() {
+      if (!hasFiredFormStart) {
+        hasFiredFormStart = true;
+        window.__SAAR_TRACK_EVENT__?.('enquiry_form_start', {
+          form_origin: isPlannerMode ? 'planner' : 'contact',
+        });
+      }
+    }
+    form.addEventListener('focusin', markFormStarted, { once: true });
+    form.addEventListener('input', markFormStarted, { once: true });
+
+    // Client-side submission handling
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Reset errors
+      if (errorSummary) errorSummary.classList.add('hidden');
+      if (errorList) errorList.innerHTML = '';
+      form.querySelectorAll('[aria-invalid="true"]').forEach((el) => el.removeAttribute('aria-invalid'));
+
+      // Gather form data
+      const formData = new FormData(form);
+      const name = formData.get('name')?.toString().trim() || '';
+      const contactMethod = formData.get('contactMethod')?.toString() || 'email';
+      const email = formData.get('email')?.toString().trim() || '';
+      const phone = formData.get('phone')?.toString().trim() || '';
+      const location = formData.get('location')?.toString().trim() || '';
+      const service = formData.get('service')?.toString().trim() || undefined;
+      const message = formData.get('message')?.toString().trim() || '';
+      const acknowledgement = formData.get('acknowledgement') === 'on' || formData.get('acknowledgement') === 'true';
+      const website_url = formData.get('website_url')?.toString() || '';
+
+      // Collect project brief if in planner mode
+      let projectBrief = null;
+      if (isPlannerMode && window.__SAAR_ACTIVE_BRIEF__) {
+        projectBrief = window.__SAAR_ACTIVE_BRIEF__;
+      }
+
+      // Pre-validation checks
+      const localErrors = [];
+
+      if (!name || name.length < 2) {
+        localErrors.push({ field: `${formId}-name`, message: 'Please enter your full name.' });
+      }
+
+      if (contactMethod === 'email' && (!email || !email.includes('@'))) {
+        localErrors.push({ field: `${formId}-email`, message: 'Please enter a valid email address.' });
+      }
+
+      if (contactMethod === 'phone' && (!phone || phone.length < 7)) {
+        localErrors.push({ field: `${formId}-phone`, message: 'Please enter a valid telephone number.' });
+      }
+
+      if (!location || location.length < 2) {
+        localErrors.push({ field: `${formId}-location`, message: 'Please enter your project city or locality.' });
+      }
+
+      if (!isPlannerMode && !projectBrief) {
+        if (!service) {
+          localErrors.push({ field: `${formId}-service`, message: 'Please select a primary discipline.' });
+        }
+        if (!message || message.length < 10) {
+          localErrors.push({ field: `${formId}-message`, message: 'Please provide a project overview (minimum 10 characters).' });
+        }
+      }
+
+      if (!acknowledgement) {
+        localErrors.push({ field: `${formId}-acknowledgement`, message: 'Please confirm agreement to respond to your enquiry.' });
+      }
+
+      if (localErrors.length > 0) {
+        window.__SAAR_TRACK_EVENT__?.('enquiry_submit_error', {
+          form_origin: isPlannerMode ? 'planner' : 'contact',
+          error_category: 'validation',
+        });
+
+        if (errorMessage) errorMessage.textContent = 'Please review the highlighted details:';
+        if (errorList) {
+          localErrors.forEach((err) => {
+            const li = document.createElement('li');
+            li.textContent = err.message;
+            errorList.appendChild(li);
+            const inputEl = document.getElementById(err.field);
+            if (inputEl) inputEl.setAttribute('aria-invalid', 'true');
+          });
+        }
+        if (errorSummary) errorSummary.classList.remove('hidden');
+        errorSummary?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
+
+      // Generate or reuse submission ID
+      let submissionId = form.dataset.submissionId;
+      if (!submissionId) {
+        submissionId = 'sub-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 8);
+        form.dataset.submissionId = submissionId;
+      }
+
+      const payload = {
+        name,
+        contactMethod,
+        email: email || undefined,
+        phone: phone || undefined,
+        location,
+        service,
+        message: message || undefined,
+        acknowledgement,
+        website_url,
+        submissionId,
+        projectBrief,
+      };
+
+      // Set in-flight state
+      if (submitBtn) submitBtn.setAttribute('disabled', 'true');
+      if (submitText) submitText.textContent = 'Submitting Enquiry...';
+      if (submitSpinner) submitSpinner.classList.remove('hidden');
+
+      try {
+        const response = await fetch('/api/enquiry', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.ok && data.success) {
+          // Success state
+          form.classList.add('hidden');
+          if (successState) {
+            successState.classList.remove('hidden');
+            if (referenceDisplay) referenceDisplay.textContent = data.reference || 'SR-CONFIRMED';
+            successState.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+
+          // Accurate conversion tracking: fire generate_lead ONLY on real accepted server delivery
+          if (data.simulated === true) {
+            if (window.__SAAR_DEBUG_ANALYTICS__ || (typeof console !== 'undefined' && console.info)) {
+              console.info('[SAAR Analytics] generate_lead suppressed: test mock delivery detected.');
+            }
+          } else {
+            // Deduplicate per submission ID so retries do not refire
+            if (!window.__SAAR_LAST_LEAD_SUBMISSION__ || window.__SAAR_LAST_LEAD_SUBMISSION__ !== submissionId) {
+              window.__SAAR_LAST_LEAD_SUBMISSION__ = submissionId;
+              window.__SAAR_TRACK_EVENT__?.('generate_lead', {
+                form_origin: isPlannerMode ? 'planner' : 'contact',
+                ...(service ? { service_id: service } : {}),
+              });
+            }
+          }
+
+          // Dispatch event for parent containers (e.g. PlannerWizard)
+          window.dispatchEvent(
+            new CustomEvent('saar:enquiry-submitted', {
+              detail: { reference: data.reference, brief: projectBrief },
+            })
+          );
+        } else {
+          // Categorize and track server submission error
+          let errorCategory = 'unexpected';
+          if (response.status === 429) {
+            errorCategory = 'rate_limited';
+          } else if (response.status === 422) {
+            errorCategory = 'validation';
+          } else if (response.status === 400) {
+            errorCategory = 'spam_check';
+          } else if (response.status === 503) {
+            errorCategory = 'delivery_unavailable';
+          }
+
+          window.__SAAR_TRACK_EVENT__?.('enquiry_submit_error', {
+            form_origin: isPlannerMode ? 'planner' : 'contact',
+            error_category: errorCategory,
+          });
+
+          // Failure: preserve entered data and report server error
+          if (errorMessage) {
+            errorMessage.textContent = data.error || 'Submission failed. Please try again.';
+          }
+          if (errorList && data.fieldErrors) {
+            Object.entries(data.fieldErrors).forEach(([field, msgs]) => {
+              msgs.forEach((m) => {
+                const li = document.createElement('li');
+                li.textContent = m;
+                errorList.appendChild(li);
+              });
+              const inputEl = document.getElementById(`${formId}-${field}`);
+              if (inputEl) inputEl.setAttribute('aria-invalid', 'true');
+            });
+          }
+          if (errorSummary) errorSummary.classList.remove('hidden');
+          errorSummary?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      } catch (err) {
+        window.__SAAR_TRACK_EVENT__?.('enquiry_submit_error', {
+          form_origin: isPlannerMode ? 'planner' : 'contact',
+          error_category: 'network',
+        });
+
+        if (errorMessage) {
+          errorMessage.textContent = 'Network connection error. Please verify your connection or contact our studio directly.';
+        }
+        if (errorSummary) errorSummary.classList.remove('hidden');
+      } finally {
+        if (submitBtn) submitBtn.removeAttribute('disabled');
+        if (submitText) {
+          submitText.textContent = isPlannerMode ? 'Submit Project Brief & Enquiry' : 'Submit Project Enquiry';
+        }
+        if (submitSpinner) submitSpinner.classList.add('hidden');
+      }
+    });
+  });
+</script>
