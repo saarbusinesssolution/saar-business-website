@@ -169,12 +169,12 @@ const hasActualPhotograph = fs.existsSync(teamImagePath);
         <div class="lg:col-span-5">
           {hasActualPhotograph ? (
             <div class="relative bg-surface-elevated border border-border-subtle p-3 rounded-sm shadow-subtle">
-              <div class="relative overflow-hidden aspect-[4/5] rounded-sm bg-surface-subtle">
+              <div class="relative overflow-hidden aspect-[3/4] rounded-sm bg-surface-subtle">
                 <img
                   src={aboutData.leadership.image}
                   alt={`${aboutData.leadership.name}, ${aboutData.leadership.designation} at SAAR Business Support Solution`}
-                  width={600}
-                  height={750}
+                  width={768}
+                  height={1024}
                   class="w-full h-full object-cover object-top"
                   loading="lazy"
                   decoding="async"
