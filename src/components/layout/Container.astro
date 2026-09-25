@@ -1,0 +1,32 @@
+---
+interface Props {
+  as?: 'div' | 'section' | 'article' | 'main' | 'header' | 'footer';
+  size?: 'content' | 'reading' | 'narrow' | 'full';
+  class?: string;
+}
+
+const {
+  as: Element = 'div',
+  size = 'content',
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+const sizeClasses = {
+  content: 'max-w-content',
+  reading: 'max-w-reading',
+  narrow: 'max-w-3xl',
+  full: 'w-full',
+};
+---
+
+<Element
+  class:list={[
+    'w-full mx-auto px-5 sm:px-8 lg:px-10',
+    sizeClasses[size],
+    className,
+  ]}
+  {...rest}
+>
+  <slot />
+</Element>

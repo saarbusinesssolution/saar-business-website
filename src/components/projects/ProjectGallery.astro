@@ -1,0 +1,273 @@
+---
+import Badge from '../ui/Badge.astro';
+import type { ImageMetadata } from '../../types/content';
+
+export interface GalleryItem {
+  image: ImageMetadata;
+  caption?: string;
+  order: number;
+}
+
+interface Props {
+  images: GalleryItem[];
+  projectTitle: string;
+  isConcept?: boolean;
+  class?: string;
+}
+
+const {
+  images,
+  projectTitle,
+  isConcept = true,
+  class: className = '',
+} = Astro.props;
+
+if (!images || images.length === 0) {
+  return null;
+}
+---
+
+<div class:list={['w-full', className]}>
+  <div class="mb-6 flex items-center justify-between">
+    <div>
+      <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold">
+        Spatial Study
+      </span>
+      <h3 class="font-serif text-2xl font-bold text-brand-navy mt-1">
+        Architectural Visualizations & Material Details
+      </h3>
+    </div>
+    <span class="text-xs font-mono text-brand-charcoal/60">
+      {images.length} {images.length === 1 ? 'Frame' : 'Frames'}
+    </span>
+  </div>
+
+  <!-- Gallery Grid (Progressive Enhancement: standard links without JS) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8" id="gallery-grid">
+    {images.map((item, index) => (
+      <figure class="m-0 p-0 flex flex-col group">
+        <a
+          href={item.image.assetPath}
+          data-lightbox-trigger
+          data-index={index}
+          class="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-surface-subtle border border-border-subtle hover:border-brand-gold focus-visible:outline-2 focus-visible:outline-brand-navy shadow-card transition-all block cursor-zoom-in"
+          aria-label={`Enlarge image ${index + 1} of ${images.length}: ${item.caption || item.image.altText || projectTitle}`}
+        >
+          <img
+            src={item.image.assetPath}
+            alt={item.image.altText || `${projectTitle} frame ${index + 1}`}
+            width={item.image.dimensions?.width || 1024}
+            height={item.image.dimensions?.height || 768}
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
+          />
+
+          <!-- Classification Badge -->
+          <div class="absolute top-3 left-3 z-10 pointer-events-none">
+            {isConcept ? (
+              <Badge variant="concept">Design Concept</Badge>
+            ) : (
+              <Badge variant="verified">Verified Project</Badge>
+            )}
+          </div>
+
+          <!-- Zoom Icon Indicator -->
+          <div class="absolute bottom-3 right-3 z-10 w-8 h-8 rounded-full bg-brand-navy/80 text-brand-softwhite flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200 pointer-events-none" aria-hidden="true">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+            </svg>
+          </div>
+        </a>
+
+        {item.caption && (
+          <figcaption class="mt-2.5 text-xs text-brand-charcoal/75 leading-relaxed font-mono">
+            {item.caption}
+          </figcaption>
+        )}
+      </figure>
+    ))}
+  </div>
+
+  <!-- Accessible Native Lightbox Dialog -->
+  <dialog
+    id="gallery-lightbox"
+    aria-label="Image gallery viewer"
+    class="p-0 border-0 rounded-md bg-transparent max-w-5xl w-[92vw] max-h-[92vh] backdrop:bg-brand-charcoal/85 backdrop:backdrop-blur-sm m-auto overflow-hidden shadow-2xl focus:outline-none"
+  >
+    <div class="relative flex flex-col bg-surface-elevated rounded-md border border-border-medium overflow-hidden">
+      <!-- Dialog Header Bar -->
+      <div class="flex items-center justify-between px-4 sm:px-6 py-3.5 bg-surface-pure border-b border-border-subtle">
+        <div class="flex items-center gap-3">
+          {isConcept ? (
+            <Badge variant="concept">Design Concept</Badge>
+          ) : (
+            <Badge variant="verified">Verified Project</Badge>
+          )}
+          <span id="lightbox-counter" class="text-xs font-mono text-brand-charcoal/80 font-bold">
+            1 of {images.length}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          id="lightbox-close-btn"
+          aria-label="Close image viewer"
+          class="p-2 rounded-xs text-brand-charcoal hover:text-brand-navy hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-brand-navy transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Main Viewer Area -->
+      <div class="relative flex items-center justify-center bg-black/95 min-h-[300px] max-h-[70vh] overflow-hidden">
+        <img
+          id="lightbox-img"
+          src={images[0]?.image.assetPath || ''}
+          alt={images[0]?.caption || images[0]?.image.altText || ''}
+          width={images[0]?.image.dimensions?.width || 1200}
+          height={images[0]?.image.dimensions?.height || 900}
+          class="max-w-full max-h-[70vh] w-auto h-auto object-contain transition-opacity duration-200"
+          decoding="async"
+        />
+
+        <!-- Prev / Next Navigation Controls -->
+        {images.length > 1 && (
+          <>
+            <button
+              type="button"
+              id="lightbox-prev-btn"
+              aria-label="Previous image"
+              class="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-brand-navy/70 hover:bg-brand-navy text-brand-softwhite focus-visible:outline-2 focus-visible:outline-brand-gold transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center shadow-md"
+            >
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              id="lightbox-next-btn"
+              aria-label="Next image"
+              class="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-brand-navy/70 hover:bg-brand-navy text-brand-softwhite focus-visible:outline-2 focus-visible:outline-brand-gold transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center shadow-md"
+            >
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </>
+        )}
+      </div>
+
+      <!-- Dialog Caption Footer -->
+      <div class="px-5 py-3.5 bg-surface-pure border-t border-border-subtle">
+        <p id="lightbox-caption" class="text-xs sm:text-sm text-brand-charcoal m-0 leading-normal font-mono">
+        </p>
+      </div>
+    </div>
+  </dialog>
+</div>
+
+<script define:vars={{ images }}>
+  function initGalleryLightbox() {
+    const dialog = document.getElementById('gallery-lightbox');
+    if (!dialog) return;
+
+    const triggers = document.querySelectorAll('[data-lightbox-trigger]');
+    const closeBtn = document.getElementById('lightbox-close-btn');
+    const prevBtn = document.getElementById('lightbox-prev-btn');
+    const nextBtn = document.getElementById('lightbox-next-btn');
+    const imgElement = document.getElementById('lightbox-img');
+    const counterElement = document.getElementById('lightbox-counter');
+    const captionElement = document.getElementById('lightbox-caption');
+
+    let currentIndex = 0;
+    let lastActiveElement = null;
+
+    function renderImage(index) {
+      if (index < 0) index = images.length - 1;
+      if (index >= images.length) index = 0;
+      currentIndex = index;
+
+      const item = images[currentIndex];
+      if (!item || !imgElement) return;
+
+      imgElement.src = item.image.assetPath;
+      imgElement.alt = item.caption || item.image.altText || '';
+
+      if (counterElement) {
+        counterElement.textContent = `${currentIndex + 1} of ${images.length}`;
+      }
+
+      if (captionElement) {
+        captionElement.textContent = item.caption || item.image.altText || '';
+      }
+    }
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener('click', (e) => {
+        // Prevent default navigation to enable rich modal
+        e.preventDefault();
+        lastActiveElement = trigger;
+        const idx = parseInt(trigger.getAttribute('data-index') || '0', 10);
+        renderImage(idx);
+        dialog.showModal();
+        document.body.style.overflow = 'hidden';
+        closeBtn?.focus();
+      });
+    });
+
+    closeBtn?.addEventListener('click', () => {
+      dialog.close();
+    });
+
+    dialog.addEventListener('close', () => {
+      document.body.style.overflow = '';
+      if (lastActiveElement && typeof lastActiveElement.focus === 'function') {
+        lastActiveElement.focus();
+      }
+    });
+
+    // Close on backdrop click
+    dialog.addEventListener('click', (e) => {
+      const rect = dialog.getBoundingClientRect();
+      const isInDialog = (
+        rect.top <= e.clientY &&
+        e.clientY <= rect.top + rect.height &&
+        rect.left <= e.clientX &&
+        e.clientX <= rect.left + rect.width
+      );
+      if (!isInDialog) {
+        dialog.close();
+      }
+    });
+
+    prevBtn?.addEventListener('click', () => {
+      renderImage(currentIndex - 1);
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      renderImage(currentIndex + 1);
+    });
+
+    // Arrow keyboard navigation
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        renderImage(currentIndex - 1);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        renderImage(currentIndex + 1);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGalleryLightbox);
+  } else {
+    initGalleryLightbox();
+  }
+  document.addEventListener('astro:page-load', initGalleryLightbox);
+</script>

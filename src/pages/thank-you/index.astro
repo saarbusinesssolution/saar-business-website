@@ -1,0 +1,127 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import Section from '../../components/layout/Section.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+---
+
+<BaseLayout
+  title="Consultation Workflow & Next Steps"
+  description="Understanding the consultation review process and next steps for SAAR Business Support Solution architectural and turnkey projects."
+  noindex={true}
+>
+
+  <Section class="pt-8 pb-16 lg:pb-24">
+    <Container class="max-w-3xl">
+      {/* Wayfinding Breadcrumbs */}
+      <div class="mb-8">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Next Steps', href: '/thank-you/', current: true },
+          ]}
+        />
+      </div>
+
+      {/* Header */}
+      <div class="mb-10 text-center sm:text-left">
+        <div class="flex items-center justify-center sm:justify-start gap-2 mb-3">
+          <Badge variant="verified">Consultation Guide</Badge>
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-semibold">
+            Process Transparency
+          </span>
+        </div>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-text-navy tracking-tight mb-4">
+          Consultation Coordination & Next Steps
+        </h1>
+        <p class="text-base sm:text-lg text-text-muted leading-relaxed">
+          Here is how SAAR coordinates initial inquiries, evaluates spatial feasibility, and prepares for your initial architectural discussion.
+        </p>
+      </div>
+
+      {/* Truthful Direct-Visit Notice Callout */}
+      <div class="mb-10 p-5 rounded-sm bg-surface-elevated border border-brand-gold/40 shadow-subtle space-y-2 text-xs text-text-muted leading-relaxed">
+        <div class="flex items-center gap-2 font-semibold text-brand-navy">
+          <svg class="w-4 h-4 text-brand-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+          <span>Direct Access Notice:</span>
+        </div>
+        <p>
+          This guide outlines our operational timeline. If you have just submitted an enquiry via our Contact form or Project Planner, your submission has been recorded. If you reached this page directly without submitting a brief, please visit our <a href="/contact/" class="text-brand-navy underline underline-offset-2 font-medium hover:text-brand-gold">Contact Page</a> or <a href="/plan-my-project/" class="text-brand-navy underline underline-offset-2 font-medium hover:text-brand-gold">Guided Project Planner</a> to initiate a project review.
+        </p>
+      </div>
+
+      {/* Step-by-Step Coordination Flow */}
+      <div class="space-y-6">
+        <h2 class="font-serif text-2xl font-semibold text-text-navy">
+          Our Initial Consultation Stages
+        </h2>
+
+        <div class="space-y-4">
+          {/* Stage 1 */}
+          <div class="bg-surface-elevated p-6 rounded-sm border border-border-subtle shadow-subtle">
+            <div class="flex items-start gap-4">
+              <span class="font-mono text-xl font-bold text-brand-gold">01</span>
+              <div class="space-y-1">
+                <h3 class="font-serif text-lg font-semibold text-text-navy">
+                  Brief Ingestion & Feasibility Screening
+                </h3>
+                <p class="text-sm text-text-muted leading-relaxed">
+                  Our core team examines the submitted spatial requirements, target locality, and project category against our active studio capacity and geographic coverage.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Stage 2 */}
+          <div class="bg-surface-elevated p-6 rounded-sm border border-border-subtle shadow-subtle">
+            <div class="flex items-start gap-4">
+              <span class="font-mono text-xl font-bold text-brand-gold">02</span>
+              <div class="space-y-1">
+                <h3 class="font-serif text-lg font-semibold text-text-navy">
+                  Direct Coordination Call
+                </h3>
+                <p class="text-sm text-text-muted leading-relaxed">
+                  We connect via your preferred communication method (email or telephone) to clarify preliminary details, site possession timelines, and specific architectural priorities.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Stage 3 */}
+          <div class="bg-surface-elevated p-6 rounded-sm border border-border-subtle shadow-subtle">
+            <div class="flex items-start gap-4">
+              <span class="font-mono text-xl font-bold text-brand-gold">03</span>
+              <div class="space-y-1">
+                <h3 class="font-serif text-lg font-semibold text-text-navy">
+                  Site Walk-Through or Studio Meeting
+                </h3>
+                <p class="text-sm text-text-muted leading-relaxed">
+                  For qualified commissions, we arrange an on-site spatial inspection or studio meeting in Delhi NCR to establish the initial drawing package and commercial baseline.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation Return Links */}
+      <div class="mt-12 pt-8 border-t border-border-subtle flex flex-wrap items-center justify-between gap-4">
+        <a href="/" class="inline-flex items-center text-sm font-semibold text-brand-navy hover:text-brand-gold">
+          &larr; Return to Homepage
+        </a>
+        <div class="flex items-center gap-3">
+          <Button href="/projects/" variant="secondary" size="md">
+            View Selected Works
+          </Button>
+          <Button href="/contact/" variant="primary" size="md">
+            Contact Form
+          </Button>
+        </div>
+      </div>
+    </Container>
+  </Section>
+</BaseLayout>

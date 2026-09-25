@@ -1,0 +1,67 @@
+---
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+import SectionHeader from '../layout/SectionHeader.astro';
+import { preparationGuidelines, type PreparationItem } from '../../data/process';
+
+interface Props {
+  guidelines?: PreparationItem[];
+  class?: string;
+}
+
+const { guidelines = preparationGuidelines, class: className = '' } = Astro.props;
+---
+
+<Section
+  id="preparation"
+  bg="elevated"
+  padding="lg"
+  class:list={['border-t border-border-subtle', className]}
+>
+  <Container size="content">
+    <SectionHeader
+      eyebrow="Initial Consultation Guide"
+      title="What to Prepare for Stage 01"
+      lead="To make our initial discovery discussion as focused and productive as possible, we recommend gathering the following preliminary details if readily accessible."
+      align="center"
+    />
+
+    {/* Non-Bureaucratic Reassurance Notice */}
+    <div class="max-w-2xl mx-auto mb-10 p-4 rounded-sm bg-surface-page border border-border-subtle text-center text-sm text-text-muted">
+      <p class="font-medium text-brand-navy">
+        Helpful Guidance, Not Bureaucratic Preconditions
+      </p>
+      <p class="mt-1 text-xs">
+        These suggestions help calibrate scope and budget frameworks. No document uploads, property deeds, or financial statements are required to start a conversation.
+      </p>
+    </div>
+
+    {/* Guidelines Grid */}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {guidelines.map((item, index) => (
+        <article class="bg-surface-page border border-border-subtle p-6 rounded-sm flex flex-col justify-between transition-all duration-300 hover:border-brand-gold/50 hover:shadow-subtle">
+          <div>
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-7 h-7 rounded-sm bg-surface-elevated border border-brand-gold/60 flex items-center justify-center text-xs font-mono font-bold text-brand-navy">
+                {index + 1}
+              </span>
+              <h3 class="font-serif text-lg font-semibold text-text-navy">
+                {item.title}
+              </h3>
+            </div>
+            <p class="text-xs font-mono text-brand-gold uppercase tracking-wider mb-2">
+              {item.subtitle}
+            </p>
+            <p class="text-sm text-text-muted leading-relaxed">
+              {item.description}
+            </p>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-border-subtle/50 text-xs text-text-muted/80 italic">
+            {item.example}
+          </div>
+        </article>
+      ))}
+    </div>
+  </Container>
+</Section>

@@ -1,0 +1,48 @@
+---
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+import SectionHeader from '../layout/SectionHeader.astro';
+import ResponsiveGrid from '../layout/ResponsiveGrid.astro';
+import ServiceCard from '../cards/ServiceCard.astro';
+import { resolveImageMetadata } from '../../lib/content';
+import type { ServiceData } from '../../types/content';
+
+interface Props {
+  services: ServiceData[];
+  class?: string;
+}
+
+const { services, class: className = '' } = Astro.props;
+
+if (services.length === 0) {
+  return null;
+}
+---
+
+<Section bg="page" padding="lg" class:list={['border-b border-border-subtle', className]}>
+  <Container size="content">
+    <SectionHeader
+      eyebrow="Complementary Disciplines"
+      title="Related Architectural Services"
+      lead="Explore how our design, contracting, and coordination capabilities integrate for complete spatial execution."
+      align="center"
+    />
+
+    <ResponsiveGrid cols={services.length > 2 ? 3 : 2} gap="lg" class="mt-10 max-w-4xl mx-auto">
+      {services.map((service) => {
+        const imageMeta = service.heroImageId ? resolveImageMetadata(service.heroImageId) : null;
+        return (
+          <ServiceCard
+            orderNumber={service.order}
+            title={service.title}
+            shortSummary={service.shortSummary}
+            deliverables={service.deliverables}
+            imagePath={imageMeta?.readiness === 'available' ? imageMeta.assetPath : undefined}
+            imageAlt={imageMeta?.altText || service.title}
+            href={`/services/${service.slug}/`}
+          />
+        );
+      })}
+    </ResponsiveGrid>
+  </Container>
+</Section>

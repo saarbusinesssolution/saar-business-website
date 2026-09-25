@@ -1,0 +1,266 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import Section from '../../components/layout/Section.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import Badge from '../../components/ui/Badge.astro';
+import { getWebPageSchema, getBreadcrumbListSchema } from '../../lib/seo/schema';
+import { SITE_URL } from '../../lib/seo/metadata';
+
+const privacyStructuredData = [
+  getWebPageSchema({
+    canonicalUrl: `${SITE_URL}/privacy/`,
+    title: 'Privacy Policy & Data Handling | SAAR',
+    description:
+      'Transparent data handling policies, client confidentiality safeguards, and third-party service provider disclosures for SAAR Business Support Solution.',
+    type: 'WebPage',
+  }),
+  getBreadcrumbListSchema([
+    { label: 'Home', href: '/' },
+    { label: 'Privacy Policy', href: '/privacy/' },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Privacy Policy & Data Handling | SAAR"
+  description="Transparent data handling policies, client confidentiality safeguards, and third-party service provider disclosures for SAAR Business Support Solution."
+  structuredData={privacyStructuredData}
+>
+  <Section class="pt-8 pb-16 lg:pb-24">
+    <Container class="max-w-3xl">
+      {/* Wayfinding Breadcrumbs */}
+      <div class="mb-8">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Privacy Policy', href: '/privacy/', current: true },
+          ]}
+        />
+      </div>
+
+      {/* Header */}
+      <div class="mb-12">
+        <div class="flex items-center gap-2 mb-3">
+          <Badge variant="category">Legal & Data Standards</Badge>
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-semibold">
+            Confidentiality Policy
+          </span>
+        </div>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-text-navy tracking-tight mb-4">
+          Privacy Policy & Data Handling
+        </h1>
+        <p class="text-sm text-text-muted leading-relaxed">
+          Last reviewed: September 2026. This policy outlines how SAAR Business Support Solution handles client contact details and spatial project briefs submitted through this website.
+        </p>
+      </div>
+
+      {/* Policy Content Sections */}
+      <div class="space-y-10 text-sm text-text-primary leading-relaxed">
+        {/* Section 1 */}
+        <section class="space-y-3">
+          <h2 class="font-serif text-xl font-semibold text-text-navy">
+            1. Core Practice Commitment & Zero Resale
+          </h2>
+          <p>
+            At <strong>Saar Business Support Solution (“SAAR”)</strong>, architectural and spatial design commissions depend upon absolute mutual trust and discretion. We treat all visitor submissions, space floor areas, budget expectations, and contact details with strict professional confidentiality.
+          </p>
+          <p class="font-semibold text-brand-navy">
+            We never sell, lease, monetize, or distribute your personal details or project briefs to third-party marketing brokers or lead generation aggregators.
+          </p>
+        </section>
+
+        {/* Section 2 */}
+        <section class="space-y-3">
+          <h2 class="font-serif text-xl font-semibold text-text-navy">
+            2. Information We Collect
+          </h2>
+          <p>
+            We collect only the information you voluntarily provide through our website’s Contact form and Guided Project Planner:
+          </p>
+          <ul class="list-disc list-inside space-y-1.5 text-text-muted">
+            <li><strong>Contact Coordinates:</strong> Your name, email address, telephone number, and preferred communication method.</li>
+            <li><strong>Project Spatial Details:</strong> Target city or locality, space typology (e.g. apartment, villa, corporate office), approximate area, and stage of execution.</li>
+            <li><strong>Self-Reported Preferences:</strong> Aesthetic style preferences, initial budget expectation frameworks, and target timelines.</li>
+            <li><strong>Custom Notes:</strong> Any specific spatial challenges or design aspirations you include in your submission.</li>
+            <li><strong>Technical Telemetry:</strong> Ephemeral server request headers (IP address, browser user-agent, timestamp) processed at the network edge for security and abuse prevention.</li>
+          </ul>
+        </section>
+
+        {/* Section 3 */}
+        <section class="space-y-3">
+          <h2 class="font-serif text-xl font-semibold text-text-navy">
+            3. Purpose of Processing
+          </h2>
+          <p>Your details are used strictly for the following operational purposes:</p>
+          <ul class="list-disc list-inside space-y-1.5 text-text-muted">
+            <li>Screening project feasibility and studio capacity for your target location.</li>
+            <li>Initiating direct correspondence via your chosen communication channel (email or telephone).</li>
+            <li>Preparing for preliminary architectural and turnkey scope consultations.</li>
+            <li>Preventing automated bot abuse and securing our communication infrastructure.</li>
+          </ul>
+        </section>
+
+        {/* Section 4 */}
+        <section class="space-y-3">
+          <h2 class="font-serif text-xl font-semibold text-text-navy">
+            4. Infrastructure & Third-Party Service Providers
+          </h2>
+          <p>
+            To provide a resilient, fast, and secure web application, we integrate trusted edge infrastructure partners:
+          </p>
+          <ul class="list-disc list-inside space-y-2 text-text-muted">
+            <li>
+              <strong>Cloudflare Pages (Cloudflare, Inc.):</strong> Hosts our pre-rendered static application assets and edge serverless Functions across global Anycast points of presence.
+            </li>
+            <li>
+              <strong>Resend (Resend, Inc.):</strong> Functions as our secure transactional email relay, transmitting submitted briefs directly to our designated corporate inbox via encrypted TLS connections.
+            </li>
+            <li>
+              <strong>Cloudflare Turnstile (Cloudflare, Inc.):</strong> An accessible, privacy-preserving bot detection challenge deployed on form submissions to protect against spam without tracking cross-site user behavior.
+            </li>
+          </ul>
+        </section>
+
+        {/* Section 5 */}
+        <section class="space-y-3">
+          <h2 class="font-serif text-xl font-semibold text-text-navy">
+            5. External Communication Channels (WhatsApp)
+          </h2>
+          <p>
+            When utilizing optional direct WhatsApp shortcuts on our website, you initiate a communication session hosted by Meta Platforms, Inc. Communications on WhatsApp are subject to WhatsApp’s separate end-to-end encryption standards and privacy terms. SAAR does not export or share your phone number with unauthorized WhatsApp broadcast lists.
+          </p>
+        </section>
+
+        {/* Section 6 */}
+        <section class="space-y-3">
+          <h2 class="font-serif text-xl font-semibold text-text-navy">
+            6. Data Storage & Retention
+          </h2>
+          <p>
+            Submitted project briefs and enquiries are delivered directly to SAAR’s secure corporate inbox and provider delivery logs. We retain project records for the duration of the active consultation and subsequent architectural engagement, or as required for professional liability and architectural documentation. Inquiries that do not materialize into projects are pruned periodically from active email inboxes.
+          </p>
+        </section>
+
+        {/* Section 7 */}
+        <section class="space-y-4">
+          <h2 class="font-serif text-xl font-semibold text-text-navy">
+            7. Cookie Policy & Privacy-Aware Analytics
+          </h2>
+          <p>
+            This website strictly avoids third-party advertising tracking networks, behavioral remarketing pixels, session replay software, and cross-site fingerprinting tools.
+          </p>
+          <p>
+            To understand how visitors discover our architectural disciplines and interact with our Guided Project Planner, we deploy a privacy-focused integration of <strong>Google Analytics 4 (GA4)</strong>. We operate GA4 under conservative, opt-in privacy principles:
+          </p>
+          <ul class="list-disc list-inside space-y-1.5 text-text-muted">
+            <li><strong>Opt-In Consent Requirement:</strong> Analytical tracking scripts and client cookies are not loaded until you explicitly click “Accept” on our consent banner.</li>
+            <li><strong>Categories of Interaction Measured:</strong> Aggregated page views, published service and project views, high-level planner step progression, plain-text brief copy/download actions, and server-accepted enquiry confirmations.</li>
+            <li><strong>Zero Personal Information (PII) Transmission:</strong> We strictly prohibit and sanitize personal information from entering analytics payloads. Your name, email, phone number, WhatsApp messages, room dimensions, budget numbers, and project notes are never transmitted to analytics servers.</li>
+            <li><strong>Separation from Inquiry Delivery:</strong> Your analytics consent choice has zero impact on your ability to submit an enquiry, use the project planner, or contact our studio.</li>
+            <li><strong>Data Retention & Provider Settings:</strong> Standard GA4 retention defaults (e.g., 2 or 14 months) apply to pseudonymized identifiers once configured on the production property. Confirmed account-level retention settings will be finalized prior to public launch.</li>
+          </ul>
+
+          {/* Interactive Consent Management Card */}
+          <div class="mt-6 p-5 bg-surface-elevated rounded-sm border border-brand-gold/30 shadow-subtle space-y-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <h3 class="font-serif text-base font-semibold text-text-navy">
+                Your Analytics Preference
+              </h3>
+              <span id="privacy-consent-badge" class="text-xs font-mono px-2.5 py-1 rounded-sm bg-surface-subtle text-text-muted border border-border-subtle font-semibold">
+                Checking preference...
+              </span>
+            </div>
+            <p class="text-xs text-text-muted leading-relaxed">
+              You can modify or withdraw your analytics consent at any time. Withdrawing consent immediately stops subsequent event tracking and purges accessible tracking cookies from your browser.
+            </p>
+            <div class="flex items-center gap-3 pt-2">
+              <button
+                type="button"
+                id="privacy-open-banner-btn"
+                class="text-xs font-semibold py-2 px-3.5 rounded-sm bg-brand-navy text-brand-softwhite hover:bg-brand-gold hover:text-brand-navy transition-colors focus-visible:outline-2 focus-visible:outline-brand-navy"
+              >
+                Change Preference
+              </button>
+              <button
+                type="button"
+                id="privacy-withdraw-btn"
+                class="text-xs font-medium py-2 px-3.5 rounded-sm bg-surface-page text-status-error hover:bg-red-50 border border-status-error/30 transition-colors focus-visible:outline-2 focus-visible:outline-brand-navy"
+              >
+                Withdraw Consent & Clear Cookies
+              </button>
+            </div>
+            <div id="privacy-consent-toast" class="hidden text-xs font-mono text-status-success font-semibold pt-1">
+              ✓ Preferences updated successfully.
+            </div>
+          </div>
+        </section>
+
+        <script>
+          import { getConsentStatus, withdrawConsent } from '../../lib/analytics/consent';
+
+          const badge = document.getElementById('privacy-consent-badge');
+          const openBannerBtn = document.getElementById('privacy-open-banner-btn');
+          const withdrawBtn = document.getElementById('privacy-withdraw-btn');
+          const toast = document.getElementById('privacy-consent-toast');
+
+          function updateBadge() {
+            if (!badge) return;
+            const status = getConsentStatus();
+            if (status === 'granted') {
+              badge.textContent = 'Status: Accepted (Active)';
+              badge.className = 'text-xs font-mono px-2.5 py-1 rounded-sm bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold';
+            } else if (status === 'denied') {
+              badge.textContent = 'Status: Declined (Disabled)';
+              badge.className = 'text-xs font-mono px-2.5 py-1 rounded-sm bg-amber-50 text-amber-800 border border-amber-300 font-semibold';
+            } else {
+              badge.textContent = 'Status: Not Set (Default Disabled)';
+              badge.className = 'text-xs font-mono px-2.5 py-1 rounded-sm bg-surface-subtle text-text-muted border border-border-subtle font-semibold';
+            }
+          }
+
+          openBannerBtn?.addEventListener('click', () => {
+            window.dispatchEvent(new CustomEvent('saar:open-consent-preferences'));
+          });
+
+          withdrawBtn?.addEventListener('click', () => {
+            withdrawConsent();
+            updateBadge();
+            if (toast) {
+              toast.classList.remove('hidden');
+              setTimeout(() => toast.classList.add('hidden'), 3500);
+            }
+          });
+
+          window.addEventListener('saar:consent-changed', updateBadge);
+          updateBadge();
+        </script>
+
+        {/* Section 8 */}
+        <section class="space-y-3">
+          <h2 class="font-serif text-xl font-semibold text-text-navy">
+            8. Privacy Inquiries & Data Rights
+          </h2>
+          <p>
+            You may request a review, update, or deletion of your submitted consultation details at any time by contacting our studio administration:
+          </p>
+          <div class="p-4 bg-surface-elevated rounded-sm border border-border-subtle text-xs space-y-1">
+            <p><strong>Practice:</strong> Saar Business Support Solution</p>
+            <p><strong>Administration Email:</strong> <span class="font-mono text-brand-navy">hello@saarbusiness.com</span></p>
+            <p><strong>Region:</strong> Delhi NCR, India</p>
+          </div>
+        </section>
+      </div>
+
+      {/* Return Links */}
+      <div class="mt-12 pt-8 border-t border-border-subtle flex items-center justify-between">
+        <a href="/contact/" class="text-xs font-semibold text-brand-navy hover:text-brand-gold underline underline-offset-4">
+          &larr; Return to Contact Page
+        </a>
+        <a href="/" class="text-xs font-semibold text-text-muted hover:text-brand-navy">
+          Homepage
+        </a>
+      </div>
+    </Container>
+  </Section>
+</BaseLayout>

@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import Section from '../../components/layout/Section.astro';
+import PlannerWizard from '../../components/planner/PlannerWizard.astro';
+
+import { getWebPageSchema, getBreadcrumbListSchema } from '../../lib/seo/schema';
+import { SITE_URL } from '../../lib/seo/metadata';
+
+const pageTitle = 'Plan My Project | Guided Spatial Planning Tool | SAAR';
+const pageDescription =
+  'Tell us a little about your space and what you need. Review your editable project summary, then choose how to discuss it with SAAR in Delhi NCR.';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Plan My Project', href: '/plan-my-project/' },
+];
+
+const structuredData = [
+  getWebPageSchema({
+    canonicalUrl: `${SITE_URL}/plan-my-project/`,
+    title: pageTitle,
+    description: pageDescription,
+    type: 'WebPage',
+  }),
+  getBreadcrumbListSchema(breadcrumbs),
+];
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  breadcrumbs={breadcrumbs}
+  structuredData={structuredData}
+>
+  {/* Editorial Page Hero */}
+  <Section bg="page" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="max-w-3xl">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-semibold block mb-3">
+          Interactive Qualification Tool
+        </span>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-text-navy tracking-tight leading-[1.15]">
+          Plan Your Project
+        </h1>
+        <p class="mt-4 text-lg sm:text-xl text-text-charcoal leading-relaxed font-sans">
+          Tell us a little about your space and what you need. Review your project summary, then choose how to discuss it with SAAR.
+        </p>
+
+        {/* Clear Expectations Callout */}
+        <div class="mt-6 p-4 rounded-sm bg-surface-elevated border border-border-subtle text-xs text-text-muted space-y-1">
+          <p class="font-semibold text-brand-navy">
+            Important Planning Notes:
+          </p>
+          <ul class="list-disc list-inside space-y-0.5">
+            <li>Any budget entered represents your initial expectation to help calibrate material specifications.</li>
+            <li>This summary is not a quotation, cost commitment, or verified architectural sign-off.</li>
+            <li>Formulating a summary does not automatically send an enquiry or create an account.</li>
+          </ul>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  {/* Interactive Wizard Section */}
+  <Section bg="page" padding="lg">
+    <Container size="content">
+      {/* No-JS Progressive Fallback */}
+      <noscript>
+        <div class="mb-8 p-6 rounded-sm bg-surface-elevated border border-brand-gold/60 text-center max-w-2xl mx-auto space-y-3">
+          <h2 class="font-serif text-xl font-semibold text-text-navy">
+            JavaScript Recommended for the Interactive Planner
+          </h2>
+          <p class="text-sm text-text-muted leading-relaxed">
+            Our multi-step spatial qualification wizard uses client-side state to formulate and export your brief. If you prefer not to enable JavaScript, you can explore our confirmed disciplines directly:
+          </p>
+          <div class="pt-2 flex flex-wrap justify-center gap-3">
+            <a href="/services/" class="px-4 py-2 rounded-sm bg-brand-navy text-white text-xs font-semibold hover:bg-brand-navy/90">
+              Explore Services &rarr;
+            </a>
+            <a href="/process/" class="px-4 py-2 rounded-sm bg-surface-page border border-border-subtle text-xs font-semibold text-text-navy hover:border-brand-gold">
+              Our 5-Stage Process &rarr;
+            </a>
+          </div>
+        </div>
+      </noscript>
+
+      {/* Client Wizard Component */}
+      <PlannerWizard />
+    </Container>
+  </Section>
+</BaseLayout>

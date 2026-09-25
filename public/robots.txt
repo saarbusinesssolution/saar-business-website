@@ -1,0 +1,15 @@
+# Robots.txt for SAAR Business Support Solution
+# Production Domain: https://saarbusiness.com
+
+User-agent: *
+Allow: /
+Allow: /images/
+Allow: /_astro/
+
+# Exclude non-public transactional, API, and development routes
+Disallow: /api/
+Disallow: /thank-you/
+Disallow: /dev/
+
+# Absolute XML Sitemap reference
+Sitemap: https://saarbusiness.com/sitemap.xml

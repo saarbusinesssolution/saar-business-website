@@ -1,0 +1,62 @@
+---
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+import Button from '../ui/Button.astro';
+import Badge from '../ui/Badge.astro';
+import { plannerTeaser } from '../../data/home';
+
+interface Props {
+  isAvailable?: boolean;
+  class?: string;
+}
+
+const {
+  isAvailable = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<Section
+  id="planner-intro"
+  bg="elevated"
+  padding="md"
+  class:list={['border-y border-border-subtle relative overflow-hidden', className]}
+>
+  <Container size="content">
+    <div class="max-w-3xl mx-auto p-8 sm:p-12 bg-surface-pure rounded-md border border-border-subtle shadow-card text-center relative">
+      <div class="inline-flex items-center gap-2 mb-4">
+        <Badge variant={isAvailable ? 'verified' : 'concept'}>
+          {isAvailable ? 'Interactive Tool' : 'Preview Fixture'}
+        </Badge>
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-gold">
+          {plannerTeaser.eyebrow}
+        </span>
+      </div>
+
+      <h2 class="text-2xl sm:text-3xl font-serif font-bold text-brand-navy mb-4">
+        {plannerTeaser.heading}
+      </h2>
+
+      <p class="text-sm sm:text-base text-brand-charcoal/80 leading-relaxed mb-6 max-w-xl mx-auto">
+        {plannerTeaser.description}
+      </p>
+
+      {isAvailable ? (
+        <Button
+          variant="gold"
+          size="lg"
+          href="/plan-my-project/"
+          class="font-semibold shadow-sm"
+        >
+          Launch Project Planner &rarr;
+        </Button>
+      ) : (
+        <div class="inline-block p-3 rounded-sm bg-surface-subtle text-xs text-brand-charcoal/70 border border-border-subtle">
+          <p class="m-0 italic">
+            <strong>Development Notice:</strong> {plannerTeaser.statusNote}
+          </p>
+        </div>
+      )}
+    </div>
+  </Container>
+</Section>

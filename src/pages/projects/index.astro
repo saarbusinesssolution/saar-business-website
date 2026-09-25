@@ -1,0 +1,204 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import Section from '../../components/layout/Section.astro';
+import ProjectCard from '../../components/cards/ProjectCard.astro';
+import ProjectFilters from '../../components/projects/ProjectFilters.astro';
+import CTASection from '../../components/sections/CTASection.astro';
+import ContactActions from '../../components/ui/ContactActions.astro';
+import Button from '../../components/ui/Button.astro';
+import { getPublishedProjects, resolveImageMetadata } from '../../lib/content';
+import { getProjectUrl } from '../../config/routes';
+import { siteConfig } from '../../config/site';
+import { getWebPageSchema, getBreadcrumbListSchema } from '../../lib/seo/schema';
+import { SITE_URL } from '../../lib/seo/metadata';
+
+const publishedProjects = await getPublishedProjects();
+
+const breadcrumbs = [
+  { label: 'Projects', current: true },
+];
+
+const structuredData = [
+  getWebPageSchema({
+    canonicalUrl: `${SITE_URL}/projects/`,
+    title: 'Architectural Design Concepts & Portfolio | SAAR',
+    description:
+      'Explore architectural design concepts and residential spatial studies by SAAR in Delhi NCR. Minimalist proportions, authentic natural materials, and disciplined daylight orchestration.',
+    type: 'CollectionPage',
+  }),
+  getBreadcrumbListSchema([
+    { label: 'Home', href: '/' },
+    { label: 'Projects', href: '/projects/' },
+  ]),
+];
+
+// Determine unique categories present in published data
+const availableCategories = Array.from(
+  new Set(publishedProjects.map((p) => p.category))
+).sort();
+
+const hasOnlyConcepts = publishedProjects.every((p) => p.projectNature === 'concept');
+
+const hasAnyContact = Boolean(
+  (siteConfig.phone && siteConfig.phone.trim().length > 5) ||
+  (siteConfig.email && siteConfig.email.trim().length > 5) ||
+  (siteConfig.whatsappNumber && siteConfig.whatsappNumber.trim().length > 5)
+);
+---
+
+<BaseLayout
+  title={hasOnlyConcepts ? "Architectural Design Concepts & Portfolio" : "Selected Works & Case Studies"}
+  description="Explore architectural design concepts and residential spatial studies by SAAR. Minimalist proportions, authentic natural materials, and disciplined daylight orchestration."
+  breadcrumbs={breadcrumbs}
+  currentPath="/projects/"
+  structuredData={structuredData}
+>
+  <!-- 1. Header & Context Intro -->
+  <Section bg="elevated" padding="lg" class="border-b border-border-subtle pt-10 sm:pt-16">
+    <Container size="content">
+      <div class="max-w-3xl">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold mb-3 block">
+          Spatial Explorations & Portfolio
+        </span>
+        <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-brand-navy tracking-tight mb-6 leading-tight">
+          {hasOnlyConcepts ? "Explore Design Directions" : "Selected Works & Architectural Studies"}
+        </h1>
+        <p class="text-base sm:text-lg text-brand-charcoal/85 leading-relaxed font-normal mb-6">
+          A curated collection of architectural design studies, residential typologies, and interior concepts demonstrating our philosophy of material honesty, daylight filtration, and spatial restraint.
+        </p>
+
+        <!-- Mandatory Concept Transparency Callout -->
+        {hasOnlyConcepts && (
+          <div class="p-4 rounded-sm bg-surface-subtle border-l-2 border-brand-gold">
+            <p class="text-xs text-brand-charcoal/80 leading-normal m-0">
+              <strong class="text-brand-navy font-semibold">Transparency Notice:</strong> In keeping with our strict zero-fabrication standard, works in this showcase represent conceptual architectural design studies. Physical commissioned client case studies will be introduced following client publication authorizations.
+            </p>
+          </div>
+        )}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 2. Portfolio Gallery & Filtering Section -->
+  <Section bg="page" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold">
+            Project Index
+          </span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brand-navy mt-1">
+            {hasOnlyConcepts ? "Curated Concept Studies" : "All Projects & Studies"}
+          </h2>
+        </div>
+        <p class="text-xs sm:text-sm text-brand-charcoal/70 max-w-md m-0">
+          Filter projects by spatial category or explore complete architectural case studies.
+        </p>
+      </div>
+
+      <!-- Progressively Enhanced Category Filters -->
+      {availableCategories.length > 0 && (
+        <ProjectFilters
+          categories={availableCategories}
+          totalCount={publishedProjects.length}
+        />
+      )}
+
+      <!-- Responsive Projects Grid -->
+      <div
+        id="portfolio-grid"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 lg:gap-12"
+      >
+        {publishedProjects.map((project) => {
+          const coverMeta = project.coverImageId ? resolveImageMetadata(project.coverImageId) : null;
+          return (
+            <div
+              data-project-card
+              data-category={project.category}
+              class="w-full transition-opacity duration-200"
+            >
+              <ProjectCard
+                title={project.title}
+                category={project.category}
+                projectNature={project.projectNature}
+                spaceType={project.spaceType}
+                location={project.location}
+                imagePath={coverMeta?.readiness === 'available' ? coverMeta.assetPath : undefined}
+                imageAlt={coverMeta?.altText || project.title}
+                href={getProjectUrl(project.slug)}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      <!-- Accessible Empty State (Shown when active filter has 0 results) -->
+      <div
+        id="portfolio-empty-state"
+        hidden
+        class="hidden text-center py-16 px-6 bg-surface-elevated rounded-md border border-border-subtle mt-8 max-w-lg mx-auto"
+      >
+        <svg class="w-12 h-12 text-brand-gold/60 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+        </svg>
+        <h3 class="font-serif text-xl font-bold text-brand-navy mb-2">
+          No Studies in This Category
+        </h3>
+        <p class="text-xs text-brand-charcoal/70 mb-6 leading-relaxed">
+          We are currently codifying additional architectural case studies for this discipline.
+        </p>
+        <button
+          type="button"
+          id="reset-filters-btn"
+          class="inline-flex items-center justify-center font-medium rounded-xs bg-brand-navy text-brand-softwhite px-4 py-2 text-xs hover:bg-brand-navy/90 focus-visible:outline-2 focus-visible:outline-brand-navy transition-colors min-h-[44px]"
+        >
+          Reset All Filters
+        </button>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 3. Consultation CTA Section -->
+  <CTASection
+    id="contact"
+    eyebrow="Commission an Inquiry"
+    heading="Have a Space Ready for Architectural Vision?"
+    description="Connect with our principal team to discuss how our spatial layout, bespoke joinery, and turnkey contracting frameworks can be applied to your property."
+    variant="navy"
+  >
+    <div class="mt-6 flex flex-col items-center">
+      {hasAnyContact ? (
+        <ContactActions
+          whatsappMessage="Hello SAAR, I would like to discuss an architectural project."
+          size="md"
+          class="justify-center"
+        />
+      ) : (
+        <div class="max-w-md mx-auto p-4 rounded-sm bg-brand-softwhite/10 border border-brand-softwhite/20 text-center mb-4">
+          <p class="text-xs text-brand-softwhite/90 leading-relaxed m-0">
+            Direct communication channels are undergoing launch verification. Preliminary briefs are scheduled directly with our studio principals.
+          </p>
+        </div>
+      )}
+
+      <div class="mt-4 flex flex-wrap gap-4 justify-center">
+        <Button
+          variant="gold"
+          size="md"
+          href="/services/"
+        >
+          Explore Services
+        </Button>
+        <Button
+          variant="secondary"
+          size="md"
+          href="/#process"
+          class="bg-surface-pure/10 text-brand-softwhite border-brand-softwhite/30 hover:bg-surface-pure/20"
+        >
+          Our 4-Stage Process
+        </Button>
+      </div>
+    </div>
+  </CTASection>
+</BaseLayout>

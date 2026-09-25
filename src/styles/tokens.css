@@ -1,0 +1,114 @@
+/**
+ * SAAR Design System — Semantic Tokens
+ * Defines custom properties for colors, typography, layout, elevations,
+ * transitions, and accessibility indicators.
+ */
+
+:root {
+  /* ==========================================
+     1. BRAND PRIMITIVES
+     ========================================== */
+  --color-raw-navy: #173A5E;
+  --color-raw-gold: #B99052;
+  --color-raw-gold-hover: #9B783E;
+  --color-raw-charcoal: #202020;
+  --color-raw-softwhite: #F4F1EA;
+
+  /* ==========================================
+     2. SEMANTIC ROLES & SURFACES
+     ========================================== */
+  --color-bg-page: var(--color-raw-softwhite);
+  --color-surface-elevated: #FFFFFF;
+  --color-surface-subtle: #EDE8DE;
+  --color-surface-dark: #0F2740;
+  --color-surface-dark-contrast: #132F4C;
+
+  /* Typography Colors */
+  --color-text-primary: var(--color-raw-charcoal);
+  --color-text-navy: var(--color-raw-navy);
+  --color-text-muted: #525252;
+  --color-text-inverse: var(--color-raw-softwhite);
+
+  /* Border Tokens */
+  --color-border-subtle: #E2DDD5;
+  --color-border-medium: #D0C9BF;
+  --color-border-strong: var(--color-raw-navy);
+
+  /* Accent & Interaction Tokens */
+  --color-accent-gold: var(--color-raw-gold);
+  --color-accent-gold-hover: var(--color-raw-gold-hover);
+  --color-accent-gold-wash: #F8F3EA;
+  --color-focus-ring: var(--color-raw-navy);
+  --color-focus-ring-gold: var(--color-raw-gold);
+
+  /* State & Validation Tokens */
+  --color-status-success: #1E6B47;
+  --color-status-success-bg: #EAF4EE;
+  --color-status-warning: #946200;
+  --color-status-warning-bg: #FEF7EA;
+  --color-status-error: #B91C1C;
+  --color-status-error-bg: #FEECEB;
+
+  /* ==========================================
+     3. TYPOGRAPHY SYSTEM
+     ========================================== */
+  --font-family-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, Cambria, serif;
+  --font-family-sans: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Fluid Display Sizes */
+  --text-size-display-1: clamp(2.5rem, 5vw + 1rem, 4.25rem);
+  --text-size-display-2: clamp(2.0rem, 3.5vw + 0.5rem, 3.0rem);
+  --text-size-display-3: clamp(1.4rem, 2vw + 0.5rem, 1.85rem);
+  --text-size-display-4: 1.25rem;
+  --text-size-lead: clamp(1.125rem, 1vw + 0.5rem, 1.25rem);
+  --text-size-body: 1.0rem;
+  --text-size-sm: 0.875rem;
+  --text-size-xs: 0.75rem;
+
+  /* Line Heights */
+  --line-height-display: 1.1;
+  --line-height-heading: 1.25;
+  --line-height-body: 1.65;
+  --line-height-tight: 1.35;
+
+  /* ==========================================
+     4. SPATIAL LAYOUT & CONTAINER SCALE
+     ========================================== */
+  --max-content-width: 1240px;
+  --reading-max-width: 720px;
+
+  /* Gutter Paddings */
+  --gutter-mobile: 1.25rem;  /* 20px */
+  --gutter-tablet: 2.0rem;   /* 32px */
+  --gutter-desktop: 2.5rem;  /* 40px */
+
+  /* Section Spacing */
+  --section-padding-y-sm: 3.5rem;  /* 56px */
+  --section-padding-y-md: 5.0rem;  /* 80px */
+  --section-padding-y-lg: 7.0rem;  /* 112px */
+
+  /* Border Radii */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Subtle Ambient Shadows */
+  --shadow-subtle: 0 4px 20px -2px rgba(23, 58, 94, 0.05);
+  --shadow-card: 0 10px 30px -10px rgba(23, 58, 94, 0.08);
+  --shadow-elevated: 0 20px 40px -15px rgba(23, 58, 94, 0.12);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Z-Index Scale */
+  --z-base: 0;
+  --z-card: 1;
+  --z-sticky: 20;
+  --z-drawer: 40;
+  --z-modal: 50;
+  --z-skip-link: 100;
+}

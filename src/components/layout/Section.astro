@@ -1,0 +1,45 @@
+---
+interface Props {
+  as?: 'section' | 'div' | 'article' | 'aside';
+  id?: string;
+  bg?: 'page' | 'elevated' | 'subtle' | 'dark';
+  padding?: 'none' | 'sm' | 'md' | 'lg';
+  class?: string;
+}
+
+const {
+  as: Element = 'section',
+  id,
+  bg = 'page',
+  padding = 'md',
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+const bgClasses = {
+  page: 'bg-surface-page text-text-primary',
+  elevated: 'bg-surface-elevated text-text-primary border-y border-border-subtle',
+  subtle: 'bg-surface-subtle text-text-primary border-y border-border-subtle',
+  dark: 'bg-surface-dark text-text-inverse',
+};
+
+const paddingClasses = {
+  none: 'py-0',
+  sm: 'py-10 md:py-14',
+  md: 'py-16 md:py-20 lg:py-24',
+  lg: 'py-20 md:py-28 lg:py-32',
+};
+---
+
+<Element
+  id={id}
+  class:list={[
+    'w-full relative scroll-mt-24',
+    bgClasses[bg],
+    paddingClasses[padding],
+    className,
+  ]}
+  {...rest}
+>
+  <slot />
+</Element>

@@ -1,0 +1,213 @@
+---
+import Container from './Container.astro';
+import { navigationConfig, getAvailableNavItems } from '../../config/navigation';
+import {
+  siteConfig,
+  type BusinessConfig,
+  hasVerifiedPhone,
+  hasVerifiedEmail,
+  hasVerifiedWhatsApp,
+  getWhatsAppDirectUrl,
+} from '../../config/site';
+
+interface Props {
+  forceAllNavItems?: boolean;
+  previewConfig?: BusinessConfig;
+  class?: string;
+}
+
+const {
+  forceAllNavItems = false,
+  previewConfig,
+  class: className = '',
+} = Astro.props;
+
+// Use active config or optional preview config for dev demonstration
+const cfg = previewConfig || siteConfig;
+
+const serviceLinks = forceAllNavItems
+  ? navigationConfig.footer.services
+  : getAvailableNavItems(navigationConfig.footer.services);
+
+const companyLinks = forceAllNavItems
+  ? navigationConfig.footer.company
+  : getAvailableNavItems(navigationConfig.footer.company);
+
+const legalLinks = forceAllNavItems
+  ? navigationConfig.footer.legal
+  : getAvailableNavItems(navigationConfig.footer.legal);
+
+const verifiedPhone = hasVerifiedPhone(cfg) ? cfg.phone : null;
+const verifiedEmail = hasVerifiedEmail(cfg) ? cfg.email : null;
+const verifiedWa = hasVerifiedWhatsApp(cfg) ? cfg.whatsappNumber : null;
+const currentYear = new Date().getFullYear();
+---
+
+<footer
+  class:list={[
+    'bg-brand-navy text-brand-softwhite border-t border-brand-navy/60 transition-colors',
+    className,
+  ]}
+>
+  <Container size="content" class="pt-16 pb-12">
+    <!-- Main Footer Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 pb-12 border-b border-surface-pure/10">
+      <!-- 1. Brand Identity & Statement (5 cols on lg) -->
+      <div class="lg:col-span-5 space-y-4">
+        <a
+          href="/"
+          class="inline-flex items-center gap-3 py-1 focus-visible:outline-2 focus-visible:outline-brand-gold rounded-xs"
+          aria-label={`${cfg.name} - Home`}
+        >
+          <img
+            src="/images/brand/logo-full.webp"
+            alt={cfg.name}
+            width="168"
+            height="56"
+            class="h-10 w-auto object-contain brightness-0 invert"
+            loading="lazy"
+            decoding="async"
+          />
+        </a>
+
+        <p class="text-sm text-brand-gold font-medium tracking-wide">
+          {cfg.tagline}
+        </p>
+
+        <p class="text-xs text-brand-softwhite/75 leading-relaxed max-w-sm">
+          {cfg.description}
+        </p>
+
+        <!-- Mandatory Concept Transparency Statement -->
+        <p class="text-[11px] text-brand-softwhite/50 leading-normal max-w-sm pt-2 border-t border-surface-pure/10">
+          Architectural visualizations and 3D renderings represent design concepts unless explicitly verified as commissioned client projects.
+        </p>
+      </div>
+
+      <!-- 2. Services Navigation (3 cols on lg) -->
+      <div class="lg:col-span-3 space-y-3">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-brand-gold">
+          Capabilities
+        </h2>
+        {serviceLinks.length > 0 ? (
+          <ul class="space-y-2 list-none m-0 p-0 text-sm">
+            {serviceLinks.map((item) => (
+              <li>
+                <a
+                  href={item.path}
+                  class="text-brand-softwhite/80 hover:text-brand-gold transition-colors inline-block py-1"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="text-xs text-brand-softwhite/60 italic">
+            Service route directories will be published in subsequent releases.
+          </p>
+        )}
+      </div>
+
+      <!-- 3. Company Navigation (2 cols on lg) -->
+      <div class="lg:col-span-2 space-y-3">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-brand-gold">
+          Studio
+        </h2>
+        {companyLinks.length > 0 ? (
+          <ul class="space-y-2 list-none m-0 p-0 text-sm">
+            {companyLinks.map((item) => (
+              <li>
+                <a
+                  href={item.path}
+                  class="text-brand-softwhite/80 hover:text-brand-gold transition-colors inline-block py-1"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="text-xs text-brand-softwhite/60 italic">
+            Company profiles will be published in subsequent releases.
+          </p>
+        )}
+      </div>
+
+      <!-- 4. Verified Contact or Consultation Portal (2 cols on lg) -->
+      <div class="lg:col-span-2 space-y-3">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-brand-gold">
+          Inquiries
+        </h2>
+
+        {verifiedPhone || verifiedEmail || verifiedWa ? (
+          <div class="space-y-2 text-xs text-brand-softwhite/80">
+            {verifiedPhone && (
+              <p>
+                <a href={`tel:${verifiedPhone.replace(/[^0-9+]/g, '')}`} class="hover:text-brand-gold transition-colors">
+                  {verifiedPhone}
+                </a>
+              </p>
+            )}
+            {verifiedEmail && (
+              <p>
+                <a href={`mailto:${verifiedEmail}`} class="hover:text-brand-gold transition-colors">
+                  {verifiedEmail}
+                </a>
+              </p>
+            )}
+            {verifiedWa && (
+              <p>
+                <a
+                  href={getWhatsAppDirectUrl('Hello SAAR, I would like to discuss a project.', cfg) || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-brand-gold hover:underline"
+                >
+                  WhatsApp Consultation &rarr;
+                </a>
+              </p>
+            )}
+            {cfg.address && cfg.address.city && (
+              <p class="text-[11px] text-brand-softwhite/60 pt-2 border-t border-surface-pure/10">
+                {cfg.address.city}, {cfg.address.country}
+              </p>
+            )}
+          </div>
+        ) : (
+          <div class="space-y-2 text-xs text-brand-softwhite/70">
+            <p>Direct project consultations open via spatial planning wizard.</p>
+            <p class="text-[11px] text-brand-softwhite/50 italic">
+              Official studio direct contacts pending formal corporate onboarding.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <!-- Bottom Copyright & Utility Bar -->
+    <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brand-softwhite/60">
+      <p class="m-0 text-center sm:text-left">
+        &copy; {currentYear} {cfg.name}. All rights reserved.
+      </p>
+
+      <div class="flex items-center gap-6">
+        {legalLinks.map((item) => (
+          <a
+            href={item.path}
+            class="hover:text-brand-gold transition-colors"
+          >
+            {item.label}
+          </a>
+        ))}
+        <a
+          href="#main-content"
+          class="hover:text-brand-gold transition-colors"
+          aria-label="Scroll back to top of page"
+        >
+          Back to top &uarr;
+        </a>
+      </div>
+    </div>
+  </Container>
+</footer>

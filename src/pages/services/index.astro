@@ -1,0 +1,268 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import Section from '../../components/layout/Section.astro';
+import SectionHeader from '../../components/layout/SectionHeader.astro';
+import ResponsiveGrid from '../../components/layout/ResponsiveGrid.astro';
+import ServiceCard from '../../components/cards/ServiceCard.astro';
+import Accordion from '../../components/ui/Accordion.astro';
+import CTASection from '../../components/sections/CTASection.astro';
+import ContactActions from '../../components/ui/ContactActions.astro';
+import Button from '../../components/ui/Button.astro';
+import { getPublishedServices, resolveImageMetadata } from '../../lib/content';
+import { siteConfig } from '../../config/site';
+
+import { getWebPageSchema, getBreadcrumbListSchema } from '../../lib/seo/schema';
+import { SITE_URL } from '../../lib/seo/metadata';
+
+const publishedServices = await getPublishedServices();
+
+const breadcrumbs = [
+  { label: 'Services', current: true },
+];
+
+const structuredData = [
+  getWebPageSchema({
+    canonicalUrl: `${SITE_URL}/services/`,
+    title: 'Architectural & Interior Services | SAAR',
+    description:
+      'Explore verified architectural interior design and turnkey contracting capabilities by SAAR in Delhi NCR. Clear deliverables, verified scopes, and single-point accountability.',
+    type: 'CollectionPage',
+  }),
+  getBreadcrumbListSchema([
+    { label: 'Home', href: '/' },
+    { label: 'Services', href: '/services/' },
+  ]),
+];
+
+const guidanceItems = [
+  {
+    title: 'Design & Spatial Planning',
+    situation: 'You are planning a new space or major overhaul and need concept layouts, 3D visualizations, material palettes, and detailed carpentry drawings.',
+    recommendation: 'Interior Design',
+    href: '/services/interior-design/',
+  },
+  {
+    title: 'Site Execution & Fit-Out',
+    situation: 'You have completed architectural drawings and require single-point site execution, trade management, civil works, and itemized BoQ cost control.',
+    recommendation: 'Turnkey Contracting',
+    href: '/services/turnkey-contracting/',
+  },
+  {
+    title: 'End-to-End Design & Build',
+    situation: 'You want a seamless journey from initial layout to completed physical space without managing multiple disjointed contractors.',
+    recommendation: 'Integrated Delivery (Design + Turnkey)',
+    href: '/services/turnkey-contracting/',
+  },
+];
+
+const overviewFaqs = [
+  {
+    question: 'Can SAAR be engaged solely for interior design without execution?',
+    answer: 'Yes. Our Interior Design service provides complete architectural working drawings, 3D renderings, and material schedules that can be independently tendered or executed.',
+  },
+  {
+    question: 'Can SAAR execute turnkey contracting using drawings from an external architect?',
+    answer: 'Yes. For clients who already have certified architectural plans, our engineering team conducts a thorough site survey, formulates an itemized Bill of Quantities (BoQ), and manages all civil, MEP, and joinery execution.',
+  },
+  {
+    question: 'How are budgets and material costs controlled during execution?',
+    answer: 'Before site commencement, every trade and material specification is codified in a fixed Bill of Quantities. Milestone payments are tied strictly to verified physical site progress.',
+  },
+  {
+    question: 'Why are only certain services currently published?',
+    answer: 'SAAR adheres to a zero-fabrication transparency policy. Only services with fully codified deliverables, approved operational guidelines, and production visual assets are published publicly.',
+  },
+];
+
+const hasAnyContact = Boolean(
+  (siteConfig.phone && siteConfig.phone.trim().length > 5) ||
+  (siteConfig.email && siteConfig.email.trim().length > 5) ||
+  (siteConfig.whatsappNumber && siteConfig.whatsappNumber.trim().length > 5)
+);
+---
+
+<BaseLayout
+  title="Architectural & Interior Services"
+  description="Explore verified architectural interior design and turnkey contracting capabilities by SAAR. Clear deliverables, verified scopes, and single-point accountability."
+  breadcrumbs={breadcrumbs}
+  currentPath="/services/"
+  structuredData={structuredData}
+>
+  <!-- 1. Overview Header / Hero -->
+  <Section bg="elevated" padding="lg" class="border-b border-border-subtle pt-10 sm:pt-16">
+    <Container size="content">
+      <div class="max-w-3xl">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold mb-3 block">
+          Disciplined Spatial Solutions
+        </span>
+        <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-brand-navy tracking-tight mb-6 leading-tight">
+          Architectural & Interior Services
+        </h1>
+        <p class="text-base sm:text-lg text-brand-charcoal/85 leading-relaxed font-normal">
+          From initial spatial configuration and bespoke millwork engineering to complete civil fit-out and site coordination, SAAR translates architectural intent into enduring built environments under single-point accountability.
+        </p>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 2. Published Services Grid -->
+  <Section bg="page" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold">
+            Available Capabilities
+          </span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brand-navy mt-1">
+            Confirmed Service Disciplines
+          </h2>
+        </div>
+        <p class="text-xs sm:text-sm text-brand-charcoal/70 max-w-md m-0">
+          Showing currently active, verified service offerings with codified deliverable schedules.
+        </p>
+      </div>
+
+      <ResponsiveGrid cols={publishedServices.length > 2 ? 3 : 2} gap="lg" class="max-w-4xl">
+        {publishedServices.map((service) => {
+          const imageMeta = service.heroImageId ? resolveImageMetadata(service.heroImageId) : null;
+          return (
+            <ServiceCard
+              orderNumber={service.order}
+              title={service.title}
+              shortSummary={service.shortSummary}
+              deliverables={service.deliverables}
+              imagePath={imageMeta?.readiness === 'available' ? imageMeta.assetPath : undefined}
+              imageAlt={imageMeta?.altText || service.title}
+              href={`/services/${service.slug}/`}
+            />
+          );
+        })}
+      </ResponsiveGrid>
+
+      <!-- Scope Boundary & Onboarding Notice -->
+      <div class="mt-12 max-w-3xl p-5 rounded-md bg-surface-subtle/80 border border-border-subtle">
+        <div class="flex items-start gap-3">
+          <svg class="w-5 h-5 text-brand-gold shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+          </svg>
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-brand-navy mb-1">
+              Service Scope Governance
+            </h3>
+            <p class="text-xs text-brand-charcoal/75 leading-relaxed m-0">
+              Additional specialized disciplines—including <strong>Architectural Renovation</strong> and <strong>Commercial Property Solutions</strong>—are currently undergoing formal operational review and asset validation. In keeping with our strict zero-fabrication policy, public service pages are activated only after deliverables and execution boundaries are fully codified.
+            </p>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 3. Guidance: Which Service Fits Your Project? -->
+  <Section bg="elevated" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <SectionHeader
+        eyebrow="Engagement Guidance"
+        title="Which Service Fits Your Project?"
+        lead="Whether you require conceptual design or end-to-end site execution, our engagement models adapt to your project's current milestone."
+        align="center"
+      />
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        {guidanceItems.map((item, index) => (
+          <div class="p-6 rounded-md bg-surface-pure border border-border-subtle flex flex-col justify-between shadow-xs">
+            <div>
+              <span class="text-xs font-mono font-bold text-brand-gold tracking-widest block mb-2">
+                PATH 0{index + 1}
+              </span>
+              <h3 class="font-serif text-lg font-bold text-brand-navy mb-3">
+                {item.title}
+              </h3>
+              <p class="text-xs sm:text-sm text-brand-charcoal/80 leading-relaxed mb-6">
+                {item.situation}
+              </p>
+            </div>
+
+            <div class="pt-4 border-t border-border-subtle">
+              <span class="text-[11px] uppercase tracking-wider text-brand-charcoal/60 block mb-1">
+                Recommended Solution:
+              </span>
+              <a
+                href={item.href}
+                class="text-xs font-semibold text-brand-navy hover:text-brand-gold inline-flex items-center gap-1.5 transition-colors"
+              >
+                <span>{item.recommendation}</span>
+                <span aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 4. Supported General FAQs -->
+  <Section bg="page" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-10">
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold">
+            Frequently Asked Questions
+          </span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brand-navy mt-2 mb-3">
+            Common Inquiries on Service Scope
+          </h2>
+          <p class="text-sm text-brand-charcoal/80">
+            Factual guidelines covering architectural coordination, contracting responsibilities, and project onboarding.
+          </p>
+        </div>
+
+        <Accordion items={overviewFaqs} />
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 5. Valid Consultation CTA -->
+  <CTASection
+    id="contact"
+    eyebrow="Start the Conversation"
+    heading="Plan Your Architectural Consultation"
+    description="Connect with our principal design and contracting team to discuss your project requirements, site conditions, and delivery milestones."
+    variant="navy"
+  >
+    <div class="mt-6 flex flex-col items-center">
+      {hasAnyContact ? (
+        <ContactActions
+          whatsappMessage="Hello SAAR, I would like to enquire about your architectural and turnkey services."
+          size="md"
+          class="justify-center"
+        />
+      ) : (
+        <div class="max-w-md mx-auto p-4 rounded-sm bg-brand-softwhite/10 border border-brand-softwhite/20 text-center mb-4">
+          <p class="text-xs text-brand-softwhite/90 leading-relaxed m-0">
+            Direct telephone and instant messaging channels are being established for public release. Inquiries are scheduled directly with our studio principals.
+          </p>
+        </div>
+      )}
+
+      <div class="mt-4 flex flex-wrap gap-4 justify-center">
+        <Button
+          variant="gold"
+          size="md"
+          href="/services/interior-design/"
+        >
+          View Interior Design
+        </Button>
+        <Button
+          variant="secondary"
+          size="md"
+          href="/services/turnkey-contracting/"
+          class="bg-surface-pure/10 text-brand-softwhite border-brand-softwhite/30 hover:bg-surface-pure/20"
+        >
+          View Turnkey Contracting
+        </Button>
+      </div>
+    </div>
+  </CTASection>
+</BaseLayout>

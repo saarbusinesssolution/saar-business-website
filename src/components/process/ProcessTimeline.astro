@@ -1,0 +1,143 @@
+---
+import Badge from '../ui/Badge.astro';
+import { processStages, type ProcessStage } from '../../data/process';
+
+interface Props {
+  stages?: ProcessStage[];
+  class?: string;
+}
+
+const { stages = processStages, class: className = '' } = Astro.props;
+---
+
+<div class:list={['relative', className]}>
+  <ol class="space-y-12 lg:space-y-16">
+    {stages.map((stage, index) => {
+      const isLast = index === stages.length - 1;
+      const isDesignOnlyEnd = stage.id === 'design';
+      const isTurnkeyOnly = stage.id === 'execute' || stage.id === 'handover';
+
+      return (
+        <li class="relative">
+          {/* Connecting Vertical Line for Desktop */}
+          {!isLast && (
+            <div
+              class="hidden lg:block absolute left-6 top-14 bottom-[-4rem] w-[2px] bg-border-subtle"
+              aria-hidden="true"
+            />
+          )}
+
+          <article class="bg-surface-elevated border border-border-subtle rounded-sm p-6 sm:p-8 lg:p-10 shadow-subtle transition-all duration-300 hover:border-brand-gold/50">
+            {/* Header Lockup */}
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-6 border-b border-border-subtle">
+              <div class="flex items-start gap-4">
+                {/* Number Badge */}
+                <div class="w-12 h-12 rounded-sm bg-brand-navy border border-brand-gold flex items-center justify-center text-white font-mono font-bold text-base shadow-subtle flex-shrink-0">
+                  <span class="text-brand-gold mr-0.5">#</span>{stage.orderFormatted}
+                </div>
+
+                <div>
+                  <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-semibold">
+                    Stage {stage.orderFormatted} • {stage.shortTitle}
+                  </span>
+                  <h2 class="font-serif text-2xl sm:text-3xl font-semibold text-text-navy mt-1">
+                    {stage.title}
+                  </h2>
+                  <p class="text-sm font-medium text-text-muted mt-1">
+                    {stage.subtitle}
+                  </p>
+                </div>
+              </div>
+
+              {/* Scope Badge */}
+              <div class="flex-shrink-0 self-start sm:self-center">
+                {isTurnkeyOnly ? (
+                  <Badge variant="category">Turnkey Execution Only</Badge>
+                ) : isDesignOnlyEnd ? (
+                  <div class="flex flex-wrap gap-2">
+                    <Badge variant="verified">Design Milestone</Badge>
+                    <Badge variant="category">Turnkey Baseline</Badge>
+                  </div>
+                ) : (
+                  <Badge variant="neutral">All Disciplines</Badge>
+                )}
+              </div>
+            </div>
+
+            {/* Summary & Objective */}
+            <div class="py-6 border-b border-border-subtle space-y-4">
+              <p class="text-base sm:text-lg text-text-charcoal leading-relaxed">
+                {stage.summary}
+              </p>
+              <div class="bg-surface-page p-4 rounded-sm border-l-2 border-brand-gold">
+                <span class="text-xs font-mono uppercase tracking-wider text-brand-navy font-semibold block mb-1">
+                  Stage Objective
+                </span>
+                <p class="text-sm text-text-muted">
+                  {stage.objective}
+                </p>
+              </div>
+            </div>
+
+            {/* Structured Responsibilities & Outputs Grid */}
+            <div class="pt-6 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+              {/* Client Involvement */}
+              <div class="space-y-3">
+                <h3 class="text-xs font-mono uppercase tracking-wider text-text-navy font-bold flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-brand-gold" aria-hidden="true" />
+                  Client Involvement
+                </h3>
+                <ul class="space-y-2 text-sm text-text-muted">
+                  {stage.clientInvolvement.map((item) => (
+                    <li class="flex items-start gap-2">
+                      <span class="text-brand-gold font-bold select-none leading-tight" aria-hidden="true">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* SAAR Responsibility */}
+              <div class="space-y-3">
+                <h3 class="text-xs font-mono uppercase tracking-wider text-text-navy font-bold flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-brand-navy" aria-hidden="true" />
+                  SAAR Responsibility
+                </h3>
+                <ul class="space-y-2 text-sm text-text-muted">
+                  {stage.saarResponsibility.map((item) => (
+                    <li class="flex items-start gap-2">
+                      <span class="text-brand-navy font-bold select-none leading-tight" aria-hidden="true">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Expected Output */}
+              <div class="space-y-3">
+                <h3 class="text-xs font-mono uppercase tracking-wider text-text-navy font-bold flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-status-success" aria-hidden="true" />
+                  Tangible Outputs
+                </h3>
+                <ul class="space-y-2 text-sm text-text-muted">
+                  {stage.expectedOutput.map((item) => (
+                    <li class="flex items-start gap-2">
+                      <span class="text-status-success font-bold select-none leading-tight" aria-hidden="true">✓</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Scope Applicability Footer Callout */}
+            <div class="mt-6 pt-4 border-t border-border-subtle/60 flex items-center gap-2 text-xs text-text-muted">
+              <span class="font-semibold text-brand-navy">Scope Boundary:</span>
+              <span>{stage.applicabilityNote}</span>
+            </div>
+          </article>
+        </li>
+      );
+    })}
+  </ol>
+</div>

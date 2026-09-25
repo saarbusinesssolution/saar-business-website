@@ -1,0 +1,69 @@
+---
+import Container from './Container.astro';
+import DesktopNav from './DesktopNav.astro';
+import MobileNav from './MobileNav.astro';
+import { getPrimaryNavigation, getPrimaryNavCta } from '../../config/navigation';
+import { siteConfig } from '../../config/site';
+
+interface Props {
+  currentPath?: string;
+  forceAllNavItems?: boolean;
+  previewIdPrefix?: string;
+  class?: string;
+}
+
+const {
+  currentPath = Astro.url.pathname,
+  forceAllNavItems = false,
+  previewIdPrefix = 'global',
+  class: className = '',
+} = Astro.props;
+
+// In production, render only routes that are actually implemented.
+// In dev preview mode (forceAllNavItems === true), render full intended layout.
+const navItems = getPrimaryNavigation(!forceAllNavItems);
+const ctaItem = getPrimaryNavCta(!forceAllNavItems);
+---
+
+<header
+  class:list={[
+    'sticky top-0 z-sticky w-full bg-surface-pure/95 backdrop-blur-md border-b border-border-subtle transition-colors duration-200',
+    className,
+  ]}
+>
+  <Container size="content">
+    <div class="h-20 flex items-center justify-between gap-4">
+      <!-- Brand Logo / Wordmark Lockup -->
+      <a
+        href="/"
+        class="inline-flex items-center gap-3 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy rounded-xs"
+        aria-label={`${siteConfig.name} - Home`}
+      >
+        <img
+          src="/images/brand/logo-full.webp"
+          alt={siteConfig.name}
+          width="168"
+          height="56"
+          class="h-10 sm:h-11 w-auto object-contain"
+          loading="eager"
+          decoding="async"
+        />
+      </a>
+
+      <!-- Desktop Navigation (hidden below lg breakpoint) -->
+      <DesktopNav
+        items={navItems}
+        cta={ctaItem}
+        currentPath={currentPath}
+      />
+
+      <!-- Accessible Mobile Navigation (visible below lg breakpoint) -->
+      <MobileNav
+        items={navItems}
+        cta={ctaItem}
+        currentPath={currentPath}
+        idPrefix={previewIdPrefix}
+      />
+    </div>
+  </Container>
+</header>

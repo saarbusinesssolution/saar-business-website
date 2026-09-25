@@ -1,0 +1,53 @@
+---
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+import SectionHeader from '../layout/SectionHeader.astro';
+import ResponsiveGrid from '../layout/ResponsiveGrid.astro';
+import ProjectCard from '../cards/ProjectCard.astro';
+import { resolveImageMetadata } from '../../lib/content';
+import { getProjectUrl } from '../../config/routes';
+import type { PublicProject } from '../../types/content';
+
+interface Props {
+  projects: PublicProject[];
+  currentProjectId?: string;
+  class?: string;
+}
+
+const { projects, currentProjectId, class: className = '' } = Astro.props;
+
+const filteredProjects = projects.filter((p) => p.id !== currentProjectId);
+
+if (filteredProjects.length === 0) {
+  return null;
+}
+---
+
+<Section bg="page" padding="lg" class:list={['border-b border-border-subtle', className]}>
+  <Container size="content">
+    <SectionHeader
+      eyebrow="Portfolio Continuations"
+      title="Related Architectural Studies"
+      lead="Explore complementary spatial inquiries, residential concepts, and material studies."
+      align="center"
+    />
+
+    <ResponsiveGrid cols={filteredProjects.length > 2 ? 3 : 2} gap="lg" class="mt-10 max-w-4xl mx-auto">
+      {filteredProjects.map((project) => {
+        const coverMeta = project.coverImageId ? resolveImageMetadata(project.coverImageId) : null;
+        return (
+          <ProjectCard
+            title={project.title}
+            category={project.category}
+            projectNature={project.projectNature}
+            spaceType={project.spaceType}
+            location={project.location}
+            imagePath={coverMeta?.readiness === 'available' ? coverMeta.assetPath : undefined}
+            imageAlt={coverMeta?.altText || project.title}
+            href={getProjectUrl(project.slug)}
+          />
+        );
+      })}
+    </ResponsiveGrid>
+  </Container>
+</Section>

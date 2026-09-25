@@ -1,0 +1,292 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import Section from '../../components/layout/Section.astro';
+import SectionHeader from '../../components/layout/SectionHeader.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import CTASection from '../../components/sections/CTASection.astro';
+import { aboutData } from '../../data/about';
+import { getImageMetadata } from '../../data/images';
+import { getWebPageSchema, getBreadcrumbListSchema } from '../../lib/seo/schema';
+import { SITE_URL } from '../../lib/seo/metadata';
+
+const pageTitle = 'About SAAR | Architectural Interiors & Turnkey Contracting';
+const pageDescription =
+  'Learn about Saar Business Support Solution — our spatial ethos, single-point accountability, confirmed disciplines, working principles, and operational standards in Delhi NCR.';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about/' },
+];
+
+const structuredData = [
+  getWebPageSchema({
+    canonicalUrl: `${SITE_URL}/about/`,
+    title: pageTitle,
+    description: pageDescription,
+    type: 'AboutPage',
+  }),
+  getBreadcrumbListSchema(breadcrumbs),
+];
+
+const heroImage = getImageMetadata('hero_architectural_main');
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  breadcrumbs={breadcrumbs}
+  structuredData={structuredData}
+>
+  {/* Editorial Page Hero */}
+  <Section bg="page" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-7">
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-semibold block mb-3">
+            About Our Practice
+          </span>
+          <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-text-navy tracking-tight leading-[1.15]">
+            {aboutData.introHeading}
+          </h1>
+          <p class="mt-5 text-lg sm:text-xl text-text-charcoal leading-relaxed font-sans">
+            {aboutData.introLead}
+          </p>
+
+          <div class="mt-8 flex flex-wrap gap-4">
+            <Button href="/process/" variant="primary" size="md">
+              Explore Our Process &rarr;
+            </Button>
+            <Button href="/services/" variant="secondary" size="md">
+              View Confirmed Services
+            </Button>
+          </div>
+        </div>
+
+        {/* Editorial Visual Asset */}
+        <div class="lg:col-span-5">
+          <div class="relative bg-surface-elevated border border-border-subtle p-2 rounded-sm shadow-subtle">
+            <div class="relative overflow-hidden aspect-[4/3] rounded-sm bg-surface-subtle">
+              {heroImage ? (
+                <img
+                  src={heroImage.assetPath}
+                  alt={heroImage.altText}
+                  width={heroImage.dimensions?.width ?? 1200}
+                  height={heroImage.dimensions?.height ?? 900}
+                  class="w-full h-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                />
+              ) : (
+                <div class="w-full h-full flex items-center justify-center text-text-muted text-sm">
+                  Architectural Visual Representation
+                </div>
+              )}
+
+              {/* Concept Disclosure Badge */}
+              <div class="absolute bottom-3 left-3">
+                <Badge variant="concept">Design Concept</Badge>
+              </div>
+            </div>
+
+            <p class="mt-3 text-xs text-text-muted px-2 pb-1">
+              Editorial spatial representation: Material honesty, natural illumination, and tactile millwork.
+            </p>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  {/* Practice Ethos & The Fundamental Friction */}
+  <Section bg="elevated" padding="lg" class="border-b border-border-subtle">
+    <Container size="narrow">
+      <SectionHeader
+        eyebrow="The Purpose"
+        title="Why SAAR Exists"
+        align="left"
+        class="mb-8"
+      />
+
+      <div class="prose prose-navy max-w-none space-y-6 text-base sm:text-lg text-text-charcoal leading-relaxed">
+        {aboutData.introNarrative.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  {/* Confirmed Capabilities & Project Fit */}
+  <Section bg="page" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <SectionHeader
+        eyebrow="Capabilities & Fit"
+        title="Disciplines & Scope Alignment"
+        lead="We strictly publish confirmed service offerings. Each engagement is structured around precise boundaries, deliverables, and operational requirements."
+        align="center"
+      />
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {aboutData.serviceFit.map((service) => (
+          <article class="bg-surface-elevated border border-border-subtle p-6 sm:p-8 rounded-sm flex flex-col justify-between transition-all duration-300 hover:border-brand-gold/50 shadow-subtle">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-serif text-xl font-semibold text-text-navy">
+                  {service.title}
+                </h3>
+                {service.isImplemented ? (
+                  <Badge variant="verified">Available</Badge>
+                ) : (
+                  <Badge variant="neutral">Staged Rollout</Badge>
+                )}
+              </div>
+
+              <div class="mb-4">
+                <span class="text-xs font-mono uppercase tracking-wider text-brand-gold font-semibold block mb-1">
+                  Suitable For
+                </span>
+                <p class="text-sm text-text-charcoal leading-relaxed">
+                  {service.suitableFor}
+                </p>
+              </div>
+
+              <div>
+                <span class="text-xs font-mono uppercase tracking-wider text-text-navy font-semibold block mb-1">
+                  Key Deliverables
+                </span>
+                <p class="text-xs text-text-muted leading-relaxed">
+                  {service.deliverablesSummary}
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-border-subtle">
+              {service.isImplemented ? (
+                <a
+                  href={`/services/${service.slug}/`}
+                  class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-navy hover:text-brand-gold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2"
+                >
+                  Explore Discipline Specifications &rarr;
+                </a>
+              ) : (
+                <span class="text-xs text-text-muted italic">
+                  Specification scope in documentation review
+                </span>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  {/* Working Principles */}
+  <Section bg="elevated" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <SectionHeader
+        eyebrow="Our Standards"
+        title="Four Principles of Our Practice"
+        lead="These non-negotiable operational commitments dictate how we draft drawings, manage budgets, curate materials, and supervise job sites."
+        align="center"
+      />
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {aboutData.principles.map((principle) => (
+          <article class="bg-surface-page border border-border-subtle p-6 sm:p-8 rounded-sm shadow-subtle flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-3 mb-3">
+                <span class="w-10 h-10 rounded-sm bg-brand-navy text-brand-gold font-mono font-bold text-sm flex items-center justify-center flex-shrink-0">
+                  {principle.number}
+                </span>
+                <div>
+                  <h3 class="font-serif text-xl sm:text-2xl font-semibold text-text-navy">
+                    {principle.title}
+                  </h3>
+                  <p class="text-xs font-mono text-brand-gold uppercase tracking-wider mt-0.5">
+                    {principle.tagline}
+                  </p>
+                </div>
+              </div>
+
+              <p class="text-sm sm:text-base text-text-muted leading-relaxed mt-4">
+                {principle.description}
+              </p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  {/* Portfolio Transparency & Geographic Footprint */}
+  <Section bg="page" padding="lg">
+    <Container size="content">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Evidence & Case Studies Transparency */}
+        <article class="bg-surface-elevated border border-border-subtle p-6 sm:p-8 rounded-sm shadow-subtle flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-gold" aria-hidden="true" />
+              <h2 class="font-serif text-2xl font-semibold text-text-navy">
+                {aboutData.evidenceNotice.title}
+              </h2>
+            </div>
+            <p class="text-sm text-text-muted leading-relaxed">
+              {aboutData.evidenceNotice.description}
+            </p>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-border-subtle">
+            <Button href={aboutData.evidenceNotice.ctaHref} variant="outline-gold" size="sm">
+              {aboutData.evidenceNotice.ctaLabel} &rarr;
+            </Button>
+          </div>
+        </article>
+
+        {/* Operational Footprint & Consultation Model */}
+        <article class="bg-surface-elevated border border-border-subtle p-6 sm:p-8 rounded-sm shadow-subtle flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-navy" aria-hidden="true" />
+              <h2 class="font-serif text-2xl font-semibold text-text-navy">
+                {aboutData.operationalFootprint.title}
+              </h2>
+            </div>
+            <p class="text-sm text-text-charcoal leading-relaxed mb-3">
+              {aboutData.operationalFootprint.serviceCoverage}
+            </p>
+            <p class="text-xs text-text-muted leading-relaxed mb-3">
+              {aboutData.operationalFootprint.consultationModel}
+            </p>
+            <p class="text-xs text-text-muted/80 italic border-l-2 border-border-subtle pl-3">
+              {aboutData.operationalFootprint.physicalCoordinatesNotice}
+            </p>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-border-subtle">
+            <Button href="/process/" variant="secondary" size="sm">
+              Review Our 5-Stage Process &rarr;
+            </Button>
+          </div>
+        </article>
+      </div>
+    </Container>
+  </Section>
+
+  {/* Conversion CTA */}
+  <CTASection
+    variant="navy"
+    eyebrow="Initiate A Consultation"
+    heading="Plan Your Project with SAAR"
+    description="Discover how our integrated architectural design and turnkey contracting practice can bring discipline, transparency, and crafted quality to your next residential or commercial project."
+    primaryAction={{
+      label: 'Explore Our Process',
+      href: '/process/',
+    }}
+    secondaryAction={{
+      label: 'Review All Services',
+      href: '/services/',
+    }}
+  />
+</BaseLayout>

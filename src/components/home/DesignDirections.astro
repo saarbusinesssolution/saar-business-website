@@ -1,0 +1,69 @@
+---
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+import SectionHeader from '../layout/SectionHeader.astro';
+import ResponsiveGrid from '../layout/ResponsiveGrid.astro';
+import ProjectCard from '../cards/ProjectCard.astro';
+import Button from '../ui/Button.astro';
+import { resolveImageMetadata } from '../../lib/content';
+import { getProjectUrl } from '../../config/routes';
+import type { PublicProject } from '../../types/content';
+
+interface Props {
+  projects: PublicProject[];
+  class?: string;
+}
+
+const {
+  projects = [],
+  class: className = '',
+} = Astro.props;
+---
+
+{projects.length > 0 && (
+  <Section
+    id="design-directions"
+    bg="page"
+    padding="md"
+    class:list={['scroll-mt-24', className]}
+  >
+    <Container size="content">
+      <SectionHeader
+        eyebrow="Spatial Exploration"
+        title="Explore Design Directions"
+        lead="Conceptual studies exploring architectural volume, internal courtyard circulation, and regional materiality."
+        align="center"
+      />
+
+      <ResponsiveGrid cols={projects.length >= 3 ? 3 : 2} gap="lg" class="mb-8 max-w-4xl mx-auto">
+        {projects.map((project) => {
+          const coverMeta = project.coverImageId ? resolveImageMetadata(project.coverImageId) : null;
+          return (
+            <ProjectCard
+              title={project.title}
+              category={project.category}
+              projectNature={project.projectNature}
+              spaceType={project.spaceType}
+              imagePath={coverMeta?.readiness === 'available' ? coverMeta.assetPath : undefined}
+              imageAlt={coverMeta?.altText || project.title}
+              location={project.location}
+              href={getProjectUrl(project.slug)}
+            />
+          );
+        })}
+      </ResponsiveGrid>
+
+      <div class="text-center mb-8">
+        <Button variant="secondary" size="md" href="/projects/">
+          View All Portfolio Studies &rarr;
+        </Button>
+      </div>
+
+      <div class="max-w-2xl mx-auto p-4 rounded-sm bg-surface-subtle/60 border border-border-subtle text-center">
+        <p class="text-xs text-brand-charcoal/70 leading-normal m-0">
+          <strong class="text-brand-navy">Transparency Note:</strong> All architectural studies shown above represent design concepts. Verified commissioned client case studies will be released following client permissions.
+        </p>
+      </div>
+    </Container>
+  </Section>
+)}

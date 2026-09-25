@@ -1,0 +1,1049 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/layout/Container.astro';
+import Section from '../components/layout/Section.astro';
+import SectionHeader from '../components/layout/SectionHeader.astro';
+import ResponsiveGrid from '../components/layout/ResponsiveGrid.astro';
+import Stack from '../components/layout/Stack.astro';
+import Cluster from '../components/layout/Cluster.astro';
+import Button from '../components/ui/Button.astro';
+import Badge from '../components/ui/Badge.astro';
+import FormField from '../components/ui/FormField.astro';
+import TextInput from '../components/ui/TextInput.astro';
+import TextArea from '../components/ui/TextArea.astro';
+import Select from '../components/ui/Select.astro';
+import Checkbox from '../components/ui/Checkbox.astro';
+import RadioGroup from '../components/ui/RadioGroup.astro';
+import ServiceCard from '../components/cards/ServiceCard.astro';
+import ProjectCard from '../components/cards/ProjectCard.astro';
+import ProcessStep from '../components/cards/ProcessStep.astro';
+import Accordion from '../components/ui/Accordion.astro';
+import SiteHeader from '../components/layout/SiteHeader.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import ContactActions from '../components/ui/ContactActions.astro';
+import CTASection from '../components/sections/CTASection.astro';
+import DesignDirections from '../components/home/DesignDirections.astro';
+import PlannerIntro from '../components/home/PlannerIntro.astro';
+import ServiceDetail from '../components/services/ServiceDetail.astro';
+import ProjectDetail from '../components/projects/ProjectDetail.astro';
+import ProcessTimeline from '../components/process/ProcessTimeline.astro';
+import PreparationSection from '../components/process/PreparationSection.astro';
+import PlannerWizard from '../components/planner/PlannerWizard.astro';
+import EnquiryForm from '../components/forms/EnquiryForm.astro';
+import { _devGetAllServices, getPublishedProjects } from '../lib/content';
+import { siteConfig, type BusinessConfig } from '../config/site';
+import type { PublicProject, ServiceData } from '../types/content';
+
+const mockContactConfig: BusinessConfig = {
+  ...siteConfig,
+  phone: '+91 (0) 98765 43210',
+  whatsappNumber: '+919876543210',
+  email: 'studio@saarbusiness.com',
+  address: {
+    street: 'Plot 42, Architectural Enclave',
+    city: 'Mumbai',
+    state: 'Maharashtra',
+    postalCode: '400001',
+    country: 'India',
+  },
+};
+
+const sampleConceptProject: PublicProject = {
+  id: 'courtyard-minimalist-residence',
+  slug: 'courtyard-minimalist-residence',
+  title: 'The Courtyard Pavilion',
+  publicationStatus: 'draft',
+  projectNature: 'concept',
+  category: 'Interior Design',
+  spaceType: 'Private Residential Villa',
+  summary: 'Contemporary pavilion opening to an internal green courtyard with fluted timber and natural stone.',
+  location: 'Bangalore, India',
+  relatedServiceIds: ['interior-design', 'turnkey-contracting'],
+  designStyleTags: ['Minimalist', 'Courtyard Living', 'Travertine'],
+  theSpace: 'Double-height volume framing natural light and indoor-outdoor sightlines.',
+  challenge: 'Balancing double-height acoustic reflection with minimalist aesthetics.',
+  approach: 'Engineered acoustic ceiling baffles and bespoke walnut cabinetry.',
+  deliverables: ['Interior architectural drawings', 'Custom millwork', 'Lighting specifications'],
+  result: undefined,
+  coverImageId: 'hero_architectural_main',
+  galleryImageIds: [],
+  featured: true,
+  natureLabel: 'Design Concept',
+  seoTitle: 'The Courtyard Pavilion | SAAR Concept Design',
+  seoDescription: 'Minimalist villa concept with central courtyard transition.',
+};
+
+const devAllServices = await _devGetAllServices(true);
+const renovationDraftService = devAllServices.find((s) => s.id === 'renovation');
+
+const textLedSampleService: ServiceData = {
+  id: 'spatial-advisory',
+  slug: 'spatial-advisory',
+  title: 'Spatial Planning & Feasibility Advisory',
+  shortSummary: 'Text-led strategic advisory demonstrating template resilience without decorative hero assets.',
+  publicationStatus: 'draft',
+  verificationStatus: 'verified',
+  overview: 'Objective architectural and spatial evaluation for residential and corporate clients planning substantial footprint changes or commercial relocations.',
+  suitableProjectTypes: ['Corporate Relocations', 'Pre-Purchase Due Diligence', 'Spatial Optimization'],
+  deliverables: [
+    'Spatial capacity and headcount matrix',
+    'Preliminary egress and circulation diagram',
+    'Fit-out timeline and phasing estimates',
+  ],
+  exclusions: [
+    'Real estate transactions and legal brokerage',
+    'Structural engineering certifications',
+  ],
+  processSteps: [
+    { step: 1, title: 'Brief Intake', description: 'Reviewing operational goals and space constraints.' },
+    { step: 2, title: 'Spatial Analysis', description: 'Evaluating floor plates and service connections.' },
+    { step: 3, title: 'Report Delivery', description: 'Delivering clear recommendations.' },
+  ],
+  relatedProjectIds: [],
+  faqs: [
+    {
+      question: 'Why does this service not feature a hero image?',
+      answer: 'This preview demonstrates the template’s graceful degradation when a service is purely advisory or does not yet have an approved architectural photograph.',
+    },
+  ],
+  ctaIntent: 'Request Advisory Brief',
+  seoTitle: 'Spatial Advisory | SAAR Preview',
+  seoDescription: 'Sample text-led service layout demonstration.',
+  order: 99,
+};
+
+const devPublishedProjects = await getPublishedProjects();
+const previewProject = devPublishedProjects[0] || sampleConceptProject;
+
+const faqSample = [
+  {
+    question: 'How are design concepts distinguished from actual client builds?',
+    answer:
+      'All non-commissioned conceptual renders display an automatic, prominent "Design Concept" badge across cards and case studies to guarantee full transparency.',
+  },
+  {
+    question: 'Why is Architectural Gold restricted from small body text?',
+    answer:
+      'Architectural Gold (#B99052) against Soft White (#F4F1EA) achieves a 2.5:1 contrast ratio, failing WCAG AA requirements (4.5:1). Gold is strictly reserved for structural borders, badges with dark text, and decorative markers.',
+  },
+  {
+    question: 'What accessibility standards do form controls adhere to?',
+    answer:
+      'All inputs enforce a minimum 44px touch target height, explicit 16px mobile text to prevent iOS zoom, and programmatic aria-describedby bindings to help and error text.',
+  },
+];
+---
+
+<BaseLayout
+  title="Design System & Component Preview (Dev Only)"
+  description="Development preview of SAAR design tokens, typography, UI primitives, and global shell."
+  hideHeader
+  hideFooter
+>
+  <div class="bg-surface-elevated border-b border-border-subtle py-4 px-6 sticky top-0 z-sticky shadow-subtle flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <img src="/images/brand/logo-icon.png" alt="SAAR" class="w-8 h-8 object-contain" />
+      <div>
+        <span class="font-serif text-lg font-bold text-text-navy">SAAR Design System</span>
+        <span class="text-xs text-text-muted ml-2 font-mono">Development Preview</span>
+      </div>
+    </div>
+    <a href="/" class="text-xs font-semibold text-brand-navy hover:text-brand-gold">
+      &larr; Back to Dev Homepage
+    </a>
+  </div>
+
+  <!-- 1. COLOR TOKENS & CONTRAST -->
+  <Section bg="page" padding="sm" id="colors">
+    <Container>
+      <SectionHeader eyebrow="01. Design Tokens" title="Color Palette & Contrast Verification" lead="Brand primitives and semantic surface pairings with WCAG AA/AAA compliance." />
+
+      <ResponsiveGrid cols={4} gap="md">
+        <div class="p-5 rounded-md bg-[#173A5E] text-[#F4F1EA] shadow-subtle border border-[#173A5E]">
+          <div class="font-mono text-xs mb-8 opacity-75">#173A5E</div>
+          <div class="font-bold text-sm">Deep Navy</div>
+          <div class="text-xs opacity-80">Primary Action / Headings (9.8:1 AAA)</div>
+        </div>
+
+        <div class="p-5 rounded-md bg-[#B99052] text-[#173A5E] shadow-subtle border border-[#B99052]">
+          <div class="font-mono text-xs mb-8 opacity-75">#B99052</div>
+          <div class="font-bold text-sm">Architectural Gold</div>
+          <div class="text-xs opacity-80">Accent / Borders / Navy on Gold (4.5:1 AA)</div>
+        </div>
+
+        <div class="p-5 rounded-md bg-[#202020] text-[#F4F1EA] shadow-subtle border border-[#202020]">
+          <div class="font-mono text-xs mb-8 opacity-75">#202020</div>
+          <div class="font-bold text-sm">Charcoal</div>
+          <div class="text-xs opacity-80">Primary Body Text (13.8:1 AAA)</div>
+        </div>
+
+        <div class="p-5 rounded-md bg-[#F4F1EA] text-[#202020] shadow-subtle border border-[#E2DDD5]">
+          <div class="font-mono text-xs mb-8 opacity-75">#F4F1EA</div>
+          <div class="font-bold text-sm">Soft White</div>
+          <div class="text-xs opacity-80">Gallery Canvas Background</div>
+        </div>
+      </ResponsiveGrid>
+    </Container>
+  </Section>
+
+  <!-- 2. TYPOGRAPHY HIERARCHY -->
+  <Section bg="elevated" padding="sm" id="typography">
+    <Container>
+      <SectionHeader eyebrow="02. Editorial Typography" title="Two-Family Typographic Scale" lead="Refined architectural serif display paired with clean grotesque sans-serif body." />
+
+      <div class="space-y-8 max-w-3xl">
+        <div class="border-b border-border-subtle pb-6">
+          <span class="text-xs font-mono text-text-muted block mb-1">Display 1 (H1 clamp) — Editorial Serif</span>
+          <h1 class="text-display-1 text-text-navy m-0">Designed with Purpose.</h1>
+        </div>
+
+        <div class="border-b border-border-subtle pb-6">
+          <span class="text-xs font-mono text-text-muted block mb-1">Display 2 (H2 clamp) — Section Heading</span>
+          <h2 class="text-display-2 text-text-navy m-0">Executed with Precision.</h2>
+        </div>
+
+        <div class="border-b border-border-subtle pb-6">
+          <span class="text-xs font-mono text-text-muted block mb-1">Display 3 (H3) & Lead Text</span>
+          <h3 class="text-display-3 text-text-navy mb-2">Turnkey Spatial Engineering</h3>
+          <p class="text-lead">
+            Saar Business Support Solution manages the entire architectural lifecycle, from concept drafting to turnkey fit-out.
+          </p>
+        </div>
+
+        <div>
+          <span class="text-xs font-mono text-text-muted block mb-1">Body Text & Small Caption</span>
+          <p class="text-sm text-text-primary leading-relaxed mb-2">
+            Standard paragraph text is rendered in high-legibility sans-serif with comfortable line height and accessible contrast.
+          </p>
+          <span class="text-xs text-text-muted">Footnote or secondary caption text.</span>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 3. BUTTONS & STATES -->
+  <Section bg="page" padding="sm" id="buttons">
+    <Container>
+      <SectionHeader eyebrow="03. Interactive Controls" title="Buttons & States" lead="Touch targets calibrated at min 44x44px with focus rings and loading states." />
+
+      <Stack space="lg">
+        <div>
+          <span class="text-xs font-semibold text-text-muted block mb-3 uppercase tracking-wider">Button Variants</span>
+          <Cluster gap="md">
+            <Button variant="primary">Primary Navy</Button>
+            <Button variant="secondary">Secondary White</Button>
+            <Button variant="gold">Architectural Gold</Button>
+            <Button variant="outline-gold">Outline Gold</Button>
+            <Button variant="ghost">Ghost Button</Button>
+          </Cluster>
+        </div>
+
+        <div>
+          <span class="text-xs font-semibold text-text-muted block mb-3 uppercase tracking-wider">States (Loading & Disabled)</span>
+          <Cluster gap="md">
+            <Button variant="primary" loading>Submitting Lead</Button>
+            <Button variant="secondary" disabled>Disabled Action</Button>
+            <Button variant="gold" disabled>Disabled Gold</Button>
+          </Cluster>
+        </div>
+
+        <div>
+          <span class="text-xs font-semibold text-text-muted block mb-3 uppercase tracking-wider">Sizes (sm, md, lg)</span>
+          <Cluster gap="md" align="center">
+            <Button variant="primary" size="sm">Small (38px)</Button>
+            <Button variant="primary" size="md">Medium (44px)</Button>
+            <Button variant="primary" size="lg">Large (52px)</Button>
+          </Cluster>
+        </div>
+      </Stack>
+    </Container>
+  </Section>
+
+  <!-- 4. FORM CONTROLS -->
+  <Section bg="elevated" padding="sm" id="forms">
+    <Container>
+      <SectionHeader eyebrow="04. Form Controls" title="Accessible Form Primitives" lead="Strict label binding, aria-describedby associations, and visible focus rings." />
+
+      <div class="max-w-2xl bg-surface-page p-8 rounded-md border border-border-subtle">
+        <FormField id="demo-name" label="Client Full Name" required helpText="Enter your formal legal or contact name.">
+          <TextInput id="demo-name" name="name" placeholder="e.g. Rahul Sharma" required />
+        </FormField>
+
+        <FormField id="demo-phone" label="Phone / WhatsApp Number" required error="Please enter a valid phone number.">
+          <TextInput id="demo-phone" name="phone" type="tel" value="invalid-phone" required invalid />
+        </FormField>
+
+        <FormField id="demo-service" label="Service Category" required>
+          <Select
+            id="demo-service"
+            name="service"
+            placeholder="Select a core discipline"
+            options={[
+              { value: 'interior-design', label: 'Interior Design' },
+              { value: 'turnkey-contracting', label: 'Turnkey Contracting' },
+              { value: 'renovation', label: 'Renovation & Remodeling' },
+              { value: 'property-solutions', label: 'Property Solutions' },
+            ]}
+          />
+        </FormField>
+
+        <FormField id="demo-notes" label="Spatial Brief">
+          <TextArea id="demo-notes" name="notes" placeholder="Describe approximate square footage and timeline..." rows={3} />
+        </FormField>
+
+        <RadioGroup
+          name="project-stage"
+          legend="Current Project Stage"
+          required
+          options={[
+            { id: 'stage-1', value: 'planning', label: 'Concept & Planning', description: 'Exploring feasibility and budgets' },
+            { id: 'stage-2', value: 'ready', label: 'Space Acquired', description: 'Possession taken, ready for immediate fit-out' },
+          ]}
+          selectedValue="planning"
+        />
+
+        <Checkbox
+          id="demo-terms"
+          name="consent"
+          label="I agree to SAAR processing this spatial inquiry to schedule a consultation."
+          required
+        />
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 5. BADGES & DISCLOSURES -->
+  <Section bg="page" padding="sm" id="badges-and-faq">
+    <Container>
+      <SectionHeader eyebrow="05. Components & Badges" title="Badges & Disclosures" lead="Concept disclosure indicators and accessible native accordion." />
+
+      <div class="mb-10">
+        <span class="text-xs font-semibold text-text-muted block mb-3 uppercase tracking-wider">Badge Indicators</span>
+        <Cluster gap="sm">
+          <Badge variant="concept">Design Concept</Badge>
+          <Badge variant="verified">Verified Project</Badge>
+          <Badge variant="category">Interior Design</Badge>
+          <Badge variant="neutral">Gujarat Region</Badge>
+          <Badge variant="gold">Featured Work</Badge>
+        </Cluster>
+      </div>
+
+      <div>
+        <span class="text-xs font-semibold text-text-muted block mb-4 uppercase tracking-wider">Accordion / FAQ Disclosure</span>
+        <div class="max-w-3xl">
+          <Accordion items={faqSample} />
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 6. CARDS -->
+  <Section bg="elevated" padding="sm" id="cards">
+    <Container>
+      <SectionHeader eyebrow="06. Card Components" title="Service, Project & Process Cards" lead="Architectural card framing with strict concept disclosure." />
+
+      <!-- Service Card Demo -->
+      <div class="mb-12">
+        <span class="text-xs font-semibold text-text-muted block mb-4 uppercase tracking-wider">Service Card Primitive</span>
+        <div class="max-w-md">
+          <ServiceCard
+            title="Interior Design"
+            shortSummary="Bespoke spatial design, material curation, custom millwork, and lighting engineering."
+            orderNumber={1}
+            deliverables={[
+              'Comprehensive spatial layouts',
+              '3D visualization and perspective renders',
+              'Bespoke joinery working drawings',
+            ]}
+            href="/services/interior-design/"
+          />
+        </div>
+      </div>
+
+      <!-- Project Card Demo -->
+      <div class="mb-12">
+        <span class="text-xs font-semibold text-text-muted block mb-4 uppercase tracking-wider">Project Card (with Concept Disclosure Badge)</span>
+        <div class="max-w-md">
+          <ProjectCard
+            title="The Courtyard Pavilion"
+            category="Interior Design"
+            projectNature="concept"
+            spaceType="Private Residential Villa"
+            location="Gujarat Region"
+            href="/projects/courtyard-minimalist-residence/"
+          />
+        </div>
+      </div>
+
+      <!-- Process Step Sequence Demo -->
+      <div>
+        <span class="text-xs font-semibold text-text-muted block mb-4 uppercase tracking-wider">Process Step Sequence</span>
+        <ResponsiveGrid cols={4} gap="md">
+          <ProcessStep step={1} title="Understand" description="Detailed evaluation of client lifestyle, spatial daylight, and budget parameters." />
+          <ProcessStep step={2} title="Plan" description="Development of spatial layouts, technical drawings, and material schedules." />
+          <ProcessStep step={3} title="Execute" description="Single-point site management, civil infrastructure, and joinery execution." />
+          <ProcessStep step={4} title="Deliver" description="System commissioning, final snag clearance, and handover." isLast />
+        </ResponsiveGrid>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 7. VISUAL CONTACT SHEET & ASSET REVIEW -->
+  <Section bg="page" padding="md" id="contact-sheet">
+    <Container>
+      <SectionHeader eyebrow="07. Image System" title="Visual Contact Sheet & Asset Review" lead="Audit of available generated imagery, responsive crops, and prompt-ready pending assets." />
+
+      <!-- Available Generated Assets -->
+      <div class="mb-12">
+        <div class="flex items-center gap-2 mb-6">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-success"></span>
+          <h3 class="font-serif text-xl font-bold text-text-navy m-0">Production-Ready Assets (Available & Optimized)</h3>
+        </div>
+
+        <div class="space-y-8">
+          <!-- Hero Asset Card with Responsive Crops -->
+          <div class="p-6 bg-surface-elevated border border-border-subtle rounded-md shadow-subtle">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-4 pb-4 border-b border-border-subtle">
+              <div>
+                <span class="font-mono text-xs text-brand-gold font-bold uppercase tracking-wider block">Asset: hero_architectural_main</span>
+                <h4 class="font-serif text-lg font-bold text-text-navy m-0">Homepage Architectural Hero (16:9)</h4>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 text-xs">
+                <Badge variant="concept">Design Concept</Badge>
+                <Badge variant="verified">Step 04 Generated</Badge>
+                <span class="text-text-muted font-mono">2400×1350 • 136.8 KB WebP</span>
+              </div>
+            </div>
+
+            <!-- Visual Preview & Mobile Crop Comparison -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+              <div class="lg:col-span-2">
+                <span class="text-xs font-mono text-text-muted block mb-2">Desktop Full Frame (16:9)</span>
+                <div class="aspect-[16/9] w-full rounded-sm overflow-hidden border border-border-subtle bg-surface-subtle">
+                  <img
+                    src="/images/hero/hero-architectural-main.webp"
+                    alt="Homepage hero living pavilion"
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <span class="text-xs font-mono text-text-muted block mb-2">Simulated Mobile Crop (4:5 / Center-Right Focus)</span>
+                <div class="aspect-[4/5] w-full max-w-[260px] mx-auto rounded-sm overflow-hidden border border-border-subtle bg-surface-subtle">
+                  <img
+                    src="/images/hero/hero-architectural-main-sm.webp"
+                    alt="Mobile cropped living pavilion"
+                    class="w-full h-full object-cover object-right"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Core Service Images Grid -->
+          <ResponsiveGrid cols={2} gap="md">
+            <!-- Interior Design -->
+            <div class="p-6 bg-surface-elevated border border-border-subtle rounded-md shadow-subtle flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-3 pb-2 border-b border-border-subtle">
+                  <span class="font-mono text-xs text-brand-gold font-bold">service_hero_interior_design</span>
+                  <Badge variant="concept">Design Concept</Badge>
+                </div>
+                <h4 class="font-serif text-base font-bold text-text-navy mb-2">Service: Interior Design (4:3)</h4>
+                <div class="aspect-[4/3] w-full rounded-sm overflow-hidden border border-border-subtle mb-4">
+                  <img
+                    src="/images/services/interior-design.webp"
+                    alt="Interior design bespoke joinery"
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              <div class="text-xs font-mono text-text-muted flex justify-between">
+                <span>1200×900 • 77.2 KB WebP</span>
+                <span class="text-status-success font-semibold">Ready for Step 07</span>
+              </div>
+            </div>
+
+            <!-- Turnkey Contracting -->
+            <div class="p-6 bg-surface-elevated border border-border-subtle rounded-md shadow-subtle flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-3 pb-2 border-b border-border-subtle">
+                  <span class="font-mono text-xs text-brand-gold font-bold">service_hero_turnkey_contracting</span>
+                  <Badge variant="concept">Design Concept</Badge>
+                </div>
+                <h4 class="font-serif text-base font-bold text-text-navy mb-2">Service: Turnkey Contracting (4:3)</h4>
+                <div class="aspect-[4/3] w-full rounded-sm overflow-hidden border border-border-subtle mb-4">
+                  <img
+                    src="/images/services/turnkey-contracting.webp"
+                    alt="Commercial boardroom fit-out"
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              <div class="text-xs font-mono text-text-muted flex justify-between">
+                <span>1200×900 • 171.8 KB WebP</span>
+                <span class="text-status-success font-semibold">Ready for Step 07</span>
+              </div>
+            </div>
+          </ResponsiveGrid>
+        </div>
+      </div>
+
+      <!-- Pending Prompts & Assets Section -->
+      <div>
+        <div class="flex items-center gap-2 mb-6">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-warning"></span>
+          <h3 class="font-serif text-xl font-bold text-text-navy m-0">Prompt-Ready Assets (Awaiting Generation / Next Model Window)</h3>
+        </div>
+
+        <ResponsiveGrid cols={3} gap="md">
+          <div class="p-5 bg-surface-subtle border border-dashed border-border-medium rounded-md">
+            <span class="font-mono text-xs text-brand-gold font-bold block mb-1">service_hero_renovation</span>
+            <h4 class="font-serif text-base font-bold text-text-navy mb-2">Service: Renovation</h4>
+            <p class="text-xs text-text-muted mb-4">Historic lime-plaster wall with black steel and reeded glass door.</p>
+            <div class="flex justify-between items-center text-xs">
+              <Badge variant="neutral">Target: 4:3</Badge>
+              <span class="font-mono text-brand-navy font-semibold">docs/IMAGE_GENERATION_PROMPTS.md #04</span>
+            </div>
+          </div>
+
+          <div class="p-5 bg-surface-subtle border border-dashed border-border-medium rounded-md">
+            <span class="font-mono text-xs text-brand-gold font-bold block mb-1">service_hero_property_solutions</span>
+            <h4 class="font-serif text-base font-bold text-text-navy mb-2">Service: Property Solutions</h4>
+            <p class="text-xs text-text-muted mb-4">Commercial concrete floorplate feasibility inspection.</p>
+            <div class="flex justify-between items-center text-xs">
+              <Badge variant="neutral">Target: 4:3</Badge>
+              <span class="font-mono text-brand-navy font-semibold">docs/IMAGE_GENERATION_PROMPTS.md #05</span>
+            </div>
+          </div>
+
+          <div class="p-5 bg-surface-subtle border border-dashed border-border-medium rounded-md">
+            <span class="font-mono text-xs text-brand-gold font-bold block mb-1">project_concept_courtyard_villa_cover</span>
+            <h4 class="font-serif text-base font-bold text-text-navy mb-2">Project: The Courtyard Pavilion</h4>
+            <p class="text-xs text-text-muted mb-4">Double-height pavilion with silver-beige travertine and teak joinery.</p>
+            <div class="flex justify-between items-center text-xs">
+              <Badge variant="neutral">Target: 16:10</Badge>
+              <span class="font-mono text-brand-navy font-semibold">docs/IMAGE_GENERATION_PROMPTS.md #06</span>
+            </div>
+          </div>
+        </ResponsiveGrid>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 8. GLOBAL HEADER PREVIEWS -->
+  <Section bg="elevated" padding="sm" id="global-header">
+    <Container>
+      <SectionHeader
+        eyebrow="08. Navigation Shell"
+        title="SiteHeader & Desktop Navigation"
+        lead="Route-aware header with brand logo lockup, active page highlighting, and strict dead-link prevention."
+      />
+
+      <div class="space-y-8">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-brand-navy">
+              A. Production Header (Implemented Routes Only)
+            </h3>
+            <Badge variant="neutral">Production Mode</Badge>
+          </div>
+          <p class="text-xs text-text-muted mb-3">
+            In production mode, only routes marked <code class="text-brand-navy">status: 'implemented'</code> are rendered. Planned inner pages are omitted to prevent 404 errors.
+          </p>
+          <div class="rounded-md border border-border-subtle overflow-hidden shadow-subtle">
+            <SiteHeader previewIdPrefix="preview-prod" currentPath="/" />
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-brand-navy">
+              B. Full Intended Navigation Layout (Dev Preview Only)
+            </h3>
+            <Badge variant="concept">Preview Fixture</Badge>
+          </div>
+          <p class="text-xs text-text-muted mb-3">
+            Demonstrates the full intended navigation architecture: Services, Projects, Our Process, About, Contact, plus the primary "Plan My Project" gold action button.
+          </p>
+          <div class="rounded-md border border-border-subtle overflow-hidden shadow-subtle">
+            <SiteHeader forceAllNavItems={true} previewIdPrefix="preview-full" currentPath="/services/" />
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 9. MOBILE NAVIGATION DRAWER -->
+  <Section bg="page" padding="sm" id="mobile-nav">
+    <Container>
+      <SectionHeader
+        eyebrow="09. Responsive Navigation"
+        title="Mobile Navigation Drawer & Touch Architecture"
+        lead="Progressively enhanced mobile drawer with min 44px touch targets, Escape dismissal, and outside click management."
+      />
+
+      <div class="p-6 bg-surface-elevated border border-border-subtle rounded-md shadow-subtle max-w-xl">
+        <h4 class="font-serif text-lg font-bold text-brand-navy mb-2">Mobile Drawer Features</h4>
+        <ul class="text-xs text-brand-charcoal/80 space-y-2 mb-6 list-disc list-inside">
+          <li><strong>Accessible trigger button:</strong> Enforces <code class="font-mono">aria-expanded</code> and <code class="font-mono">aria-controls</code> attributes.</li>
+          <li><strong>Focus security:</strong> Panel is strictly <code class="font-mono">hidden</code> when closed, preventing keyboard focus on collapsed links.</li>
+          <li><strong>Escape dismissal:</strong> Pressing Escape immediately closes the drawer and restores focus to the trigger.</li>
+          <li><strong>Clean resize:</strong> Automatically collapses when the viewport expands to desktop (<code class="font-mono">&ge; 1024px</code>).</li>
+          <li><strong>No-JS fallback:</strong> Progressively enhanced; renders accessible fallback in <code class="font-mono">&lt;noscript&gt;</code> environments.</li>
+        </ul>
+        <p class="text-xs text-text-muted">
+          Resize the browser window below <code class="font-mono">1024px</code> or inspect the mobile preview above to test the drawer interactions.
+        </p>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 10. BREADCRUMBS WAYFINDING -->
+  <Section bg="elevated" padding="sm" id="breadcrumbs">
+    <Container>
+      <SectionHeader
+        eyebrow="10. Spatial Wayfinding"
+        title="Breadcrumbs Hierarchy & Truncation"
+        lead="Structured navigational landmarks with ordered-list semantics, hidden separators, and graceful text truncation."
+      />
+
+      <div class="space-y-6">
+        <div class="p-4 bg-surface-pure border border-border-subtle rounded-md">
+          <span class="text-xs font-mono text-text-muted block mb-2">Example 1: Two-Tier Service Index</span>
+          <Breadcrumbs
+            currentPath="/services/"
+            items={[
+              { label: 'Services', current: true },
+            ]}
+          />
+        </div>
+
+        <div class="p-4 bg-surface-pure border border-border-subtle rounded-md">
+          <span class="text-xs font-mono text-text-muted block mb-2">Example 2: Three-Tier Inner Service Page</span>
+          <Breadcrumbs
+            currentPath="/services/interior-design/"
+            items={[
+              { label: 'Services', href: '/services/' },
+              { label: 'Interior Design', current: true },
+            ]}
+          />
+        </div>
+
+        <div class="p-4 bg-surface-pure border border-border-subtle rounded-md">
+          <span class="text-xs font-mono text-text-muted block mb-2">Example 3: Deep Project Case Study with Long Title Truncation</span>
+          <Breadcrumbs
+            currentPath="/projects/courtyard-residence/"
+            items={[
+              { label: 'Selected Works', href: '/projects/' },
+              { label: 'Ultra-Luxury Minimalist Courtyard Residence with Double-Height Glass Pavilion and Natural Stone Masonry', current: true },
+            ]}
+          />
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 11. REUSABLE CTA SECTION -->
+  <Section bg="page" padding="sm" id="cta-sections">
+    <Container>
+      <SectionHeader
+        eyebrow="11. Conversion Architecture"
+        title="Reusable CTA Section (Navy & Light Variants)"
+        lead="Polished spatial conversion blocks with configurable headings, dual actions, and subtle architectural grid backdrops."
+      />
+
+      <div class="space-y-8">
+        <div>
+          <span class="text-xs font-mono text-text-muted block mb-2">A. Navy Presentation Variant (Default)</span>
+          <div class="rounded-md overflow-hidden border border-brand-navy shadow-card">
+            <CTASection
+              variant="navy"
+              eyebrow="Begin Your Spatial Journey"
+              heading="Have a Space Ready for Architectural Transformation?"
+              description="Connect with our principal consultants for an initial spatial feasibility, design brief, and regulatory assessment."
+              primaryAction={{
+                label: 'Plan My Project',
+                href: '/plan-my-project/',
+                variant: 'gold',
+              }}
+              secondaryAction={{
+                label: 'Explore Portfolio',
+                href: '/projects/',
+                variant: 'ghost',
+              }}
+            />
+          </div>
+        </div>
+
+        <div>
+          <span class="text-xs font-mono text-text-muted block mb-2">B. Light Presentation Variant</span>
+          <div class="rounded-md overflow-hidden border border-border-subtle shadow-card">
+            <CTASection
+              variant="light"
+              eyebrow="Turnkey Execution"
+              heading="Commercial Fit-Outs Delivered on Time & Budget"
+              description="From structural engineering to bespoke millwork and acoustics, experience single-point accountability."
+              primaryAction={{
+                label: 'Book Consultation',
+                href: '/contact/',
+                variant: 'primary',
+              }}
+              secondaryAction={{
+                label: 'Our Process',
+                href: '/process/',
+                variant: 'secondary',
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 12. GLOBAL FOOTER ARCHITECTURE -->
+  <Section bg="elevated" padding="sm" id="global-footer">
+    <Container>
+      <SectionHeader
+        eyebrow="12. Global Footer"
+        title="SiteFooter (Production vs. Full Intended)"
+        lead="Architectural footer with brand lockup, mandatory concept disclaimer, zero-fabrication safety, and responsive column grid."
+      />
+
+      <div class="space-y-8">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-brand-navy">
+              A. Production Footer (Verified Facts Only)
+            </h3>
+            <Badge variant="neutral">Production Mode</Badge>
+          </div>
+          <p class="text-xs text-text-muted mb-3">
+            In production mode, unconfirmed phone numbers, email addresses, and studio addresses are omitted gracefully.
+          </p>
+          <div class="rounded-md border border-brand-navy overflow-hidden shadow-card">
+            <SiteFooter />
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-brand-navy">
+              B. Full Intended Footer (Synthetic Development Fixture)
+            </h3>
+            <Badge variant="concept">Preview Fixture</Badge>
+          </div>
+          <p class="text-xs text-text-muted mb-3">
+            Demonstrates layout with confirmed corporate details: physical studio address, verified direct lines, and full capability links.
+          </p>
+          <div class="rounded-md border border-brand-navy overflow-hidden shadow-card">
+            <SiteFooter forceAllNavItems={true} previewConfig={mockContactConfig} />
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 13. CONTACT ACTIONS & SAFE PREVIEW FIXTURES -->
+  <Section bg="page" padding="sm" id="contact-actions">
+    <Container>
+      <SectionHeader
+        eyebrow="13. Contact Shortcuts"
+        title="ContactActions & Safe Development Fixtures"
+        lead="Re-usable action helpers for telephone, email, and WhatsApp communication with strict null safety."
+      />
+
+      <div class="space-y-6">
+        <div class="p-6 bg-surface-elevated border border-border-subtle rounded-md shadow-subtle">
+          <h4 class="text-sm font-bold uppercase tracking-wider text-brand-navy mb-4">
+            A. Action Buttons (Safe Mock Preview)
+          </h4>
+          <ContactActions
+            phone={mockContactConfig.phone}
+            email={mockContactConfig.email}
+            whatsappNumber={mockContactConfig.whatsappNumber}
+            isMockPreview={true}
+          />
+        </div>
+
+        <div class="p-6 bg-surface-elevated border border-border-subtle rounded-md shadow-subtle">
+          <h4 class="text-sm font-bold uppercase tracking-wider text-brand-navy mb-4">
+            B. Link List Presentation
+          </h4>
+          <ContactActions
+            variant="links"
+            phone={mockContactConfig.phone}
+            email={mockContactConfig.email}
+            whatsappNumber={mockContactConfig.whatsappNumber}
+            isMockPreview={true}
+          />
+        </div>
+
+        <div class="p-6 bg-surface-elevated border border-border-subtle rounded-md shadow-subtle">
+          <h4 class="text-sm font-bold uppercase tracking-wider text-brand-navy mb-2">
+            C. Mobile Bottom Contact Bar Policy
+          </h4>
+          <p class="text-xs text-text-muted leading-relaxed">
+            The mobile floating contact bar is configured to appear exclusively when verified business contact destinations (<code class="font-mono">phone</code> or <code class="font-mono">whatsappNumber</code>) are active. In the current production state where client contact details are pending confirmation, the floating bar is gracefully suppressed to avoid rendering non-functional buttons.
+          </p>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 14. HOMEPAGE COMPOSITION & FUTURE SECTIONS -->
+  <Section bg="elevated" padding="sm" id="homepage-sections">
+    <Container>
+      <SectionHeader
+        eyebrow="14. Homepage Preview Fixtures"
+        title="Design Directions & Interactive Planner Preview"
+        lead="Preview-only sections demonstrating future content and tools awaiting publication permissions and wizard implementation."
+      />
+
+      <div class="space-y-8">
+        <!-- Sub-section A: Design Directions Preview -->
+        <div class="p-6 bg-surface-pure rounded-md border border-border-subtle shadow-subtle">
+          <div class="flex items-center justify-between mb-4">
+            <h4 class="text-sm font-bold uppercase tracking-wider text-brand-navy m-0">
+              A. Selected Work / Design Directions (Demonstration Fixture)
+            </h4>
+            <Badge variant="concept">Preview Only</Badge>
+          </div>
+          <p class="text-xs text-text-muted mb-6">
+            On the public homepage, this section is automatically suppressed until published projects exist in the content collection. Below is the intended layout rendered with sample concept data.
+          </p>
+          <div class="rounded-md border border-border-subtle overflow-hidden">
+            <DesignDirections projects={[sampleConceptProject]} />
+          </div>
+        </div>
+
+        <!-- Sub-section B: Planner Intro Preview -->
+        <div class="p-6 bg-surface-pure rounded-md border border-border-subtle shadow-subtle">
+          <div class="flex items-center justify-between mb-4">
+            <h4 class="text-sm font-bold uppercase tracking-wider text-brand-navy m-0">
+              B. Interactive Project Planner Introduction
+            </h4>
+            <Badge variant="concept">Planned for Step 08</Badge>
+          </div>
+          <p class="text-xs text-text-muted mb-6">
+            Demonstrates the promotional section designed to guide visitors into the project planning wizard once the /plan-my-project/ route is active.
+          </p>
+          <div class="rounded-md border border-border-subtle overflow-hidden">
+            <PlannerIntro isAvailable={false} />
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 15. SERVICE ARCHITECTURE & DETAIL LAYOUT PREVIEW -->
+  <Section bg="page" padding="sm" id="service-detail-preview">
+    <Container>
+      <SectionHeader
+        eyebrow="15. Service Architecture"
+        title="Service Detail Layout & Draft Service Previews"
+        lead="Demonstration fixtures verifying the reusable service layout, draft service handling, and image-free text-led resilience."
+      />
+
+      <div class="space-y-10">
+        <!-- Sub-section A: Draft Service Fixture (Renovation) -->
+        {renovationDraftService && (
+          <div class="p-6 bg-surface-elevated rounded-md border border-border-subtle shadow-card">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h4 class="text-sm font-bold uppercase tracking-wider text-brand-navy m-0">
+                  A. Draft Service Fixture: Architectural Renovation
+                </h4>
+                <p class="text-xs text-text-muted mt-1">
+                  Status: <code>draft / pending_confirmation</code>. Excluded from production routes until hero asset and consultant boundaries are signed off.
+                </p>
+              </div>
+              <Badge variant="concept">Dev Preview Only</Badge>
+            </div>
+
+            <div class="rounded-md border border-border-subtle overflow-hidden mt-6">
+              <ServiceDetail
+                service={renovationDraftService}
+                isMockPreview={true}
+              />
+            </div>
+          </div>
+        )}
+
+        <!-- Sub-section B: Text-Led Service Layout (No Hero Image) -->
+        <div class="p-6 bg-surface-elevated rounded-md border border-border-subtle shadow-card">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h4 class="text-sm font-bold uppercase tracking-wider text-brand-navy m-0">
+                B. Text-Led Layout Resilience (Image-Free Service)
+              </h4>
+              <p class="text-xs text-text-muted mt-1">
+                Verifies graceful degradation when a service is purely advisory or does not require decorative imagery.
+              </p>
+            </div>
+            <Badge variant="concept">Text-Led Specimen</Badge>
+          </div>
+
+          <div class="rounded-md border border-border-subtle overflow-hidden mt-6">
+            <ServiceDetail
+              service={textLedSampleService}
+              isMockPreview={true}
+            />
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 16. PORTFOLIO ARCHITECTURE & ACCESSIBLE LIGHTBOX PREVIEW -->
+  <Section bg="elevated" padding="sm" id="portfolio-detail-preview">
+    <Container>
+      <SectionHeader
+        eyebrow="16. Portfolio Architecture"
+        title="Project Detail Layout & Accessible Lightbox Preview"
+        lead="Demonstration fixtures verifying the reusable project presentation, transparent concept badging, and accessible image gallery modal."
+      />
+
+      <div class="space-y-10">
+        <!-- Sub-section A: Project Detail Layout Specimen -->
+        <div class="p-6 bg-surface-pure rounded-md border border-border-subtle shadow-card">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h4 class="text-sm font-bold uppercase tracking-wider text-brand-navy m-0">
+                A. Project Detail Template: {previewProject.title}
+              </h4>
+              <p class="text-xs text-text-muted mt-1">
+                Classification: <code>{previewProject.natureLabel}</code>. Verifies spatial narrative, project facts matrix, and contextual enquiry CTA.
+              </p>
+            </div>
+            <Badge variant="concept">{previewProject.natureLabel}</Badge>
+          </div>
+
+          <div class="rounded-md border border-border-subtle overflow-hidden mt-6">
+            <ProjectDetail
+              project={previewProject}
+              isMockPreview={true}
+            />
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 17. ABOUT & PROCESS ARCHITECTURE (STEP 09) -->
+  <Section bg="page" padding="sm" id="about-process-preview">
+    <Container>
+      <SectionHeader
+        eyebrow="17. Methodology & Practice"
+        title="About & 5-Stage Process Architecture"
+        lead="Verification fixture for the 5-stage sequential methodology timeline and Stage 01 consultation preparation guidelines."
+      />
+
+      <div class="space-y-12">
+        <!-- Sub-section A: Process Timeline -->
+        <div class="p-6 bg-surface-elevated rounded-md border border-border-subtle shadow-card">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h4 class="text-sm font-bold uppercase tracking-wider text-brand-navy m-0">
+                A. 5-Stage Spatial Methodology Timeline
+              </h4>
+              <p class="text-xs text-text-muted mt-1">
+                Verifies sequential ordering, client involvement, SAAR responsibility, tangible deliverables, and scope applicability notes.
+              </p>
+            </div>
+            <Badge variant="verified">5 Stages Confirmed</Badge>
+          </div>
+
+          <div class="mt-6">
+            <ProcessTimeline />
+          </div>
+        </div>
+
+        <!-- Sub-section B: Preparation Guidelines -->
+        <div class="p-6 bg-surface-elevated rounded-md border border-border-subtle shadow-card">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h4 class="text-sm font-bold uppercase tracking-wider text-brand-navy m-0">
+                B. Stage 01 Preparation Recommendations
+              </h4>
+              <p class="text-xs text-text-muted mt-1">
+                Helpful suggestions for prospective clients prior to initial discovery consultation (with zero bureaucratic document upload friction).
+              </p>
+            </div>
+            <Badge variant="neutral">Guidance Only</Badge>
+          </div>
+
+          <div class="mt-6">
+            <PreparationSection />
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 18. INTERACTIVE PROJECT PLANNER (STEP 10) -->
+  <Section bg="elevated" padding="sm" id="planner-preview">
+    <Container>
+      <SectionHeader
+        eyebrow="18. Spatial Qualification"
+        title="Interactive Project Planner Wizard"
+        lead="Verification fixture for the 5-step spatial qualification wizard, validation, summary generation, and export."
+      />
+
+      <div class="p-6 bg-surface-pure rounded-md border border-border-subtle shadow-card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h4 class="text-sm font-bold uppercase tracking-wider text-brand-navy m-0">
+              Project Planner Interactive Specimen
+            </h4>
+            <p class="text-xs text-text-muted mt-1">
+              Verifies category selection, mutual exclusivity for guidance, numeric area validation, review edit actions, and plain-text export.
+            </p>
+          </div>
+          <Badge variant="verified">Step 10 Live</Badge>
+        </div>
+
+        <div class="mt-6">
+          <PlannerWizard />
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 19. CONTACT & LEAD DELIVERY SPECIMEN (STEP 11) -->
+  <Section bg="page" padding="sm" id="contact-preview">
+    <Container>
+      <SectionHeader
+        eyebrow="19. Lead Delivery & Anti-Spam"
+        title="Consultation Enquiry Form & Validation States"
+        lead="Verification fixture for the reusable consultation form, Zod server-side validation, honeypot spam protection, and non-presumptuous confirmation states."
+      />
+
+      <div class="p-6 bg-surface-elevated rounded-md border border-border-subtle shadow-card max-w-2xl">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h4 class="text-sm font-bold uppercase tracking-wider text-brand-navy m-0">
+              Standalone Consultation Form Specimen
+            </h4>
+            <p class="text-xs text-text-muted mt-1">
+              Demonstrates contact method preference, location validation, discipline selection, and honeypot protection.
+            </p>
+          </div>
+          <Badge variant="verified">Step 11 Live</Badge>
+        </div>
+
+        <div class="mt-6">
+          <EnquiryForm id="preview-enquiry-form" mode="standalone" />
+        </div>
+      </div>
+    </Container>
+  </Section>
+</BaseLayout>
+
+

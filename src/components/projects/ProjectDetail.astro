@@ -1,0 +1,370 @@
+---
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+import CTASection from '../sections/CTASection.astro';
+import ContactActions from '../ui/ContactActions.astro';
+import ProjectGallery, { type GalleryItem } from './ProjectGallery.astro';
+import RelatedProjects from './RelatedProjects.astro';
+import { resolveImageMetadata } from '../../lib/content';
+import { getServiceUrl } from '../../config/routes';
+import { siteConfig } from '../../config/site';
+import type { PublicProject, ServiceData } from '../../types/content';
+
+interface Props {
+  project: PublicProject;
+  relatedServices?: ServiceData[];
+  relatedProjects?: PublicProject[];
+  isMockPreview?: boolean;
+}
+
+const {
+  project,
+  relatedServices = [],
+  relatedProjects = [],
+  isMockPreview = false,
+} = Astro.props;
+
+const isConcept = project.projectNature === 'concept';
+
+const coverMeta = project.coverImageId ? resolveImageMetadata(project.coverImageId) : null;
+const hasCoverImage = coverMeta && coverMeta.readiness === 'available';
+
+// Resolve gallery assets
+const galleryItems: GalleryItem[] = [];
+
+// Include cover as first frame if available
+if (hasCoverImage && coverMeta) {
+  galleryItems.push({
+    image: coverMeta,
+    caption: `${project.title} — Primary Spatial Perspective`,
+    order: 1,
+  });
+}
+
+// Include secondary gallery images
+if (project.galleryImageIds && project.galleryImageIds.length > 0) {
+  project.galleryImageIds.forEach((id, idx) => {
+    const meta = resolveImageMetadata(id);
+    if (meta && meta.readiness === 'available') {
+      galleryItems.push({
+        image: meta,
+        caption: meta.altText || `${project.title} Architectural Detail`,
+        order: idx + 2,
+      });
+    }
+  });
+}
+
+const hasAnyContact = Boolean(
+  (siteConfig.phone && siteConfig.phone.trim().length > 5) ||
+  (siteConfig.email && siteConfig.email.trim().length > 5) ||
+  (siteConfig.whatsappNumber && siteConfig.whatsappNumber.trim().length > 5)
+);
+
+const whatsappEnquiryMessage = isConcept
+  ? `Hello SAAR, I’m interested in the design direction shown in ${project.title} and would like to discuss my space.`
+  : `Hello SAAR, I would like to discuss a project similar to ${project.title}.`;
+---
+
+<!-- 1. Introduction & Hero Section -->
+<Section bg="elevated" padding="lg" class="border-b border-border-subtle pt-8 sm:pt-14">
+  <Container size="content">
+    <div class="max-w-4xl mx-auto mb-8">
+      <!-- Badges Cluster -->
+      <div class="flex flex-wrap items-center gap-3 mb-4">
+        {isConcept ? (
+          <Badge variant="concept">Design Concept</Badge>
+        ) : (
+          <Badge variant="verified">Verified Project</Badge>
+        )}
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold">
+          {project.category}
+        </span>
+      </div>
+
+      <!-- Title -->
+      <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-brand-navy tracking-tight mb-4 leading-tight">
+        {project.title}
+      </h1>
+
+      <!-- Concept Transparency Notice -->
+      {isConcept && (
+        <p class="text-xs text-brand-charcoal/70 bg-surface-subtle p-3 rounded-xs border-l-2 border-brand-gold max-w-2xl mb-6">
+          <strong>Architectural Design Study:</strong> This presentation illustrates a conceptual spatial inquiry by SAAR exploring light, geometry, and material restraint. It does not represent a commissioned client build.
+        </p>
+      )}
+
+      <!-- Summary -->
+      <p class="text-base sm:text-lg text-brand-charcoal/85 leading-relaxed font-normal mb-8">
+        {project.summary}
+      </p>
+
+      <!-- Primary Action -->
+      <div class="flex flex-wrap items-center gap-4">
+        <Button
+          variant="gold"
+          size="md"
+          href="#enquire"
+          class="font-semibold shadow-sm"
+        >
+          Discuss a Similar Project
+        </Button>
+        <Button
+          variant="secondary"
+          size="md"
+          href="/projects/"
+        >
+          All Portfolio Works
+        </Button>
+      </div>
+    </div>
+
+    <!-- Hero Image Viewport -->
+    {hasCoverImage && coverMeta && (
+      <div class="max-w-5xl mx-auto mt-6">
+        <div class="relative w-full aspect-[16/10] rounded-md overflow-hidden bg-surface-subtle border border-border-subtle shadow-card group">
+          <img
+            src={coverMeta.assetPath}
+            alt={coverMeta.altText || project.title}
+            width={coverMeta.dimensions?.width || 1200}
+            height={coverMeta.dimensions?.height || 750}
+            class="w-full h-full object-cover"
+            loading="eager"
+            fetchpriority="high"
+          />
+          <div class="absolute bottom-4 left-4 z-10">
+            {isConcept ? (
+              <Badge variant="concept">Design Concept</Badge>
+            ) : (
+              <Badge variant="verified">Verified Project</Badge>
+            )}
+          </div>
+        </div>
+      </div>
+    )}
+  </Container>
+</Section>
+
+<!-- 2. Project Specifications Matrix -->
+<Section bg="page" padding="sm" class="border-b border-border-subtle">
+  <Container size="content">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 p-6 rounded-md bg-surface-elevated border border-border-subtle shadow-xs">
+      <div>
+        <span class="text-[11px] font-mono uppercase tracking-wider text-brand-charcoal/60 block mb-1">
+          Typology
+        </span>
+        <span class="text-xs sm:text-sm font-semibold text-brand-navy">
+          {project.spaceType}
+        </span>
+      </div>
+
+      <div>
+        <span class="text-[11px] font-mono uppercase tracking-wider text-brand-charcoal/60 block mb-1">
+          Discipline
+        </span>
+        <span class="text-xs sm:text-sm font-semibold text-brand-navy">
+          {project.category}
+        </span>
+      </div>
+
+      <div>
+        <span class="text-[11px] font-mono uppercase tracking-wider text-brand-charcoal/60 block mb-1">
+          Location
+        </span>
+        <span class="text-xs sm:text-sm font-semibold text-brand-navy">
+          {project.location || 'Regional Study'}
+        </span>
+      </div>
+
+      <div>
+        <span class="text-[11px] font-mono uppercase tracking-wider text-brand-charcoal/60 block mb-1">
+          Related Capability
+        </span>
+        {relatedServices.length > 0 ? (
+          <a
+            href={getServiceUrl(relatedServices[0].slug)}
+            class="text-xs sm:text-sm font-semibold text-brand-navy hover:text-brand-gold underline transition-colors"
+          >
+            {relatedServices[0].title}
+          </a>
+        ) : (
+          <span class="text-xs sm:text-sm font-semibold text-brand-navy">
+            {project.category}
+          </span>
+        )}
+      </div>
+    </div>
+  </Container>
+</Section>
+
+<!-- 3. Spatial Narrative & Architectural Inquiry (The Space, Challenge, Approach) -->
+<Section bg="page" padding="lg" class="border-b border-border-subtle">
+  <Container size="content">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-5xl mx-auto">
+      <!-- Left Column: The Space & Architecture -->
+      <div class="lg:col-span-7 space-y-10">
+        <!-- The Space -->
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold block mb-2">
+            Spatial Composition
+          </span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brand-navy mb-4">
+            The Space
+          </h2>
+          <p class="text-sm sm:text-base text-brand-charcoal/85 leading-relaxed font-normal">
+            {project.theSpace}
+          </p>
+        </div>
+
+        <!-- The Challenge / Brief -->
+        {project.challenge && (
+          <div class="p-6 rounded-md bg-surface-elevated border border-border-subtle shadow-xs">
+            <h3 class="font-serif text-lg font-bold text-brand-navy mb-2.5">
+              {isConcept ? 'Design Problem & Solar Study' : 'The Client Brief & Site Constraints'}
+            </h3>
+            <p class="text-sm text-brand-charcoal/80 leading-relaxed m-0">
+              {project.challenge}
+            </p>
+          </div>
+        )}
+
+        <!-- The Approach -->
+        {project.approach && (
+          <div>
+            <h3 class="font-serif text-xl font-bold text-brand-navy mb-3">
+              {isConcept ? 'Proposed Architectural Strategy' : 'Execution & Material Approach'}
+            </h3>
+            <p class="text-sm sm:text-base text-brand-charcoal/85 leading-relaxed font-normal">
+              {project.approach}
+            </p>
+          </div>
+        )}
+
+        <!-- Result (Only for verified actual projects!) -->
+        {!isConcept && project.result && (
+          <div class="p-6 rounded-md bg-brand-softwhite border-l-4 border-brand-navy">
+            <h3 class="font-serif text-lg font-bold text-brand-navy mb-2">
+              Verified Project Outcome
+            </h3>
+            <p class="text-sm text-brand-charcoal/80 leading-relaxed m-0">
+              {project.result}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <!-- Right Column: Deliverables / Style Tags -->
+      <div class="lg:col-span-5 space-y-8">
+        <!-- Deliverables Box -->
+        <div class="p-6 sm:p-7 rounded-md bg-surface-elevated border border-border-subtle shadow-card">
+          <h3 class="font-serif text-lg font-bold text-brand-navy mb-4">
+            {isConcept ? 'Concept Scope & Outputs' : 'Delivered Architectural Scope'}
+          </h3>
+          <ul class="space-y-3 list-none m-0 p-0 text-xs sm:text-sm text-brand-charcoal">
+            {project.deliverables.map((item) => (
+              <li class="flex items-start gap-2.5">
+                <span class="text-brand-gold font-bold shrink-0 mt-0.5" aria-hidden="true">✓</span>
+                <span class="leading-relaxed">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Style Tags -->
+        {project.designStyleTags && project.designStyleTags.length > 0 && (
+          <div class="p-5 rounded-md bg-surface-subtle/70 border border-border-subtle">
+            <span class="text-[11px] font-mono uppercase tracking-wider text-brand-navy font-bold block mb-3">
+              Material & Stylistic Palette
+            </span>
+            <div class="flex flex-wrap gap-2">
+              {project.designStyleTags.map((tag) => (
+                <span class="px-2.5 py-1 rounded-xs bg-surface-elevated border border-border-subtle text-xs text-brand-charcoal/80 font-mono">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </Container>
+</Section>
+
+<!-- 4. Visual Gallery Section with Accessible Lightbox -->
+{galleryItems.length > 0 && (
+  <Section bg="elevated" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="max-w-5xl mx-auto">
+        <ProjectGallery
+          images={galleryItems}
+          projectTitle={project.title}
+          isConcept={isConcept}
+        />
+      </div>
+    </Container>
+  </Section>
+)}
+
+<!-- 5. Contextual Consultation CTA Section -->
+<CTASection
+  id="enquire"
+  eyebrow={isConcept ? "Concept Inquiries" : "Start Your Project"}
+  heading={isConcept ? `Discuss a Project Inspired by ${project.title}` : `Plan a Project Similar to ${project.title}`}
+  description={isConcept
+    ? `Appreciate the material palette and spatial layout in this design study? Connect with our team to evaluate how these architectural principles can be adapted for your bespoke residence or commercial space.`
+    : `Interested in achieving a comparable level of craftsmanship and execution rigor? Schedule a preliminary architectural consultation.`}
+  variant="navy"
+>
+  <div class="mt-6 flex flex-col items-center">
+    {hasAnyContact || isMockPreview ? (
+      <div class="w-full max-w-md mx-auto">
+        <ContactActions
+          whatsappMessage={whatsappEnquiryMessage}
+          isMockPreview={isMockPreview}
+          size="md"
+          class="justify-center"
+        />
+      </div>
+    ) : (
+      <div class="max-w-md mx-auto p-4 rounded-sm bg-brand-softwhite/10 border border-brand-softwhite/20 text-center mb-4">
+        <p class="text-xs text-brand-softwhite/90 leading-relaxed m-0">
+          Direct telephone and instant messaging channels are being established for public release. Inquiries are scheduled directly with our studio principals.
+        </p>
+      </div>
+    )}
+
+    <div class="mt-4 flex flex-wrap gap-3 justify-center items-center">
+      <Button
+        variant="gold"
+        size="md"
+        href="/contact/"
+      >
+        Send Project Enquiry &rarr;
+      </Button>
+      <Button
+        variant="outline-gold"
+        size="md"
+        href="/plan-my-project/"
+      >
+        Plan Similar Space
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        href="/projects/"
+      >
+        &larr; Return to Portfolio
+      </Button>
+    </div>
+  </div>
+</CTASection>
+
+<!-- 6. Related Projects Section (Omitted cleanly if none exist) -->
+{relatedProjects.length > 0 && (
+  <RelatedProjects
+    projects={relatedProjects}
+    currentProjectId={project.id}
+  />
+)}

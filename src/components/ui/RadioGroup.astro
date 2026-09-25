@@ -1,0 +1,65 @@
+---
+interface RadioOption {
+  id: string;
+  value: string;
+  label: string;
+  description?: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  name: string;
+  legend: string;
+  options: RadioOption[];
+  selectedValue?: string;
+  required?: boolean;
+  helpText?: string;
+  class?: string;
+}
+
+const {
+  name,
+  legend,
+  options,
+  selectedValue,
+  required = false,
+  helpText,
+  class: className = '',
+} = Astro.props;
+---
+
+<fieldset class:list={['mb-5 border-none p-0 m-0', className]}>
+  <legend class="text-xs font-semibold uppercase tracking-wider text-text-navy mb-2 block">
+    {legend}
+    {required && <span class="text-status-error ml-0.5" aria-hidden="true">*</span>}
+  </legend>
+
+  {helpText && <p class="text-xs text-text-muted mb-3">{helpText}</p>}
+
+  <div class="space-y-2">
+    {options.map((opt) => (
+      <div class="flex items-start gap-3 p-3 bg-surface-elevated border border-border-subtle rounded-sm hover:border-border-medium transition-colors cursor-pointer">
+        <div class="flex items-center h-5">
+          <input
+            id={opt.id}
+            name={name}
+            type="radio"
+            value={opt.value}
+            checked={opt.value === selectedValue}
+            required={required}
+            disabled={opt.disabled}
+            class="w-4 h-4 text-brand-navy border-border-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy cursor-pointer"
+          />
+        </div>
+        <div class="text-sm">
+          <label for={opt.id} class="font-medium text-text-primary cursor-pointer block">
+            {opt.label}
+          </label>
+          {opt.description && (
+            <p class="text-xs text-text-muted mt-0.5">{opt.description}</p>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</fieldset>

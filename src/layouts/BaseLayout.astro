@@ -1,0 +1,102 @@
+---
+import '../styles/global.css';
+import { siteConfig } from '../config/site';
+import SiteHeader from '../components/layout/SiteHeader.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+import Breadcrumbs, { type BreadcrumbItem } from '../components/ui/Breadcrumbs.astro';
+import Container from '../components/layout/Container.astro';
+import SEOHead from '../components/seo/SEOHead.astro';
+import ConsentBanner from '../components/analytics/ConsentBanner.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  breadcrumbs?: BreadcrumbItem[];
+  hideHeader?: boolean;
+  hideFooter?: boolean;
+  currentPath?: string;
+  noindex?: boolean;
+  ogImage?: string;
+  ogImageAlt?: string;
+  ogType?: 'website' | 'article';
+  structuredData?: Record<string, any> | Array<Record<string, any>>;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  breadcrumbs = [],
+  hideHeader = false,
+  hideFooter = false,
+  currentPath = Astro.url.pathname,
+  noindex = false,
+  ogImage,
+  ogImageAlt,
+  ogType = 'website',
+  structuredData,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang={siteConfig.defaultLanguage}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Comprehensive Favicon Suite -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- Centralized SEO & Metadata Suite -->
+    <SEOHead
+      title={title}
+      description={description}
+      canonical={canonical}
+      currentPath={currentPath}
+      noindex={noindex}
+      ogImage={ogImage}
+      ogImageAlt={ogImageAlt}
+      ogType={ogType}
+      structuredData={structuredData}
+    />
+    <slot name="head" />
+  </head>
+  <body class="min-h-screen flex flex-col bg-brand-softwhite text-brand-charcoal antialiased">
+    <!-- Accessible Skip to Main Content Landmark -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Global Header -->
+    {!hideHeader && <SiteHeader currentPath={currentPath} />}
+
+    <!-- Breadcrumbs (when supplied by inner pages) -->
+    {breadcrumbs.length > 0 && currentPath !== '/' && (
+      <div class="border-b border-border-subtle/50 bg-surface-pure/40">
+        <Container size="content">
+          <Breadcrumbs items={breadcrumbs} currentPath={currentPath} />
+        </Container>
+      </div>
+    )}
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="flex-grow">
+      <slot />
+    </main>
+
+    <!-- Global Footer -->
+    {!hideFooter && <SiteFooter />}
+
+    <!-- Cookie & Analytics Consent Preferences Banner -->
+    <ConsentBanner />
+
+    <!-- Analytics & Client-Side Initialization -->
+    <script>
+      import { initAnalytics, initAnalyticsDelegation } from '../lib/analytics/client';
+      initAnalyticsDelegation();
+      initAnalytics();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,102 @@
+---
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+import Button from '../ui/Button.astro';
+import Badge from '../ui/Badge.astro';
+import { heroContent } from '../../data/home';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<Section
+  as="section"
+  padding="md"
+  class:list={['relative overflow-hidden pt-8 md:pt-12 pb-16 md:pb-24', className]}
+>
+  <Container size="content">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      <!-- 1. Editorial Text & Actions (5 cols on lg) -->
+      <div class="lg:col-span-5 flex flex-col justify-center order-2 lg:order-1">
+        <!-- Eyebrow -->
+        <span class="inline-block text-xs font-bold uppercase tracking-widest text-brand-gold mb-3">
+          {heroContent.eyebrow}
+        </span>
+
+        <!-- Single Descriptive H1 -->
+        <h1 class="text-3xl sm:text-4xl xl:text-5xl font-serif font-bold text-brand-navy tracking-tight leading-[1.15] mb-5">
+          {heroContent.heading}
+        </h1>
+
+        <!-- Supporting Paragraph -->
+        <p class="text-base sm:text-lg text-brand-charcoal/85 leading-relaxed mb-8 max-w-xl">
+          {heroContent.description}
+        </p>
+
+        <!-- Primary & Secondary Anchor Actions -->
+        <div class="flex flex-wrap items-center gap-4">
+          <Button
+            variant="primary"
+            size="lg"
+            href={heroContent.primaryAction.href}
+            data-analytics-cta="hero-start-planning"
+            data-analytics-placement="hero"
+            class="shadow-sm font-semibold min-w-[170px]"
+          >
+            {heroContent.primaryAction.label}
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="lg"
+            href={heroContent.secondaryAction.href}
+            data-analytics-cta="hero-explore-disciplines"
+            data-analytics-placement="hero"
+            class="font-medium min-w-[140px]"
+          >
+            {heroContent.secondaryAction.label}
+          </Button>
+        </div>
+      </div>
+
+      <!-- 2. Architectural Visual Anchor (7 cols on lg) -->
+      <div class="lg:col-span-7 order-1 lg:order-2">
+        <div class="relative w-full aspect-[16/10] sm:aspect-[16/9] rounded-md overflow-hidden bg-surface-subtle shadow-card border border-border-subtle">
+          <!-- Responsive Picture Anchor -->
+          <picture>
+            <source
+              media="(max-width: 640px)"
+              srcset="/images/hero/hero-architectural-main-sm.webp"
+              type="image/webp"
+            />
+            <source
+              media="(max-width: 1024px)"
+              srcset="/images/hero/hero-architectural-main-md.webp"
+              type="image/webp"
+            />
+            <img
+              src={heroContent.heroImage.src}
+              srcset={heroContent.heroImage.srcSet}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+              alt={heroContent.heroImage.alt}
+              width={heroContent.heroImage.width}
+              height={heroContent.heroImage.height}
+              fetchpriority="high"
+              loading="eager"
+              decoding="async"
+              class="w-full h-full object-cover select-none"
+            />
+          </picture>
+
+          <!-- Mandatory Architectural Concept Transparency Badge -->
+          <div class="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-10 shadow-sm">
+            <Badge variant="concept">{heroContent.heroImage.badge}</Badge>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Container>
+</Section>
