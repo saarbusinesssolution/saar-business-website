@@ -12,6 +12,7 @@ export default {
           softwhite: 'var(--color-raw-softwhite)',
         },
         surface: {
+          pure: 'var(--color-surface-pure, #FFFFFF)',
           page: 'var(--color-bg-page)',
           elevated: 'var(--color-surface-elevated)',
           subtle: 'var(--color-surface-subtle)',
