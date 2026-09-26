@@ -616,6 +616,38 @@ export const IMAGES: Record<string, ImageMetadata> = {
     permissionStatus: 'approved',
     readiness: 'available',
   },
+
+  // ==========================================
+  // NOVA SKILLS ASSETS (Industry & Learning)
+  // ==========================================
+  nova_skills_logo: {
+    id: 'nova_skills_logo',
+    assetPath: '/images/nova-skills/nova-skills-logo.svg',
+    intendedSection: 'About Page - Nova Skills Industry & Learning',
+    purpose: 'Authorized vector brand logo for Nova Skills',
+    altText: 'Nova Skills official brand logo',
+    isDecorative: false,
+    dimensions: { width: 1309, height: 390 },
+    aspectRatio: '1309:390',
+    classification: 'brand_asset',
+    sourceCredit: 'Nova Skills official brand asset',
+    permissionStatus: 'approved',
+    readiness: 'available',
+  },
+  nova_skills_founder_waseeullah_mansoori: {
+    id: 'nova_skills_founder_waseeullah_mansoori',
+    assetPath: '/images/nova-skills/waseeullah-mansoori.webp',
+    intendedSection: 'About Page - Nova Skills Founder Profile',
+    purpose: 'Approved professional photograph of Waseeullah Mansoori',
+    altText: 'Waseeullah Mansoori, Founder & Chief Learning Officer, Nova Skills',
+    isDecorative: false,
+    dimensions: { width: 533, height: 300 },
+    aspectRatio: '16:9',
+    classification: 'brand_asset',
+    sourceCredit: 'Nova Skills approved leadership portrait',
+    permissionStatus: 'approved',
+    readiness: 'available',
+  },
 };
 
 /**

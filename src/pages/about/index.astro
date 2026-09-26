@@ -6,6 +6,7 @@ import SectionHeader from '../../components/layout/SectionHeader.astro';
 import Badge from '../../components/ui/Badge.astro';
 import Button from '../../components/ui/Button.astro';
 import CTASection from '../../components/sections/CTASection.astro';
+import NovaSkillsSection from '../../components/about/NovaSkillsSection.astro';
 import { aboutData } from '../../data/about';
 import { getImageMetadata } from '../../data/images';
 import { getWebPageSchema, getBreadcrumbListSchema } from '../../lib/seo/schema';
@@ -380,6 +381,9 @@ const hasActualPhotograph = fs.existsSync(teamImagePath);
       </div>
     </Container>
   </Section>
+
+  {/* Industry & Learning: Nova Skills Feature */}
+  <NovaSkillsSection />
 
   {/* Conversion CTA */}
   <CTASection
