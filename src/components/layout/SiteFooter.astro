@@ -137,21 +137,35 @@ const currentYear = new Date().getFullYear();
       <!-- 4. Verified Contact or Consultation Portal (2 cols on lg) -->
       <div class="lg:col-span-2 space-y-3">
         <h2 class="text-xs font-bold uppercase tracking-wider text-brand-gold">
-          Inquiries
+          Studio & Inquiries
         </h2>
 
         {verifiedPhone || verifiedEmail || verifiedWa ? (
           <div class="space-y-2 text-xs text-brand-softwhite/80">
+            {cfg.owner && (
+              <div class="pb-1 border-b border-surface-pure/10">
+                <span class="block font-medium text-brand-softwhite">{cfg.owner.name}</span>
+                <span class="text-[11px] text-brand-gold block font-mono uppercase tracking-wider">{cfg.owner.designation}</span>
+              </div>
+            )}
             {verifiedPhone && (
               <p>
-                <a href={`tel:${verifiedPhone.replace(/[^0-9+]/g, '')}`} class="hover:text-brand-gold transition-colors">
+                <a
+                  href={`tel:${cfg.phoneClean || verifiedPhone.replace(/[^0-9+]/g, '')}`}
+                  class="hover:text-brand-gold transition-colors inline-block"
+                  aria-label={`Call SAAR at ${verifiedPhone}`}
+                >
                   {verifiedPhone}
                 </a>
               </p>
             )}
             {verifiedEmail && (
               <p>
-                <a href={`mailto:${verifiedEmail}`} class="hover:text-brand-gold transition-colors">
+                <a
+                  href={`mailto:${verifiedEmail}`}
+                  class="hover:text-brand-gold transition-colors inline-block break-all"
+                  aria-label={`Email SAAR at ${verifiedEmail}`}
+                >
                   {verifiedEmail}
                 </a>
               </p>
@@ -162,16 +176,16 @@ const currentYear = new Date().getFullYear();
                   href={getWhatsAppDirectUrl('Hello SAAR, I would like to discuss a project.', cfg) || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-brand-gold hover:underline"
+                  class="text-brand-gold hover:underline inline-block"
                 >
                   WhatsApp Consultation &rarr;
                 </a>
               </p>
             )}
-            {cfg.address && cfg.address.city && (
-              <p class="text-[11px] text-brand-softwhite/60 pt-2 border-t border-surface-pure/10">
-                {cfg.address.city}, {cfg.address.country}
-              </p>
+            {cfg.address && (
+              <div class="text-[11px] text-brand-softwhite/65 pt-2 border-t border-surface-pure/10 leading-relaxed">
+                <span>{cfg.address.formatted || `${cfg.address.street}, ${cfg.address.city}`}</span>
+              </div>
             )}
           </div>
         ) : (

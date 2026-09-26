@@ -189,7 +189,7 @@ const hasActualPhotograph = fs.existsSync(teamImagePath);
                     {aboutData.leadership.designation}
                   </span>
                 </div>
-                <Badge variant="neutral">Delhi NCR</Badge>
+                <Badge variant="verified">{aboutData.leadership.designation}</Badge>
               </div>
             </div>
           ) : (
@@ -215,7 +215,7 @@ const hasActualPhotograph = fs.existsSync(teamImagePath);
 
               <div class="mt-8 pt-4 border-t border-border-subtle flex items-center justify-between text-xs text-text-muted">
                 <span>Executive Governance</span>
-                <Badge variant="neutral">Delhi NCR</Badge>
+                <Badge variant="verified">{aboutData.leadership.designation}</Badge>
               </div>
             </div>
           )}

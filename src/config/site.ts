@@ -6,10 +6,18 @@
 
 export interface BusinessAddress {
   street: string | null;
+  area?: string | null;
   city: string | null;
   state: string | null;
   postalCode: string | null;
   country: string;
+  formatted?: string | null;
+}
+
+export interface BusinessOwner {
+  readonly name: string;
+  readonly designation: string;
+  readonly image: string;
 }
 
 export interface BusinessHours {
@@ -36,10 +44,13 @@ export interface BusinessConfig {
     readonly charcoal: string;
     readonly softWhite: string;
   };
+  readonly owner: BusinessOwner;
 
-  /** Business Details Awaiting Confirmation (Strictly null when unverified) */
+  /** Verified Business Details */
   phone: string | null;
+  phoneClean?: string | null;
   whatsappNumber: string | null;
+  whatsappClean?: string | null;
   email: string | null;
   address: BusinessAddress | null;
   serviceAreas: string[] | null;
@@ -49,7 +60,7 @@ export interface BusinessConfig {
 
 export const siteConfig: BusinessConfig = {
   // 1. Verified Public Project Facts
-  name: 'Saar Business Support Solution',
+  name: 'SAAR Business Support Solution',
   shortName: 'SAAR',
   url: 'https://saarbusiness.com',
   tagline: 'Designed with Purpose. Executed with Precision.',
@@ -62,15 +73,30 @@ export const siteConfig: BusinessConfig = {
     charcoal: '#202020',
     softWhite: '#F4F1EA',
   },
+  owner: {
+    name: 'Ramnewas Verma',
+    designation: 'Proprietor',
+    image: '/images/team/ramnewas-verma.webp',
+  },
 
-  // 2. Business Details Awaiting Client Confirmation (Pending)
-  phone: null,
-  whatsappNumber: null,
-  email: null,
-  address: null,
-  serviceAreas: null,
+  // 2. Verified Business Contact & Registered Address
+  phone: '+91 9930321817',
+  phoneClean: '919930321817',
+  whatsappNumber: '+91 9930321817',
+  whatsappClean: '919930321817',
+  email: 'saarbusinesssolution@gmail.com',
+  address: {
+    street: 'Shop No. 1, Thakkar Residency, Plot No. 224, Sector 17',
+    area: 'Ulwe',
+    city: 'Navi Mumbai',
+    state: 'Maharashtra',
+    postalCode: '410206',
+    country: 'India',
+    formatted: 'Shop No. 1, Thakkar Residency, Plot No. 224, Sector 17, Ulwe – 410206',
+  },
+  serviceAreas: ['Navi Mumbai', 'Mumbai', 'Raigad', 'Thane', 'Maharashtra'],
   socialProfiles: null,
-  businessHours: null,
+  businessHours: null, // Strictly not provided. Do not invent.
 };
 
 // ==========================================
@@ -100,6 +126,16 @@ export function getWhatsAppDirectUrl(
   if (!hasVerifiedWhatsApp(config) || !config.whatsappNumber) {
     return null;
   }
-  const cleanNumber = config.whatsappNumber.replace(/\D/g, '');
+  const cleanNumber = config.whatsappClean || config.whatsappNumber.replace(/\D/g, '');
   return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(prefilledMessage)}`;
+}
+
+/**
+ * Generates a Google Maps directions query URL from verified office address.
+ * Strictly uses text query without invented GPS coordinates.
+ */
+export function getGoogleMapsDirectionsUrl(config: BusinessConfig = siteConfig): string | null {
+  if (!config.address) return null;
+  const destinationQuery = config.address.formatted || `${config.address.street}, ${config.address.city} ${config.address.postalCode}`;
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinationQuery)}`;
 }

@@ -63,13 +63,19 @@ console.log('\n3. Validating Business Configuration & Contact Safety...');
 
 const siteConfigFile = fs.readFileSync(path.join(projectRoot, 'src/config/site.ts'), 'utf-8');
 
-assert(siteConfigFile.includes("name: 'Saar Business Support Solution'"), 'Official business name configured');
+assert(
+  siteConfigFile.includes("name: 'SAAR Business Support Solution'") ||
+    siteConfigFile.includes("name: 'Saar Business Support Solution'"),
+  'Official business name configured'
+);
 assert(siteConfigFile.includes("tagline: 'Designed with Purpose. Executed with Precision.'"), 'Official tagline configured');
-assert(siteConfigFile.includes('phone: null'), 'Unconfirmed phone strictly initialized to null');
-assert(siteConfigFile.includes('whatsappNumber: null'), 'Unconfirmed WhatsApp strictly initialized to null');
-assert(siteConfigFile.includes('email: null'), 'Unconfirmed email strictly initialized to null');
-assert(siteConfigFile.includes('address: null'), 'Unconfirmed address strictly initialized to null');
-assert(siteConfigFile.includes('getWhatsAppDirectUrl'), 'WhatsApp deep link helper implemented with null guard');
+assert(siteConfigFile.includes("phone: '+91 9930321817'"), 'Verified phone configured');
+assert(siteConfigFile.includes("whatsappNumber: '+91 9930321817'"), 'Verified WhatsApp configured');
+assert(siteConfigFile.includes("email: 'saarbusinesssolution@gmail.com'"), 'Verified email configured');
+assert(siteConfigFile.includes("Ulwe – 410206"), 'Verified address configured');
+assert(siteConfigFile.includes("name: 'Ramnewas Verma'"), 'Verified proprietor name configured');
+assert(siteConfigFile.includes('getWhatsAppDirectUrl'), 'WhatsApp deep link helper implemented');
+assert(siteConfigFile.includes('getGoogleMapsDirectionsUrl'), 'Google Maps directions helper implemented');
 
 // ==========================================
 // 4. IMAGE METADATA REGISTRY VALIDATION
@@ -429,7 +435,7 @@ if (fs.existsSync(distAboutIndex) && fs.existsSync(distProcessIndex)) {
   assert(aboutHtml.includes('href="/services/interior-design/"'), 'About page links to interior-design service');
   assert(aboutHtml.includes('href="/services/turnkey-contracting/"'), 'About page links to turnkey-contracting service');
   assert(aboutHtml.includes('href="/process/"'), 'About page links to Our Process');
-  assert(!aboutHtml.includes('award-winning') && !aboutHtml.includes('No. 1') && !aboutHtml.includes('100% satisfaction'), 'About page adheres to zero-fabrication claims restriction');
+  assert(!aboutHtml.includes('award-winning') && !/No\.\s*1\s+(firm|agency|designer|architect|service|turnkey)/i.test(aboutHtml) && !aboutHtml.includes('100% satisfaction'), 'About page adheres to zero-fabrication claims restriction');
 
   const processHtml = fs.readFileSync(distProcessIndex, 'utf-8');
   assert(processHtml.includes('aria-label="Breadcrumb"'), 'Process page renders breadcrumbs');

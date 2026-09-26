@@ -149,10 +149,10 @@ export const aboutData: AboutData = {
   operationalFootprint: {
     title: 'Operational Coverage & Consultation',
     serviceCoverage:
-      'SAAR provides architectural interior design and turnkey execution services across select regional metropolitan markets for qualified residential and commercial projects.',
+      'SAAR provides architectural interior design and turnkey execution services across select regional metropolitan markets (including Navi Mumbai, Mumbai, and Delhi NCR) for qualified residential and commercial projects.',
     consultationModel:
       'We initiate all client engagements through structured Stage 01 discovery discussions to assess spatial feasibility, site logistics, and alignment with our delivery standards.',
     physicalCoordinatesNotice:
-      'Physical studio consultations are coordinated by prior appointment. Registered office coordinates will be published upon final operational administrative sign-off.',
+      'Registered office: Shop No. 1, Thakkar Residency, Plot No. 224, Sector 17, Ulwe – 410206. Studio consultations and site walk-throughs are coordinated by prior appointment.',
   },
 };

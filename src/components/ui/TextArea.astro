@@ -10,6 +10,7 @@ interface Props {
   describedBy?: string;
   invalid?: boolean;
   maxlength?: number;
+  minlength?: number;
   class?: string;
 }
 
@@ -23,6 +24,8 @@ const {
   disabled = false,
   describedBy,
   invalid = false,
+  maxlength,
+  minlength,
   class: className = '',
   ...rest
 } = Astro.props;
@@ -35,6 +38,8 @@ const {
   placeholder={placeholder}
   required={required}
   disabled={disabled}
+  minlength={minlength}
+  maxlength={maxlength}
   aria-describedby={describedBy}
   aria-invalid={invalid ? 'true' : undefined}
   class:list={[
