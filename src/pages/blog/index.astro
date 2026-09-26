@@ -1,0 +1,288 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import Section from '../../components/layout/Section.astro';
+import BlogCard from '../../components/blog/BlogCard.astro';
+import BlogFilters, { type BlogCategoryFilterItem } from '../../components/blog/BlogFilters.astro';
+import CTASection from '../../components/sections/CTASection.astro';
+import ContactActions from '../../components/ui/ContactActions.astro';
+import Button from '../../components/ui/Button.astro';
+import Badge from '../../components/ui/Badge.astro';
+import { getPublishedBlogPosts, getFeaturedBlogPosts } from '../../lib/content';
+import { getBlogUrl } from '../../config/routes';
+import { siteConfig } from '../../config/site';
+import { getWebPageSchema, getBreadcrumbListSchema } from '../../lib/seo/schema';
+import { SITE_URL } from '../../lib/seo/metadata';
+
+const allPosts = await getPublishedBlogPosts();
+const featuredPosts = await getFeaturedBlogPosts();
+const heroFeaturedPost = featuredPosts.length > 0 ? featuredPosts[0] : allPosts[0];
+
+const breadcrumbs = [
+  { label: 'Blog & Insights', current: true },
+];
+
+const structuredData = [
+  getWebPageSchema({
+    canonicalUrl: `${SITE_URL}/blog/`,
+    title: 'Blog & Insights | Architectural Design & Contracting | SAAR',
+    description:
+      'Practical architectural interior design guides, turnkey contracting principles, renovation checklists, and leadership insights by SAAR in Navi Mumbai.',
+    type: 'CollectionPage',
+  }),
+  getBreadcrumbListSchema([
+    { label: 'Home', href: '/' },
+    { label: 'Blog & Insights', href: '/blog/' },
+  ]),
+];
+
+// Calculate category counts dynamically
+const categoryCounts = allPosts.reduce<Record<string, number>>((acc, post) => {
+  acc[post.category] = (acc[post.category] || 0) + 1;
+  return acc;
+}, {});
+
+const categoryFilterItems: BlogCategoryFilterItem[] = Object.keys(categoryCounts)
+  .sort()
+  .map((cat) => ({
+    name: cat,
+    count: categoryCounts[cat],
+  }));
+
+const hasAnyContact = Boolean(
+  (siteConfig.phone && siteConfig.phone.trim().length > 5) ||
+  (siteConfig.email && siteConfig.email.trim().length > 5) ||
+  (siteConfig.whatsappNumber && siteConfig.whatsappNumber.trim().length > 5)
+);
+---
+
+<BaseLayout
+  title="Blog & Insights | Architectural Interior & Contracting Guides | SAAR"
+  description="Explore original architectural guides, turnkey contracting checklists, home renovation insights, and leadership articles by SAAR Business Support Solution in Navi Mumbai."
+  breadcrumbs={breadcrumbs}
+  currentPath="/blog/"
+  structuredData={structuredData}
+>
+  <!-- 1. Editorial Header -->
+  <Section bg="elevated" padding="lg" class="border-b border-border-subtle pt-10 sm:pt-16">
+    <Container size="content">
+      <div class="max-w-3xl">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold mb-3 block">
+          Editorial Perspectives & Practice
+        </span>
+        <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-brand-navy tracking-tight mb-6 leading-tight">
+          Blog & Industry Insights
+        </h1>
+        <p class="text-base sm:text-lg text-brand-charcoal/85 leading-relaxed font-normal mb-6">
+          Original technical guidance, spatial planning principles, and execution frameworks from our architectural interior and turnkey contracting practice in Ulwe, Navi Mumbai.
+        </p>
+
+        <!-- Transparency & Editorial Standard Notice -->
+        <div class="p-4 rounded-sm bg-surface-subtle border-l-2 border-brand-gold">
+          <p class="text-xs text-brand-charcoal/80 leading-normal m-0">
+            <strong class="text-brand-navy font-semibold">Editorial Standard:</strong> Our articles provide factual spatial guidance, technical checklists, and verified company information. In accordance with our zero-fabrication policy, general industry advice is clearly distinguished from project-specific documentation.
+          </p>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 2. Spotlight / Featured Article -->
+  {heroFeaturedPost && (
+    <Section bg="page" padding="md" class="border-b border-border-subtle">
+      <Container size="content">
+        <div class="mb-4">
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold">
+            Editor's Spotlight
+          </span>
+        </div>
+
+        <div class="bg-surface-elevated border border-border-subtle rounded-md overflow-hidden shadow-card grid grid-cols-1 lg:grid-cols-12 gap-0 group">
+          <!-- Spotlight Cover Image (7 cols on lg) -->
+          <div class="lg:col-span-7 relative aspect-[16/10] lg:aspect-auto overflow-hidden bg-surface-subtle border-b lg:border-b-0 lg:border-r border-border-subtle">
+            <a href={getBlogUrl(heroFeaturedPost.slug)} class="block w-full h-full" aria-label={`Read featured article: ${heroFeaturedPost.title}`}>
+              <img
+                src={heroFeaturedPost.coverImage}
+                alt={heroFeaturedPost.coverImageAlt}
+                width="1200"
+                height="750"
+                class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
+                loading="eager"
+                fetchpriority="high"
+              />
+            </a>
+            <div class="absolute top-4 left-4 z-10 flex gap-2">
+              <Badge variant="gold" class="text-[10px] font-mono uppercase tracking-widest">
+                Featured
+              </Badge>
+              <Badge variant="category" class="bg-surface-elevated/95 backdrop-blur-xs font-mono text-[10px] uppercase tracking-wider text-brand-navy">
+                {heroFeaturedPost.category}
+              </Badge>
+            </div>
+          </div>
+
+          <!-- Spotlight Content Body (5 cols on lg) -->
+          <div class="lg:col-span-5 p-8 sm:p-10 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-3 text-xs text-brand-charcoal/60 font-mono mb-4">
+                <time datetime={heroFeaturedPost.publishedAt}>
+                  {new Date(heroFeaturedPost.publishedAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </time>
+                <span aria-hidden="true">&bull;</span>
+                <span>{heroFeaturedPost.readingTime}</span>
+              </div>
+
+              <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brand-navy group-hover:text-brand-gold transition-colors duration-200 mb-4 leading-snug">
+                <a href={getBlogUrl(heroFeaturedPost.slug)} class="hover:underline">
+                  {heroFeaturedPost.title}
+                </a>
+              </h2>
+
+              <p class="text-sm text-brand-charcoal/80 leading-relaxed font-normal mb-6">
+                {heroFeaturedPost.description}
+              </p>
+            </div>
+
+            <div class="pt-6 border-t border-border-subtle flex items-center justify-between">
+              <div>
+                <span class="text-xs font-semibold text-brand-navy block">{heroFeaturedPost.author.name}</span>
+                <span class="text-[11px] text-brand-charcoal/60 font-mono">{heroFeaturedPost.author.role}</span>
+              </div>
+              <Button
+                variant="gold"
+                size="sm"
+                href={getBlogUrl(heroFeaturedPost.slug)}
+                class="font-semibold shadow-xs"
+              >
+                Read Article &rarr;
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </Section>
+  )}
+
+  <!-- 3. All Articles Grid & Category Filtering -->
+  <Section bg="page" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold">
+            Article Archive
+          </span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brand-navy mt-1">
+            All Practical Guides & Insights
+          </h2>
+        </div>
+        <p class="text-xs sm:text-sm text-brand-charcoal/70 max-w-md m-0">
+          Filter by topic or browse our complete library of architectural, contracting, and renovation knowledge.
+        </p>
+      </div>
+
+      <!-- Category Filter Bar -->
+      <BlogFilters
+        categories={categoryFilterItems}
+        totalCount={allPosts.length}
+      />
+
+      <!-- Blog Cards Grid -->
+      <div
+        id="blog-grid"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+      >
+        {allPosts.map((post) => (
+          <div
+            data-blog-card
+            data-category={post.category}
+            class="w-full transition-opacity duration-200"
+          >
+            <BlogCard
+              title={post.title}
+              description={post.description}
+              category={post.category}
+              publishedAt={post.publishedAt}
+              readingTime={post.readingTime}
+              coverImage={post.coverImage}
+              coverImageAlt={post.coverImageAlt}
+              slug={post.slug}
+              author={post.author}
+              featured={post.featured}
+            />
+          </div>
+        ))}
+      </div>
+
+      <!-- Accessible Empty State -->
+      <div
+        id="blog-empty-state"
+        hidden
+        class="hidden text-center py-16 px-6 bg-surface-elevated rounded-md border border-border-subtle mt-8 max-w-lg mx-auto"
+      >
+        <svg class="w-12 h-12 text-brand-gold/60 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
+        <h3 class="font-serif text-xl font-bold text-brand-navy mb-2">
+          No Articles in This Category
+        </h3>
+        <p class="text-xs text-brand-charcoal/70 mb-6 leading-relaxed">
+          We are currently preparing additional technical guides for this topic.
+        </p>
+        <button
+          type="button"
+          id="reset-blog-filters-btn"
+          class="inline-flex items-center justify-center font-medium rounded-xs bg-brand-navy text-brand-softwhite px-4 py-2 text-xs hover:bg-brand-navy/90 focus-visible:outline-2 focus-visible:outline-brand-navy transition-colors min-h-[44px]"
+        >
+          Reset All Topics
+        </button>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 4. Conversion CTA -->
+  <CTASection
+    id="contact"
+    eyebrow="Have a Specific Project Question?"
+    heading="Speak Directly with Our Studio Principals"
+    description="From architectural layouts and civil permits to turnkey contracting quotes in Navi Mumbai, our team provides practical, grounded project guidance."
+    variant="navy"
+  >
+    <div class="mt-6 flex flex-col items-center">
+      {hasAnyContact ? (
+        <ContactActions
+          whatsappMessage="Hello SAAR, I read your insights and would like to discuss my project."
+          size="md"
+          class="justify-center"
+        />
+      ) : (
+        <div class="max-w-md mx-auto p-4 rounded-sm bg-brand-softwhite/10 border border-brand-softwhite/20 text-center mb-4">
+          <p class="text-xs text-brand-softwhite/90 leading-relaxed m-0">
+            Direct studio channels are active. Speak directly with our leadership team for custom project inquiries.
+          </p>
+        </div>
+      )}
+
+      <div class="mt-6 flex flex-wrap gap-4 justify-center">
+        <Button
+          variant="gold"
+          size="md"
+          href="/plan-my-project/"
+        >
+          Plan My Project
+        </Button>
+        <Button
+          variant="secondary"
+          size="md"
+          href="/projects/"
+          class="bg-surface-pure/10 text-brand-softwhite border-brand-softwhite/30 hover:bg-surface-pure/20"
+        >
+          View Selected Works
+        </Button>
+      </div>
+    </div>
+  </CTASection>
+</BaseLayout>

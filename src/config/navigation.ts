@@ -29,6 +29,7 @@ export const navigationConfig: NavigationConfig = {
     createNavItem('projects', 'Projects'),
     createNavItem('process', 'Our Process'),
     createNavItem('about', 'About'),
+    createNavItem('blog', 'Blog & Insights'),
     createNavItem('contact', 'Contact'),
   ],
   primaryCta: createNavItem('plan_my_project', 'Plan My Project', true),
@@ -40,6 +41,7 @@ export const navigationConfig: NavigationConfig = {
       createNavItem('about', 'About SAAR'),
       createNavItem('process', 'Our Process'),
       createNavItem('projects', 'Selected Works'),
+      createNavItem('blog', 'Blog & Insights'),
       createNavItem('contact', 'Contact Us'),
     ],
     legal: [

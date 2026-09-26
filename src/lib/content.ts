@@ -6,6 +6,7 @@ import type {
   PublicProject,
   ProjectNature,
   ImageMetadata,
+  BlogPostData,
 } from '../types/content';
 
 // ==========================================
@@ -183,6 +184,61 @@ export async function getRelatedServices(currentServiceId: string): Promise<Serv
  */
 export function resolveImageMetadata(imageId: string): ImageMetadata | null {
   return getImageMetadata(imageId);
+}
+
+// ==========================================
+// 5. BLOG & INSIGHTS QUERY HELPERS
+// ==========================================
+
+/**
+ * Retrieve all published blog articles, sorted by publishedAt descending.
+ */
+export async function getPublishedBlogPosts(): Promise<BlogPostData[]> {
+  const entries = await getCollection('blog', ({ data }) => {
+    return !data.draft;
+  });
+
+  return entries
+    .map((entry) => ({
+      ...entry.data,
+      slug: entry.data.id || entry.id,
+    } as BlogPostData))
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+}
+
+/**
+ * Retrieve a single blog article by its unique slug.
+ */
+export async function getBlogPostBySlug(slug: string): Promise<BlogPostData | null> {
+  const posts = await getPublishedBlogPosts();
+  return posts.find((p) => p.slug === slug) || null;
+}
+
+/**
+ * Retrieve featured editorial articles for hero / spotlight components.
+ */
+export async function getFeaturedBlogPosts(): Promise<BlogPostData[]> {
+  const posts = await getPublishedBlogPosts();
+  return posts.filter((p) => p.featured);
+}
+
+/**
+ * Retrieve contextual related articles for a given post.
+ */
+export async function getRelatedBlogPosts(post: BlogPostData, limit: number = 3): Promise<BlogPostData[]> {
+  const allPosts = await getPublishedBlogPosts();
+  const others = allPosts.filter((p) => p.slug !== post.slug);
+
+  if (post.relatedSlugs && post.relatedSlugs.length > 0) {
+    const explicit = others.filter((p) => post.relatedSlugs.includes(p.slug));
+    if (explicit.length >= limit) return explicit.slice(0, limit);
+    const categoryMatches = others.filter((p) => p.category === post.category && !post.relatedSlugs.includes(p.slug));
+    return [...explicit, ...categoryMatches].slice(0, limit);
+  }
+
+  const sameCategory = others.filter((p) => p.category === post.category);
+  const differentCategory = others.filter((p) => p.category !== post.category);
+  return [...sameCategory, ...differentCategory].slice(0, limit);
 }
 
 // ==========================================

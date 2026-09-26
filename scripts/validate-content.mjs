@@ -454,6 +454,44 @@ if (fs.existsSync(distAboutIndex) && fs.existsSync(distProcessIndex)) {
   assert(homeHtml.includes('href="/about/"'), 'Global navigation links to /about/');
 }
 
+// ==========================================
+// 11B. BLOG & PROPRIETOR PROFILE VALIDATION
+// ==========================================
+console.log('\n11B. Validating Blog & Proprietor Profile Architecture...');
+
+const blogDir = path.join(projectRoot, 'src/content/blog');
+assert(fs.existsSync(blogDir), 'Blog content directory src/content/blog exists');
+
+const blogFiles = fs.readdirSync(blogDir).filter((f) => f.endsWith('.md'));
+assert(blogFiles.length === 7, `All 7 initial blog articles exist in src/content/blog (found ${blogFiles.length})`);
+
+assert(routesFile.includes("id: 'blog'") && routesFile.includes("status: 'implemented'"), 'Blog route status marked implemented');
+assert(routesFile.includes("id: 'blog_detail'") && routesFile.includes("status: 'implemented'"), 'Blog detail dynamic route status marked implemented');
+assert(routesFile.includes("id: 'proprietor_profile'") && routesFile.includes("status: 'implemented'"), 'Proprietor profile route status marked implemented');
+
+const distBlogIndex = path.join(projectRoot, 'dist/blog/index.html');
+const distProprietor = path.join(projectRoot, 'dist/about/ramniwas-verma/index.html');
+const distMeetPost = path.join(projectRoot, 'dist/blog/meet-ramniwas-verma/index.html');
+
+if (fs.existsSync(distBlogIndex)) {
+  assert(fs.existsSync(distBlogIndex), 'Production build output dist/blog/index.html exists');
+  assert(fs.existsSync(distProprietor), 'Production build output dist/about/ramniwas-verma/index.html exists');
+  assert(fs.existsSync(distMeetPost), 'Production build output dist/blog/meet-ramniwas-verma/index.html exists');
+
+  const blogHtml = fs.readFileSync(distBlogIndex, 'utf-8');
+  assert(blogHtml.includes('blog-filter-group'), 'Blog overview includes filter controls');
+  assert(blogHtml.includes("Editor's Spotlight") || blogHtml.includes("Editor&#39;s Spotlight"), 'Blog overview includes featured spotlight article');
+
+  const proprietorHtml = fs.readFileSync(distProprietor, 'utf-8');
+  assert(proprietorHtml.includes('Ramniwas Verma'), 'Proprietor profile displays Ramniwas Verma');
+  assert(proprietorHtml.includes('Ramnewas Verma'), 'Proprietor profile notes dual-spelling context');
+  assert(proprietorHtml.includes('ramniwas-verma.webp'), 'Proprietor profile displays corporate portrait');
+  assert(proprietorHtml.includes('@type":"Person"') || proprietorHtml.includes('@type": "Person"'), 'Proprietor profile includes Person structured data');
+
+  const meetPostHtml = fs.readFileSync(distMeetPost, 'utf-8');
+  assert(meetPostHtml.includes('/about/ramniwas-verma/'), 'Meet Ramniwas Verma post links to authoritative profile page');
+}
+
 // Check Project Planner Architecture (Step 10)
 console.log('\n12. Validating Project Planner Architecture (Step 10)...');
 

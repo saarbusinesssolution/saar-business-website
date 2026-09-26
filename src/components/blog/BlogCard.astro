@@ -1,0 +1,125 @@
+---
+import Badge from '../ui/Badge.astro';
+import { getBlogUrl } from '../../config/routes';
+
+interface Props {
+  title: string;
+  description: string;
+  category: string;
+  publishedAt: string;
+  readingTime: string;
+  coverImage: string;
+  coverImageAlt?: string;
+  slug: string;
+  author: {
+    name: string;
+    role: string;
+  };
+  featured?: boolean;
+  class?: string;
+}
+
+const {
+  title,
+  description,
+  category,
+  publishedAt,
+  readingTime,
+  coverImage,
+  coverImageAlt = title,
+  slug,
+  author,
+  featured = false,
+  class: className = '',
+} = Astro.props;
+
+const href = getBlogUrl(slug);
+
+// Format date into human-readable string
+const formattedDate = new Date(publishedAt).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+---
+
+<article
+  class:list={[
+    'flex flex-col bg-surface-elevated border border-border-subtle rounded-md overflow-hidden transition-all duration-300 group relative shadow-xs hover:shadow-card hover:border-brand-gold',
+    className,
+  ]}
+>
+  <!-- Image Frame (16:10) -->
+  <a
+    href={href}
+    class="relative w-full aspect-[16/10] bg-surface-subtle overflow-hidden border-b border-border-subtle block"
+    aria-label={`Read article: ${title}`}
+  >
+    <img
+      src={coverImage}
+      alt={coverImageAlt}
+      width="1200"
+      height="750"
+      class="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
+      loading="lazy"
+      decoding="async"
+    />
+
+    <!-- Category Badge Over Image -->
+    <div class="absolute top-3 left-3 z-10">
+      <Badge variant="category" class="bg-surface-elevated/95 backdrop-blur-xs font-mono text-[11px] uppercase tracking-wider text-brand-navy border-border-subtle">
+        {category}
+      </Badge>
+    </div>
+
+    {featured && (
+      <div class="absolute top-3 right-3 z-10">
+        <Badge variant="gold" class="text-[10px] font-mono uppercase tracking-widest">
+          Featured
+        </Badge>
+      </div>
+    )}
+  </a>
+
+  <!-- Content Body -->
+  <div class="p-6 sm:p-7 flex flex-col flex-grow justify-between">
+    <div>
+      <!-- Meta Bar -->
+      <div class="flex items-center gap-3 text-xs text-brand-charcoal/60 font-mono mb-3">
+        <time datetime={publishedAt}>{formattedDate}</time>
+        <span aria-hidden="true">&bull;</span>
+        <span>{readingTime}</span>
+      </div>
+
+      <!-- Title -->
+      <h3 class="font-serif text-xl sm:text-2xl font-bold text-brand-navy group-hover:text-brand-gold transition-colors duration-200 mb-3 leading-snug">
+        <a href={href} class="hover:underline focus-visible:outline-2 focus-visible:outline-brand-navy rounded-xs">
+          {title}
+        </a>
+      </h3>
+
+      <!-- Excerpt -->
+      <p class="text-sm text-brand-charcoal/80 leading-relaxed font-normal mb-5 line-clamp-3">
+        {description}
+      </p>
+    </div>
+
+    <!-- Footer Bar: Author & Read Link -->
+    <div class="pt-4 mt-auto border-t border-border-subtle flex items-center justify-between text-xs">
+      <div class="flex flex-col">
+        <span class="font-semibold text-brand-navy">{author.name}</span>
+        <span class="text-[11px] text-brand-charcoal/60 font-mono">{author.role}</span>
+      </div>
+
+      <a
+        href={href}
+        class="inline-flex items-center gap-1 font-semibold text-brand-navy group-hover:text-brand-gold transition-colors"
+        aria-hidden="true"
+        tabindex="-1"
+      >
+        <span>Read Guide</span>
+        <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+      </a>
+    </div>
+  </div>
+</article>

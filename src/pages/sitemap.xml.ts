@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
-import { getPublishedServices, getPublishedProjects } from '../lib/content';
-import { getIndexableRoutes, getServiceUrl, getProjectUrl } from '../config/routes';
+import { getPublishedServices, getPublishedProjects, getPublishedBlogPosts } from '../lib/content';
+import { getIndexableRoutes, getServiceUrl, getProjectUrl, getBlogUrl } from '../config/routes';
 import { SITE_URL } from '../lib/seo/metadata';
 
 export const GET: APIRoute = async () => {
@@ -16,8 +16,12 @@ export const GET: APIRoute = async () => {
   const publishedProjects = await getPublishedProjects();
   const projectRoutes = publishedProjects.map((project) => `${SITE_URL}${getProjectUrl(project.slug)}`);
 
+  // 4. Published blog articles (excludes drafts)
+  const publishedBlogPosts = await getPublishedBlogPosts();
+  const blogRoutes = publishedBlogPosts.map((post) => `${SITE_URL}${getBlogUrl(post.slug)}`);
+
   // Combine and deduplicate URLs
-  const allUrls = Array.from(new Set([...staticRoutes, ...serviceRoutes, ...projectRoutes]));
+  const allUrls = Array.from(new Set([...staticRoutes, ...serviceRoutes, ...projectRoutes, ...blogRoutes]));
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
