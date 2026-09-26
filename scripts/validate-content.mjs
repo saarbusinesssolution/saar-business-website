@@ -147,8 +147,8 @@ for (const file of projectFiles) {
   const notesMatch = content.match(/^internalNotes:\s*"([^"]+)"/m);
 
   assert(idMatch !== null, `${file} defines a valid id field`);
-  assert(statusMatch && statusMatch[1] === 'published', `${file} is published as an approved concept study`);
-  assert(natureMatch && natureMatch[1] === 'concept', `${file} is correctly classified as a concept project`);
+  assert(statusMatch && statusMatch[1] === 'published', `${file} is published`);
+  assert(natureMatch && ['concept', 'actual'].includes(natureMatch[1]), `${file} defines valid projectNature classification`);
   assert(notesMatch !== null, `${file} contains internalNotes for testing data-leak prevention`);
 }
 
@@ -639,8 +639,8 @@ if (fs.existsSync(distSitemapPath)) {
   assert(sitemapXml.includes('<loc>https://saarbusiness.com/privacy/</loc>'), 'Sitemap includes Privacy page');
   assert(!sitemapXml.includes('/thank-you/'), 'Sitemap strictly excludes non-indexable /thank-you/');
   assert(!sitemapXml.includes('/404'), 'Sitemap strictly excludes error route /404');
-  assert(!sitemapXml.includes('renovation'), 'Sitemap strictly excludes draft service renovation');
-  assert(!sitemapXml.includes('property-solutions'), 'Sitemap strictly excludes draft service property-solutions');
+  assert(!sitemapXml.includes('/services/renovation/'), 'Sitemap strictly excludes draft service renovation');
+  assert(!sitemapXml.includes('/services/property-solutions/'), 'Sitemap strictly excludes draft service property-solutions');
 }
 
 if (fs.existsSync(distRobotsPath)) {

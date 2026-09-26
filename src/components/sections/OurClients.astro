@@ -1,0 +1,57 @@
+---
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+const clients = [
+  { name: 'M J Coaters', sector: 'Commercial & Industrial' },
+  { name: 'K K Group', sector: 'Residential Development' },
+  { name: 'Sadguru Kripa Builders', sector: 'Turnkey Construction' },
+  { name: 'Jainam Group', sector: 'Commercial Real Estate' },
+  { name: 'Supriti CHS', sector: 'Residential Housing' },
+  { name: 'Ramdev Restaurant', sector: 'Hospitality Dining' },
+  { name: 'Apurva Baar & Restaurant', sector: 'Hospitality & Lounge' },
+  { name: 'Bhoomi Mall', sector: 'Retail & Commercial' },
+  { name: 'SBI Bank Nerul', sector: 'Institutional Banking' },
+];
+---
+
+<Section bg="elevated" padding="lg" class={`border-b border-border-subtle ${className}`}>
+  <Container size="content">
+    <div class="max-w-3xl mb-12">
+      <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold mb-3 block">
+        Trusted Partnerships
+      </span>
+      <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-brand-navy tracking-tight mb-4 leading-tight">
+        Our Clients
+      </h2>
+      <p class="text-base sm:text-lg text-brand-charcoal/85 leading-relaxed font-normal">
+        We take pride in our collaborations with established enterprises, builders, housing societies, and hospitality establishments across Navi Mumbai and Maharashtra, delivering purposeful spatial execution and turnkey accountability.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+      {clients.map((client) => (
+        <div class="group bg-surface-elevated p-6 sm:p-7 rounded-md border border-border-subtle shadow-xs hover:shadow-card hover:border-brand-gold transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <span class="text-[11px] font-mono uppercase tracking-wider text-brand-gold/90 font-medium block mb-2">
+              {client.sector}
+            </span>
+            <h3 class="font-serif text-xl sm:text-2xl font-bold text-brand-navy group-hover:text-brand-gold transition-colors duration-200">
+              {client.name}
+            </h3>
+          </div>
+          <div class="pt-4 mt-4 border-t border-border-subtle flex items-center justify-between text-xs text-brand-charcoal/60 font-mono">
+            <span>Client Partner</span>
+            <span class="text-brand-gold font-bold group-hover:translate-x-0.5 transition-transform" aria-hidden="true">&rarr;</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </Container>
+</Section>

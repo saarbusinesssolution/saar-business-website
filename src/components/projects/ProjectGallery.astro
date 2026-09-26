@@ -12,6 +12,7 @@ interface Props {
   images: GalleryItem[];
   projectTitle: string;
   isConcept?: boolean;
+  isDemo?: boolean;
   class?: string;
 }
 
@@ -19,6 +20,7 @@ const {
   images,
   projectTitle,
   isConcept = true,
+  isDemo = false,
   class: className = '',
 } = Astro.props;
 
@@ -67,10 +69,19 @@ if (!images || images.length === 0) {
           <div class="absolute top-3 left-3 z-10 pointer-events-none">
             {isConcept ? (
               <Badge variant="concept">Design Concept</Badge>
+            ) : isDemo ? (
+              <Badge variant="concept">Illustrative Imagery</Badge>
             ) : (
               <Badge variant="verified">Verified Project</Badge>
             )}
           </div>
+
+          <!-- Bottom Illustrative Notice -->
+          {isDemo && (
+            <div class="absolute bottom-0 inset-x-0 bg-brand-navy/90 backdrop-blur-xs px-2.5 py-1 text-[10px] text-brand-softwhite/95 font-mono text-center tracking-tight pointer-events-none">
+              Illustrative imagery — actual project photographs coming soon
+            </div>
+          )}
 
           <!-- Zoom Icon Indicator -->
           <div class="absolute bottom-3 right-3 z-10 w-8 h-8 rounded-full bg-brand-navy/80 text-brand-softwhite flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200 pointer-events-none" aria-hidden="true">

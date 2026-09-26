@@ -27,6 +27,7 @@ const {
 } = Astro.props;
 
 const isConcept = project.projectNature === 'concept';
+const isDemo = project.imageType === 'demo';
 
 const coverMeta = project.coverImageId ? resolveImageMetadata(project.coverImageId) : null;
 const hasCoverImage = coverMeta && coverMeta.readiness === 'available';
@@ -76,12 +77,19 @@ const whatsappEnquiryMessage = isConcept
       <div class="flex flex-wrap items-center gap-3 mb-4">
         {isConcept ? (
           <Badge variant="concept">Design Concept</Badge>
+        ) : isDemo ? (
+          <Badge variant="concept">Illustrative Imagery</Badge>
         ) : (
           <Badge variant="verified">Verified Project</Badge>
         )}
         <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold">
           {project.category}
         </span>
+        {project.clientName && (
+          <span class="text-xs font-mono uppercase tracking-wider text-brand-navy font-semibold px-2.5 py-0.5 bg-surface-subtle rounded-xs border border-border-subtle">
+            Client: {project.clientName}
+          </span>
+        )}
       </div>
 
       <!-- Title -->
@@ -89,12 +97,18 @@ const whatsappEnquiryMessage = isConcept
         {project.title}
       </h1>
 
-      <!-- Concept Transparency Notice -->
-      {isConcept && (
+      <!-- Concept / Demo Transparency Notice -->
+      {isConcept ? (
         <p class="text-xs text-brand-charcoal/70 bg-surface-subtle p-3 rounded-xs border-l-2 border-brand-gold max-w-2xl mb-6">
           <strong>Architectural Design Study:</strong> This presentation illustrates a conceptual spatial inquiry by SAAR exploring light, geometry, and material restraint. It does not represent a commissioned client build.
         </p>
-      )}
+      ) : isDemo ? (
+        <div class="p-3.5 rounded-xs bg-surface-subtle border-l-2 border-brand-gold max-w-2xl mb-6">
+          <p class="text-xs text-brand-charcoal/80 leading-normal m-0">
+            <strong class="text-brand-navy font-semibold">Demo Photography Notice:</strong> Illustrative imagery — actual project photographs coming soon. The visual assets shown are illustrative representations and will be replaced with genuine on-site documentation following client publication clearance.
+          </p>
+        </div>
+      ) : null}
 
       <!-- Summary -->
       <p class="text-base sm:text-lg text-brand-charcoal/85 leading-relaxed font-normal mb-8">
@@ -134,13 +148,20 @@ const whatsappEnquiryMessage = isConcept
             loading="eager"
             fetchpriority="high"
           />
-          <div class="absolute bottom-4 left-4 z-10">
+          <div class="absolute top-4 left-4 z-10">
             {isConcept ? (
               <Badge variant="concept">Design Concept</Badge>
+            ) : isDemo ? (
+              <Badge variant="concept">Illustrative Imagery</Badge>
             ) : (
               <Badge variant="verified">Verified Project</Badge>
             )}
           </div>
+          {isDemo && (
+            <div class="absolute bottom-0 inset-x-0 bg-brand-navy/90 backdrop-blur-xs px-4 py-2 text-xs text-brand-softwhite/95 font-mono text-center tracking-tight">
+              Illustrative imagery — actual project photographs coming soon
+            </div>
+          )}
         </div>
       </div>
     )}
@@ -150,7 +171,18 @@ const whatsappEnquiryMessage = isConcept
 <!-- 2. Project Specifications Matrix -->
 <Section bg="page" padding="sm" class="border-b border-border-subtle">
   <Container size="content">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 p-6 rounded-md bg-surface-elevated border border-border-subtle shadow-xs">
+    <div class:list={['grid gap-6 p-6 rounded-md bg-surface-elevated border border-border-subtle shadow-xs', project.clientName ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5' : 'grid-cols-2 md:grid-cols-4']}>
+      {project.clientName && (
+        <div>
+          <span class="text-[11px] font-mono uppercase tracking-wider text-brand-charcoal/60 block mb-1">
+            Client
+          </span>
+          <span class="text-xs sm:text-sm font-semibold text-brand-navy">
+            {project.clientName}
+          </span>
+        </div>
+      )}
+
       <div>
         <span class="text-[11px] font-mono uppercase tracking-wider text-brand-charcoal/60 block mb-1">
           Typology
@@ -301,6 +333,7 @@ const whatsappEnquiryMessage = isConcept
           images={galleryItems}
           projectTitle={project.title}
           isConcept={isConcept}
+          isDemo={isDemo}
         />
       </div>
     </Container>

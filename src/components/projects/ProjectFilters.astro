@@ -1,11 +1,23 @@
 ---
+export interface CategoryFilterItem {
+  name: string;
+  count?: number;
+}
+
 interface Props {
-  categories: string[];
+  categories: (string | CategoryFilterItem)[];
   totalCount: number;
   class?: string;
 }
 
 const { categories, totalCount, class: className = '' } = Astro.props;
+
+const normalizedCategories = categories.map((cat) => {
+  if (typeof cat === 'string') {
+    return { name: cat, count: undefined };
+  }
+  return cat;
+});
 ---
 
 <div class:list={['w-full mb-10', className]}>
@@ -26,14 +38,14 @@ const { categories, totalCount, class: className = '' } = Astro.props;
         All Works ({totalCount})
       </button>
 
-      {categories.map((category) => (
+      {normalizedCategories.map(({ name, count }) => (
         <button
           type="button"
-          data-filter={category}
+          data-filter={name}
           aria-pressed="false"
           class="portfolio-filter-btn px-4 py-2 rounded-xs text-xs font-medium tracking-wider transition-all select-none focus-visible:outline-2 focus-visible:outline-brand-navy bg-surface-elevated text-brand-charcoal hover:border-brand-gold/60 border border-border-subtle shadow-xs"
         >
-          {category}
+          {name}{typeof count === 'number' ? ` (${count})` : ''}
         </button>
       ))}
     </div>
