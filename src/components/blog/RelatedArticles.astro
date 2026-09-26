@@ -1,0 +1,52 @@
+---
+import type { BlogPostData } from '../../types/content';
+import BlogCard from './BlogCard.astro';
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+
+interface Props {
+  articles: BlogPostData[];
+  title?: string;
+  class?: string;
+}
+
+const {
+  articles,
+  title = 'Related Insights & Guides',
+  class: className = '',
+} = Astro.props;
+
+if (!articles || articles.length === 0) {
+  return null;
+}
+---
+
+<Section bg="subtle" padding="lg" class={`border-t border-border-subtle ${className}`}>
+  <Container size="content">
+    <div class="max-w-3xl mb-10">
+      <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold mb-2 block">
+        Explore Further
+      </span>
+      <h2 class="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-brand-navy tracking-tight">
+        {title}
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      {articles.map((post) => (
+        <BlogCard
+          title={post.title}
+          description={post.description}
+          category={post.category}
+          publishedAt={post.publishedAt}
+          readingTime={post.readingTime}
+          coverImage={post.coverImage}
+          coverImageAlt={post.coverImageAlt}
+          slug={post.slug}
+          author={post.author}
+          featured={post.featured}
+        />
+      ))}
+    </div>
+  </Container>
+</Section>

@@ -68,6 +68,15 @@ export const ROUTES: Record<RouteId, RouteDefinition> = {
     isIndexable: true,
     primaryCtaIntent: 'Speak With Our Team',
   },
+  proprietor_profile: {
+    id: 'proprietor_profile',
+    path: '/about/ramniwas-verma/',
+    label: 'Ramniwas Verma — Proprietor',
+    purpose: 'Authoritative professional profile and verified leadership background of Ramniwas Verma, Proprietor of SAAR Business Support Solution.',
+    status: 'implemented',
+    isIndexable: true,
+    primaryCtaIntent: 'Connect with Studio Leadership',
+  },
   process: {
     id: 'process',
     path: '/process/',
@@ -76,6 +85,25 @@ export const ROUTES: Record<RouteId, RouteDefinition> = {
     status: 'implemented',
     isIndexable: true,
     primaryCtaIntent: 'Start Stage 01',
+  },
+  blog: {
+    id: 'blog',
+    path: '/blog/',
+    label: 'Blog & Insights',
+    purpose: 'Architectural perspectives, turnkey contracting insights, and practical project planning guides.',
+    status: 'implemented',
+    isIndexable: true,
+    primaryCtaIntent: 'Read Articles',
+  },
+  blog_detail: {
+    id: 'blog_detail',
+    path: '/blog/[slug]/',
+    label: 'Article Detail',
+    purpose: 'In-depth informational editorial guide or leadership article.',
+    status: 'implemented',
+    isIndexable: true,
+    primaryCtaIntent: 'Discuss Project',
+    isDynamic: true,
   },
   plan_my_project: {
     id: 'plan_my_project',
@@ -157,6 +185,18 @@ export function getProjectUrl(slug: string): string {
   }
   const cleanSlug = slug.toLowerCase().replace(/^\/+|\/+$/g, '');
   return `/projects/${cleanSlug}/`;
+}
+
+/**
+ * Construct a type-safe canonical URL for an individual blog article.
+ * Validates that slugs are well-formed and prevents literal "[slug]" leaks.
+ */
+export function getBlogUrl(slug: string): string {
+  if (!slug || slug.trim() === '' || slug.includes('[slug]')) {
+    throw new Error(`Invalid blog slug provided: "${slug}"`);
+  }
+  const cleanSlug = slug.toLowerCase().replace(/^\/+|\/+$/g, '');
+  return `/blog/${cleanSlug}/`;
 }
 
 /**

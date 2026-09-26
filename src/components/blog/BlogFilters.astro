@@ -1,0 +1,144 @@
+---
+export interface BlogCategoryFilterItem {
+  name: string;
+  count: number;
+}
+
+interface Props {
+  categories: BlogCategoryFilterItem[];
+  totalCount: number;
+  class?: string;
+}
+
+const { categories, totalCount, class: className = '' } = Astro.props;
+---
+
+<div class:list={['w-full mb-10', className]}>
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-subtle">
+    <!-- Filter Buttons Bar -->
+    <div
+      role="group"
+      aria-label="Filter articles by topic"
+      class="flex flex-wrap items-center gap-2"
+      id="blog-filter-group"
+    >
+      <button
+        type="button"
+        data-filter="all"
+        aria-pressed="true"
+        class="blog-filter-btn px-4 py-2 rounded-xs text-xs font-semibold tracking-wider transition-all select-none focus-visible:outline-2 focus-visible:outline-brand-navy bg-brand-navy text-brand-softwhite border border-brand-navy shadow-xs min-h-[40px]"
+      >
+        All Insights ({totalCount})
+      </button>
+
+      {categories.map(({ name, count }) => (
+        <button
+          type="button"
+          data-filter={name}
+          aria-pressed="false"
+          class="blog-filter-btn px-4 py-2 rounded-xs text-xs font-medium tracking-wider transition-all select-none focus-visible:outline-2 focus-visible:outline-brand-navy bg-surface-elevated text-brand-charcoal hover:border-brand-gold/60 border border-border-subtle shadow-xs min-h-[40px]"
+        >
+          {name} ({count})
+        </button>
+      ))}
+    </div>
+
+    <!-- Active Count Display & Screen Reader Live Region -->
+    <div class="flex items-center gap-2">
+      <span class="text-xs text-brand-charcoal/70 font-mono">
+        Showing:
+      </span>
+      <span id="active-blog-count-label" class="text-xs font-bold text-brand-navy font-mono">
+        {totalCount} of {totalCount}
+      </span>
+      <div id="blog-filter-announcement" aria-live="polite" class="sr-only">
+        Showing all {totalCount} articles
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initBlogFiltering() {
+    const filterGroup = document.getElementById('blog-filter-group');
+    if (!filterGroup) return;
+
+    const filterButtons = filterGroup.querySelectorAll<HTMLButtonElement>('.blog-filter-btn');
+    const blogCards = document.querySelectorAll<HTMLElement>('[data-blog-card]');
+    const countLabel = document.getElementById('active-blog-count-label');
+    const announcement = document.getElementById('blog-filter-announcement');
+    const emptyState = document.getElementById('blog-empty-state');
+    const resetBtn = document.getElementById('reset-blog-filters-btn');
+
+    const totalArticles = blogCards.length;
+
+    function applyFilter(selectedCategory: string) {
+      let visibleCount = 0;
+
+      filterButtons.forEach((btn) => {
+        const isMatch = btn.getAttribute('data-filter') === selectedCategory;
+        btn.setAttribute('aria-pressed', isMatch ? 'true' : 'false');
+        if (isMatch) {
+          btn.className = 'blog-filter-btn px-4 py-2 rounded-xs text-xs font-semibold tracking-wider transition-all select-none focus-visible:outline-2 focus-visible:outline-brand-navy bg-brand-navy text-brand-softwhite border border-brand-navy shadow-xs min-h-[40px]';
+        } else {
+          btn.className = 'blog-filter-btn px-4 py-2 rounded-xs text-xs font-medium tracking-wider transition-all select-none focus-visible:outline-2 focus-visible:outline-brand-navy bg-surface-elevated text-brand-charcoal hover:border-brand-gold/60 border border-border-subtle shadow-xs min-h-[40px]';
+        }
+      });
+
+      blogCards.forEach((card) => {
+        const cardCategory = card.getAttribute('data-category') || '';
+        const matches = selectedCategory === 'all' || cardCategory === selectedCategory;
+
+        if (matches) {
+          card.removeAttribute('hidden');
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.setAttribute('hidden', '');
+          card.classList.add('hidden');
+        }
+      });
+
+      if (countLabel) {
+        countLabel.textContent = `${visibleCount} of ${totalArticles}`;
+      }
+
+      if (announcement) {
+        const topicLabel = selectedCategory === 'all' ? 'all topics' : selectedCategory;
+        announcement.textContent = `Showing ${visibleCount} article${visibleCount === 1 ? '' : 's'} on ${topicLabel}.`;
+      }
+
+      if (emptyState) {
+        if (visibleCount === 0) {
+          emptyState.removeAttribute('hidden');
+          emptyState.classList.remove('hidden');
+        } else {
+          emptyState.setAttribute('hidden', '');
+          emptyState.classList.add('hidden');
+        }
+      }
+    }
+
+    filterButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const cat = btn.getAttribute('data-filter') || 'all';
+        applyFilter(cat);
+      });
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        applyFilter('all');
+        const allBtn = filterGroup.querySelector<HTMLButtonElement>('[data-filter="all"]');
+        allBtn?.focus();
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBlogFiltering);
+  } else {
+    initBlogFiltering();
+  }
+  document.addEventListener('astro:page-load', initBlogFiltering);
+</script>

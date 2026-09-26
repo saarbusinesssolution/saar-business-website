@@ -83,4 +83,41 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { services, projects };
+/**
+ * Zod validation schema for SAAR Blog & Insights editorial articles.
+ */
+const blog = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
+  schema: z.object({
+    id: z.string().min(2, 'Stable ID must be at least 2 characters'),
+    title: z.string().min(5, 'Title is required and must be descriptive'),
+    description: z.string().min(10, 'Description must be descriptive'),
+    category: z.enum([
+      'Leadership & Company',
+      'Interior Design',
+      'Turnkey Contracting',
+      'Residential Renovation',
+      'Commercial Spaces',
+      'Industry Guides',
+      'Hospitality Design',
+    ]),
+    author: z.object({
+      name: z.string(),
+      role: z.string(),
+      url: z.string().optional(),
+      avatarUrl: z.string().optional(),
+    }),
+    publishedAt: z.string(),
+    updatedAt: z.string().optional(),
+    coverImage: z.string(),
+    coverImageAlt: z.string().default('Article cover image'),
+    imageCredit: z.string().default('SAAR Architectural Documentation / Illustrative Photography'),
+    readingTime: z.string().default('5 min read'),
+    featured: z.boolean().default(false),
+    draft: z.boolean().default(false),
+    tags: z.array(z.string()).default([]),
+    relatedSlugs: z.array(z.string()).default([]),
+  }),
+});
+
+export const collections = { services, projects, blog };

@@ -1,0 +1,421 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Container from '../../../components/layout/Container.astro';
+import Section from '../../../components/layout/Section.astro';
+import Badge from '../../../components/ui/Badge.astro';
+import Button from '../../../components/ui/Button.astro';
+import ContactActions from '../../../components/ui/ContactActions.astro';
+import {
+  getPersonSchema,
+  getProfilePageSchema,
+  getFAQSchema,
+  getBreadcrumbListSchema,
+} from '../../../lib/seo/schema';
+import { SITE_URL } from '../../../lib/seo/metadata';
+
+const canonicalPath = '/about/ramniwas-verma/';
+const canonicalUrl = `${SITE_URL}${canonicalPath}`;
+
+const breadcrumbs = [
+  { label: 'About', href: '/about/' },
+  { label: 'Ramniwas Verma', current: true },
+];
+
+const faqs = [
+  {
+    question: 'Who is Ramniwas Verma?',
+    answer:
+      'Ramniwas Verma (also recorded in earlier company documentation as Ramnewas Verma) is the Proprietor and executive leader of SAAR Business Support Solution, an architectural interior design and turnkey contracting firm based in Ulwe, Navi Mumbai.',
+  },
+  {
+    question: 'What is his role at SAAR Business Support Solution?',
+    answer:
+      'As Proprietor, Ramniwas Verma oversees all business operations, single-point project accountability, client contract execution, material procurement standards, and trade coordination across residential, commercial, and hospitality projects.',
+  },
+  {
+    question: 'What services does SAAR Business Support Solution provide?',
+    answer:
+      'Under Ramniwas Verma’s leadership, SAAR provides architectural space planning, bespoke interior design, turnkey contracting, complete residential society renovations, commercial workspace fit-outs, and hospitality venue execution.',
+  },
+  {
+    question: 'Where is the business located?',
+    answer:
+      'SAAR Business Support Solution is physically located at Shop No. 1, Thakkar Residency, Plot No. 224, Sector 17, Ulwe – 410206, Navi Mumbai, Maharashtra, India.',
+  },
+  {
+    question: 'How can prospective clients contact Ramniwas Verma and the studio?',
+    answer:
+      'Clients can reach Ramniwas Verma and the SAAR team directly by telephone at +91 9930321817, via WhatsApp at +91 9930321817, or by official email at saarbusinesssolution@gmail.com.',
+  },
+];
+
+const structuredData = [
+  getProfilePageSchema(canonicalUrl),
+  getPersonSchema(),
+  getFAQSchema(faqs),
+  getBreadcrumbListSchema([
+    { label: 'Home', href: '/' },
+    { label: 'About', href: '/about/' },
+    { label: 'Ramniwas Verma — Proprietor', href: canonicalPath },
+  ]),
+];
+
+const portraitPath = '/images/team/ramniwas-verma.webp';
+---
+
+<BaseLayout
+  title="Ramniwas Verma — Proprietor | SAAR Business Support Solution"
+  description="Executive profile of Ramniwas Verma, Proprietor of SAAR Business Support Solution in Ulwe, Navi Mumbai. Verified business leadership, core services, and contact channels."
+  breadcrumbs={breadcrumbs}
+  currentPath={canonicalPath}
+  structuredData={structuredData}
+>
+  <!-- 1. Executive Profile Hero -->
+  <Section bg="elevated" padding="lg" class="border-b border-border-subtle pt-10 sm:pt-16">
+    <Container size="content">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+        <!-- Text & Credentials (7 cols on lg) -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="flex flex-wrap items-center gap-3">
+            <Badge variant="verified">
+              Verified Leadership
+            </Badge>
+            <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold">
+              Sole Proprietorship
+            </span>
+          </div>
+
+          <div>
+            <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-brand-navy tracking-tight mb-2 leading-tight">
+              Ramniwas Verma
+            </h1>
+            <p class="text-lg sm:text-xl font-medium text-brand-gold font-serif">
+              Proprietor, SAAR Business Support Solution
+            </p>
+          </div>
+
+          <!-- Dual-Spelling Transparency Callout -->
+          <div class="p-4 rounded-sm bg-surface-subtle border-l-2 border-brand-gold text-xs text-brand-charcoal/85 leading-relaxed">
+            <strong class="text-brand-navy font-semibold block mb-1">Name & Verification Notice:</strong>
+            Earlier company documentation and legacy records referenced the phonetic spelling <em>"Ramnewas Verma"</em>. Both spellings identify the same proprietor and registered enterprise. Formal business registration and statutory GST filings are registered under <strong>SAAR Business Support Solution</strong>.
+          </div>
+
+          <p class="text-base text-brand-charcoal/85 leading-relaxed font-normal">
+            Ramniwas Verma provides executive leadership and single-point operational accountability for SAAR Business Support Solution. Based in Ulwe, Navi Mumbai, he directs architectural space planning, interior joinery craftsmanship, and turnkey contracting for property owners, housing societies, and commercial enterprises.
+          </p>
+
+          <!-- Direct Studio Contact Actions -->
+          <div class="pt-2">
+            <span class="text-xs font-mono uppercase tracking-wider text-brand-charcoal/60 block mb-3">
+              Direct Contact & Studio Coordinates
+            </span>
+            <ContactActions
+              whatsappMessage="Hello Mr. Verma, I would like to consult on an architectural / contracting project with SAAR."
+              size="md"
+            />
+          </div>
+        </div>
+
+        <!-- Corporate Portrait (5 cols on lg) -->
+        <div class="lg:col-span-5">
+          <figure class="relative m-0">
+            <div class="relative w-full aspect-[4/3] sm:aspect-square lg:aspect-[4/5] rounded-md overflow-hidden bg-surface-subtle border border-border-subtle shadow-card group">
+              <img
+                src={portraitPath}
+                alt="Ramniwas Verma, Proprietor of SAAR Business Support Solution"
+                width="1024"
+                height="768"
+                class="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-500"
+                loading="eager"
+                fetchpriority="high"
+              />
+              <div class="absolute bottom-0 inset-x-0 bg-brand-navy/90 backdrop-blur-xs p-3 text-center">
+                <span class="text-xs font-semibold text-brand-softwhite block">Ramniwas Verma</span>
+                <span class="text-[11px] text-brand-gold font-mono">Proprietor — SAAR Business Support Solution</span>
+              </div>
+            </div>
+            <figcaption class="mt-2.5 text-[11px] text-brand-charcoal/60 font-mono text-center leading-normal">
+              Portrait Notice: Digitally refined studio portrait from original photograph. Likeness subject to final proprietor confirmation.
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 2. Association & Operational Philosophy -->
+  <Section bg="page" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="max-w-3xl">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold mb-3 block">
+          Practice & Leadership Ethos
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-brand-navy tracking-tight mb-6">
+          Single-Point Accountability in Turnkey Execution
+        </h2>
+        
+        <div class="space-y-4 text-base text-brand-charcoal/85 leading-relaxed">
+          <p>
+            Under Ramniwas Verma’s direct ownership, SAAR Business Support Solution was conceived to resolve the fragmentation that so often plagues architectural and contracting projects in India. In conventional execution, separate architects, civil contractors, and trade vendors routinely divide accountability, creating compounding delays and unplanned cost overruns.
+          </p>
+          <p>
+            By consolidating design coordination, core material procurement, on-site labor management, and quality control under single-point leadership, Mr. Verma ensures that every project commitment is verified against physical site conditions before work commences.
+          </p>
+        </div>
+
+        <div class="mt-8 p-6 rounded-md bg-surface-elevated border border-border-subtle shadow-xs">
+          <h3 class="font-serif text-lg font-bold text-brand-navy mb-2">
+            Editorial Feature Available
+          </h3>
+          <p class="text-xs sm:text-sm text-brand-charcoal/80 mb-4 leading-relaxed">
+            Read our in-depth editorial profile on Ramniwas Verma’s background, practice methodology, and vision for turnkey contracting in Navi Mumbai.
+          </p>
+          <a
+            href="/blog/meet-ramniwas-verma/"
+            class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-navy hover:text-brand-gold font-mono transition-colors"
+          >
+            <span>Read Article: Meet Ramniwas Verma</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 3. Business Capabilities Under Direct Supervision -->
+  <Section bg="elevated" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="max-w-3xl mb-10">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold mb-2 block">
+          Core Capabilities
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-brand-navy tracking-tight">
+          Services Delivered Under SAAR
+        </h2>
+        <p class="text-sm sm:text-base text-brand-charcoal/75 mt-2">
+          Projects contracted and managed under Ramniwas Verma’s direct oversight include:
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-6 rounded-md bg-surface-page border border-border-subtle shadow-xs">
+          <span class="text-xs font-mono uppercase tracking-wider text-brand-gold font-bold block mb-1">
+            Capability 01
+          </span>
+          <h3 class="font-serif text-xl font-bold text-brand-navy mb-2">
+            Architectural Interior Design
+          </h3>
+          <p class="text-xs sm:text-sm text-brand-charcoal/80 leading-relaxed mb-4">
+            Bespoke residential layouts, modular joinery specification, 3D visualization, reflective ceiling plans, and natural material palettes for residences and commercial offices.
+          </p>
+          <a href="/services/interior-design/" class="text-xs font-semibold text-brand-navy hover:text-brand-gold font-mono">
+            Explore Interior Design &rarr;
+          </a>
+        </div>
+
+        <div class="p-6 rounded-md bg-surface-page border border-border-subtle shadow-xs">
+          <span class="text-xs font-mono uppercase tracking-wider text-brand-gold font-bold block mb-1">
+            Capability 02
+          </span>
+          <h3 class="font-serif text-xl font-bold text-brand-navy mb-2">
+            Turnkey Contracting
+          </h3>
+          <p class="text-xs sm:text-sm text-brand-charcoal/80 leading-relaxed mb-4">
+            Comprehensive site execution covering civil modifications, MEP infrastructure, electrical wiring, acoustic paneling, and final handover under an all-inclusive single contract.
+          </p>
+          <a href="/services/turnkey-contracting/" class="text-xs font-semibold text-brand-navy hover:text-brand-gold font-mono">
+            Explore Turnkey Contracting &rarr;
+          </a>
+        </div>
+
+        <div class="p-6 rounded-md bg-surface-page border border-border-subtle shadow-xs">
+          <span class="text-xs font-mono uppercase tracking-wider text-brand-gold font-bold block mb-1">
+            Capability 03
+          </span>
+          <h3 class="font-serif text-xl font-bold text-brand-navy mb-2">
+            Residential Renovations
+          </h3>
+          <p class="text-xs sm:text-sm text-brand-charcoal/80 leading-relaxed mb-4">
+            Phased structural modernization, wet-area waterproofing, and interior fit-outs for apartments and housing societies across Navi Mumbai with minimal resident disruption.
+          </p>
+          <a href="/plan-my-project/" class="text-xs font-semibold text-brand-navy hover:text-brand-gold font-mono">
+            Plan Renovation Project &rarr;
+          </a>
+        </div>
+
+        <div class="p-6 rounded-md bg-surface-page border border-border-subtle shadow-xs">
+          <span class="text-xs font-mono uppercase tracking-wider text-brand-gold font-bold block mb-1">
+            Capability 04
+          </span>
+          <h3 class="font-serif text-xl font-bold text-brand-navy mb-2">
+            Commercial & Hospitality Fit-Outs
+          </h3>
+          <p class="text-xs sm:text-sm text-brand-charcoal/80 leading-relaxed mb-4">
+            Specialized space planning for corporate office branches, retail showrooms, banks, and hospitality dining environments conforming to NBC fire and accessibility standards.
+          </p>
+          <a href="/projects/" class="text-xs font-semibold text-brand-navy hover:text-brand-gold font-mono">
+            View Commercial Projects &rarr;
+          </a>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 4. Studio Location & Verified Coordinates -->
+  <Section bg="page" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="max-w-3xl mb-8">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold mb-2 block">
+          Physical Establishment
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brand-navy tracking-tight">
+          Studio Headquarters & Operational Presence
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 sm:p-8 rounded-md bg-surface-elevated border border-border-subtle shadow-xs">
+        <div class="space-y-3">
+          <h3 class="font-serif text-lg font-bold text-brand-navy">
+            Office Coordinates
+          </h3>
+          <p class="text-sm text-brand-charcoal/80 leading-relaxed">
+            <strong>SAAR Business Support Solution</strong><br />
+            Shop No. 1, Thakkar Residency,<br />
+            Plot No. 224, Sector 17,<br />
+            Ulwe, Navi Mumbai – 410206,<br />
+            Maharashtra, India.
+          </p>
+          <div class="pt-2">
+            <a
+              href="https://maps.google.com/?q=Shop+No+1+Thakkar+Residency+Plot+224+Sector+17+Ulwe+410206"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 text-xs font-mono text-brand-navy hover:text-brand-gold underline font-semibold"
+            >
+              <span>View Location on Google Maps</span>
+              <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="space-y-3 border-t md:border-t-0 md:border-l border-border-subtle pt-6 md:pt-0 md:pl-8">
+          <h3 class="font-serif text-lg font-bold text-brand-navy">
+            Operational Territories
+          </h3>
+          <ul class="text-xs sm:text-sm text-brand-charcoal/80 space-y-1.5 list-none m-0 p-0">
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand-gold" aria-hidden="true"></span>
+              <span><strong>Primary Hub:</strong> Ulwe, Nerul, Belapur, Vashi, Kharghar, Panvel</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand-gold" aria-hidden="true"></span>
+              <span><strong>Regional Node:</strong> Mumbai Metropolitan Region (MMR), Thane, Raigad</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand-gold" aria-hidden="true"></span>
+              <span><strong>Commercial State:</strong> Maharashtra</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 5. Frequently Asked Questions (GEO / AEO Engine) -->
+  <Section bg="elevated" padding="lg" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="max-w-3xl mb-10">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold mb-2 block">
+          Frequently Answered Inquiries
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-brand-navy tracking-tight">
+          Verified Leadership FAQs
+        </h2>
+        <p class="text-sm text-brand-charcoal/70 mt-2">
+          Grounded, factual answers to direct questions regarding Ramniwas Verma and SAAR Business Support Solution.
+        </p>
+      </div>
+
+      <div class="space-y-4 max-w-3xl">
+        {faqs.map((faq) => (
+          <div class="p-6 rounded-md bg-surface-page border border-border-subtle shadow-xs">
+            <h3 class="font-serif text-lg font-bold text-brand-navy mb-2">
+              {faq.question}
+            </h3>
+            <p class="text-sm text-brand-charcoal/80 leading-relaxed m-0">
+              {faq.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 6. Content Checklist Awaiting Proprietor Approval -->
+  <Section bg="page" padding="md" class="border-b border-border-subtle">
+    <Container size="content">
+      <div class="max-w-3xl p-6 rounded-md bg-surface-subtle border border-border-subtle">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold mb-2 block">
+          Editorial Governance Checklist
+        </span>
+        <h3 class="font-serif text-xl font-bold text-brand-navy mb-3">
+          Biographical Detail Verification Status
+        </h3>
+        <p class="text-xs text-brand-charcoal/80 mb-4 leading-relaxed">
+          In strict compliance with our zero-fabrication standards, the following biographical items are omitted from public publication pending written confirmation from Ramniwas Verma:
+        </p>
+        <ul class="text-xs text-brand-charcoal/75 space-y-2 list-none m-0 p-0 font-mono">
+          <li class="flex items-center gap-2">
+            <span class="text-status-warning font-bold">[ PENDING ]</span>
+            <span>Formal confirmation of preferred legal name spelling ("Ramniwas Verma" vs "Ramnewas Verma")</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-status-warning font-bold">[ PENDING ]</span>
+            <span>Educational background, university credentials, and degree verification</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-status-warning font-bold">[ PENDING ]</span>
+            <span>Complete chronological career history prior to founding SAAR</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-status-warning font-bold">[ PENDING ]</span>
+            <span>Formal digital portrait approval of AI-refined corporate likeness</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-status-warning font-bold">[ PENDING ]</span>
+            <span>Personal industry awards, institutional memberships, or civic recognitions</span>
+          </li>
+        </ul>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 7. Onward Internal Navigation & Contact Portal -->
+  <Section bg="elevated" padding="lg">
+    <Container size="content">
+      <div class="text-center max-w-2xl mx-auto space-y-6">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold block">
+          Explore SAAR
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brand-navy">
+          Connect With Our Practice
+        </h2>
+        <p class="text-sm text-brand-charcoal/80 leading-relaxed">
+          Discover how our integrated design and turnkey contracting framework can bring disciplined execution to your upcoming property project.
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-4 pt-2">
+          <Button variant="gold" size="md" href="/projects/">
+            Explore All Works
+          </Button>
+          <Button variant="secondary" size="md" href="/about/">
+            About SAAR Studio
+          </Button>
+          <Button variant="secondary" size="md" href="/contact/">
+            Contact Our Office
+          </Button>
+        </div>
+      </div>
+    </Container>
+  </Section>
+</BaseLayout>

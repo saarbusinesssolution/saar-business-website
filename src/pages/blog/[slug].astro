@@ -1,0 +1,226 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import Section from '../../components/layout/Section.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import ContactActions from '../../components/ui/ContactActions.astro';
+import RelatedArticles from '../../components/blog/RelatedArticles.astro';
+import { getRelatedBlogPosts } from '../../lib/content';
+import { getBlogPostingSchema, getBreadcrumbListSchema } from '../../lib/seo/schema';
+import { SITE_URL } from '../../lib/seo/metadata';
+
+export async function getStaticPaths() {
+  const blogEntries = await getCollection('blog', ({ data }) => !data.draft);
+  return blogEntries.map((entry) => ({
+    params: { slug: entry.data.id || entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const post = {
+  ...entry.data,
+  slug: entry.data.id || entry.id,
+};
+
+const canonicalPath = `/blog/${post.slug}/`;
+const canonicalUrl = `${SITE_URL}${canonicalPath}`;
+const coverImageUrl = post.coverImage.startsWith('http')
+  ? post.coverImage
+  : `${SITE_URL}${post.coverImage}`;
+
+const breadcrumbs = [
+  { label: 'Blog & Insights', href: '/blog/' },
+  { label: post.title, current: true },
+];
+
+const structuredData = [
+  getBlogPostingSchema({
+    title: post.title,
+    description: post.description,
+    canonicalUrl,
+    publishedAt: post.publishedAt,
+    updatedAt: post.updatedAt,
+    coverImageUrl,
+    authorName: post.author.name,
+    authorUrl: post.author.url ? `${SITE_URL}${post.author.url}` : undefined,
+  }),
+  getBreadcrumbListSchema([
+    { label: 'Home', href: '/' },
+    { label: 'Blog & Insights', href: '/blog/' },
+    { label: post.title, href: canonicalPath },
+  ]),
+];
+
+const relatedPosts = await getRelatedBlogPosts(post, 3);
+
+const formattedDate = new Date(post.publishedAt).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout
+  title={`${post.title} | SAAR Insights`}
+  description={post.description}
+  breadcrumbs={breadcrumbs}
+  currentPath={canonicalPath}
+  structuredData={structuredData}
+>
+  <!-- 1. Article Header -->
+  <Section bg="elevated" padding="lg" class="border-b border-border-subtle pt-10 sm:pt-16">
+    <Container size="narrow">
+      <!-- Category & Reading Time -->
+      <div class="flex flex-wrap items-center gap-3 mb-6">
+        <Badge variant="category" class="font-mono text-xs uppercase tracking-wider text-brand-navy">
+          {post.category}
+        </Badge>
+        <span class="text-xs text-brand-charcoal/60 font-mono">
+          {post.readingTime}
+        </span>
+        <span class="text-xs text-brand-charcoal/40 font-mono" aria-hidden="true">&bull;</span>
+        <time datetime={post.publishedAt} class="text-xs text-brand-charcoal/60 font-mono">
+          {formattedDate}
+        </time>
+      </div>
+
+      <!-- Article Title -->
+      <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-brand-navy tracking-tight mb-6 leading-tight">
+        {post.title}
+      </h1>
+
+      <!-- Lead Excerpt -->
+      <p class="text-lg sm:text-xl text-brand-charcoal/85 leading-relaxed font-normal mb-8">
+        {post.description}
+      </p>
+
+      <!-- Author Card -->
+      <div class="pt-6 border-t border-border-subtle flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-brand-navy text-brand-softwhite flex items-center justify-center font-serif font-bold text-sm shrink-0">
+            S
+          </div>
+          <div>
+            <span class="font-semibold text-sm text-brand-navy block">{post.author.name}</span>
+            <span class="text-xs text-brand-charcoal/60 font-mono">{post.author.role}</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <a
+            href="/blog/"
+            class="text-xs font-semibold text-brand-navy hover:text-brand-gold transition-colors font-mono inline-flex items-center gap-1"
+          >
+            <span>&larr;</span> All Insights
+          </a>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 2. Hero Cover Image Frame -->
+  <Section bg="page" padding="sm" class="border-b border-border-subtle">
+    <Container size="content">
+      <figure class="max-w-4xl mx-auto m-0">
+        <div class="relative w-full aspect-[16/10] rounded-md overflow-hidden bg-surface-subtle border border-border-subtle shadow-card">
+          <img
+            src={post.coverImage}
+            alt={post.coverImageAlt}
+            width="1200"
+            height="750"
+            class="w-full h-full object-cover"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+        <figcaption class="mt-3 text-xs text-brand-charcoal/60 font-mono text-center">
+          {post.imageCredit}
+        </figcaption>
+      </figure>
+    </Container>
+  </Section>
+
+  <!-- 3. Article Markdown Content -->
+  <Section bg="page" padding="lg" class="border-b border-border-subtle">
+    <Container size="narrow">
+      <div class="prose max-w-none text-brand-charcoal/90 leading-relaxed space-y-6">
+        <Content />
+      </div>
+
+      <!-- Studio Attribution & Leadership Connect Box -->
+      <div class="mt-14 p-6 sm:p-8 rounded-md bg-surface-elevated border border-border-subtle shadow-xs">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div class="space-y-1">
+            <span class="text-[11px] font-mono uppercase tracking-widest text-brand-gold font-bold block">
+              Architectural Practice & Accountability
+            </span>
+            <h3 class="font-serif text-xl sm:text-2xl font-bold text-brand-navy">
+              SAAR Business Support Solution
+            </h3>
+            <p class="text-xs sm:text-sm text-brand-charcoal/75 leading-relaxed max-w-lg">
+              Operating under the direct proprietorship of <strong>Ramniwas Verma</strong> in Ulwe, Navi Mumbai. We execute turnkey residential renovations, architectural space planning, and commercial fit-outs.
+            </p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3 shrink-0">
+            <Button
+              variant="secondary"
+              size="sm"
+              href="/about/ramniwas-verma/"
+            >
+              Meet the Proprietor
+            </Button>
+            <Button
+              variant="gold"
+              size="sm"
+              href="/plan-my-project/"
+            >
+              Plan Your Project
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 4. Related Insights Grid -->
+  <RelatedArticles articles={relatedPosts} />
+
+  <!-- 5. Editorial Consultation CTA -->
+  <Section bg="elevated" padding="lg">
+    <Container size="narrow">
+      <div class="text-center max-w-xl mx-auto">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-bold mb-3 block">
+          Direct Studio Inquiries
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brand-navy tracking-tight mb-4">
+          Discuss Your Spatial Vision With Our Team
+        </h2>
+        <p class="text-sm text-brand-charcoal/80 leading-relaxed mb-6">
+          Have questions about material feasibility, architectural zoning, or turnkey contracting timelines in Navi Mumbai? Reach out directly.
+        </p>
+
+        <ContactActions
+          whatsappMessage={`Hello SAAR, I read your article "${post.title}" and would like to consult on my space.`}
+          size="md"
+          class="justify-center mb-6"
+        />
+
+        <div class="flex flex-wrap justify-center gap-4 text-xs font-mono">
+          <a href="/projects/" class="text-brand-navy hover:text-brand-gold underline transition-colors">
+            Explore Portfolio Works &rarr;
+          </a>
+          <span class="text-brand-charcoal/30">&bull;</span>
+          <a href="/contact/" class="text-brand-navy hover:text-brand-gold underline transition-colors">
+            Studio Coordinates & Location &rarr;
+          </a>
+        </div>
+      </div>
+    </Container>
+  </Section>
+</BaseLayout>

@@ -14,7 +14,10 @@ export type RouteId =
   | 'projects'
   | 'project_detail'
   | 'about'
+  | 'proprietor_profile'
   | 'process'
+  | 'blog'
+  | 'blog_detail'
   | 'plan_my_project'
   | 'contact'
   | 'privacy'
@@ -183,4 +186,43 @@ export interface ProjectData {
  */
 export interface PublicProject extends Omit<ProjectData, 'internalNotes'> {
   natureLabel: 'Design Concept' | 'Verified Project';
+}
+
+// ==========================================
+// 5. BLOG & INSIGHTS CONTENT TYPES
+// ==========================================
+
+export type BlogCategory =
+  | 'Leadership & Company'
+  | 'Interior Design'
+  | 'Turnkey Contracting'
+  | 'Residential Renovation'
+  | 'Commercial Spaces'
+  | 'Industry Guides'
+  | 'Hospitality Design';
+
+export interface BlogAuthor {
+  name: string;
+  role: string;
+  url?: string;
+  avatarUrl?: string;
+}
+
+export interface BlogPostData {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  category: BlogCategory;
+  author: BlogAuthor;
+  publishedAt: string;
+  updatedAt?: string;
+  coverImage: string;
+  coverImageAlt: string;
+  imageCredit: string;
+  readingTime: string;
+  featured: boolean;
+  draft: boolean;
+  tags: string[];
+  relatedSlugs: string[];
 }
