@@ -1,0 +1,149 @@
+---
+import Container from '../layout/Container.astro';
+import Section from '../layout/Section.astro';
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+import { getImageMetadata } from '../../data/images';
+import fs from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  class?: string;
+  id?: string;
+}
+
+const { class: className = '', id = 'nova-skills' } = Astro.props;
+
+// Verified asset metadata from central registry
+const logoMeta = getImageMetadata('nova_skills_logo');
+const photoMeta = getImageMetadata('nova_skills_founder_waseeullah_mansoori');
+
+const hasLogo = Boolean(logoMeta && fs.existsSync(path.join(process.cwd(), 'public', logoMeta.assetPath.replace(/^\//, ''))));
+const hasPhoto = Boolean(photoMeta && fs.existsSync(path.join(process.cwd(), 'public', photoMeta.assetPath.replace(/^\//, ''))));
+---
+
+<Section bg="elevated" padding="lg" class:list={['border-b border-border-subtle', className]} id={id}>
+  <Container size="content">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      <!-- Left: Institute Overview & Mission (7 cols on lg) -->
+      <div class="lg:col-span-7">
+        <span class="text-xs font-mono uppercase tracking-widest text-brand-gold font-semibold block mb-3">
+          Industry &amp; Learning
+        </span>
+
+        {hasLogo && logoMeta && (
+          <div class="mb-4">
+            <img
+              src={logoMeta.assetPath}
+              alt={logoMeta.altText}
+              width={262}
+              height={78}
+              class="h-8 sm:h-9 w-auto object-contain"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        )}
+
+        <h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl font-semibold text-text-navy tracking-tight leading-[1.2]">
+          Discover Nova Skills
+        </h2>
+
+        <p class="mt-2 text-base sm:text-lg font-medium text-brand-gold font-sans">
+          Building practical skills for a changing world.
+        </p>
+
+        <div class="mt-5 space-y-4 text-sm sm:text-base text-text-charcoal leading-relaxed font-sans">
+          <p>
+            Nova Skills is a professional education institute focused on practical, career-oriented learning. Its training programmes cover Digital Marketing, Artificial Intelligence, Graphic Design, UI/UX, Video Editing, Web Development and other emerging technologies.
+          </p>
+          <p>
+            Through project-based learning and industry-relevant training, Nova Skills aims to help students, working professionals and entrepreneurs develop applicable digital skills.
+          </p>
+        </div>
+
+        <!-- Call to Action Buttons -->
+        <div class="mt-8 flex flex-wrap items-center gap-3.5">
+          <Button
+            href="https://novaskills.in/"
+            target="_blank"
+            rel="noopener noreferrer"
+            variant="primary"
+            size="md"
+          >
+            <span>Explore Nova Skills</span>
+            <span class="ml-1.5 text-xs text-brand-gold" aria-hidden="true">&nearr;</span>
+          </Button>
+
+          <Button
+            href="https://novaskills.in/blog/waseeullah-mansoori/"
+            target="_blank"
+            rel="noopener noreferrer"
+            variant="secondary"
+            size="md"
+          >
+            <span>Meet the Founder</span>
+            <span class="ml-1.5 text-xs text-brand-navy/60" aria-hidden="true">&nearr;</span>
+          </Button>
+        </div>
+      </div>
+
+      <!-- Right: Founder Profile Card (5 cols on lg) -->
+      <div class="lg:col-span-5">
+        <div class="bg-surface-page border border-border-subtle p-6 sm:p-7 rounded-sm shadow-subtle flex flex-col justify-between">
+          <div>
+            {hasPhoto && photoMeta ? (
+              <div class="relative overflow-hidden aspect-[16/9] sm:aspect-[4/3] rounded-sm bg-surface-subtle border border-border-subtle mb-5">
+                <img
+                  src={photoMeta.assetPath}
+                  alt={photoMeta.altText}
+                  width={photoMeta.dimensions?.width ?? 533}
+                  height={photoMeta.dimensions?.height ?? 300}
+                  class="w-full h-full object-cover object-top"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            ) : (
+              <div class="w-12 h-12 rounded-sm bg-brand-navy border border-brand-gold/30 text-brand-gold font-serif font-semibold text-lg flex items-center justify-center mb-5 shadow-xs">
+                WM
+              </div>
+            )}
+
+            <div class="border-b border-border-subtle pb-3 mb-4">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="font-serif text-xl font-semibold text-text-navy">
+                  Waseeullah Mansoori
+                </h3>
+                <Badge variant="category">Founder</Badge>
+              </div>
+              <p class="text-xs font-mono uppercase tracking-wider text-brand-gold font-semibold mt-1">
+                Founder &amp; Chief Learning Officer, Nova Skills
+              </p>
+            </div>
+
+            <p class="text-xs sm:text-sm text-text-charcoal leading-relaxed font-sans">
+              Waseeullah Mansoori is a multimedia and digital marketing specialist whose work spans creative design, performance marketing, website development and AI-powered workflows. Through Nova Skills, he focuses on making digital education more practical, project-driven and relevant to contemporary professional needs.
+            </p>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-border-subtle flex items-center justify-between">
+            <a
+              href="https://novaskills.in/blog/waseeullah-mansoori/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-navy hover:text-brand-gold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2"
+            >
+              <span>Read Founder Profile</span>
+              <span aria-hidden="true">&rarr;</span>
+            </a>
+
+            <span class="text-[11px] font-mono text-text-muted">
+              novaskills.in
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Container>
+</Section>
