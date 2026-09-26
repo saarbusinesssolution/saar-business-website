@@ -18,6 +18,7 @@
      2. SEMANTIC ROLES & SURFACES
      ========================================== */
   --color-bg-page: var(--color-raw-softwhite);
+  --color-surface-pure: #FFFFFF;
   --color-surface-elevated: #FFFFFF;
   --color-surface-subtle: #EDE8DE;
   --color-surface-dark: #0F2740;
