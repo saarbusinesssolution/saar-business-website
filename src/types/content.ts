@@ -140,7 +140,11 @@ export type ProjectCategory =
   | 'Interior Design'
   | 'Turnkey Contracting'
   | 'Renovation'
-  | 'Property Solutions';
+  | 'Property Solutions'
+  | 'Residential Projects'
+  | 'Commercial Projects'
+  | 'Hospitality'
+  | 'Retail & Showrooms';
 
 export interface ProjectData {
   id: string;
@@ -167,6 +171,10 @@ export interface ProjectData {
   seoDescription: string;
   /** Internal review & evidence notes - NEVER exposed to public consumers */
   internalNotes?: string;
+  /** Whether images are demo/illustrative or actual project photos */
+  imageType?: 'demo' | 'actual';
+  /** Client name for the project */
+  clientName?: string;
 }
 
 /**

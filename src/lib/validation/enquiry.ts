@@ -87,14 +87,17 @@ export const enquirySchema = z
       .min(2, 'Name must be at least 2 characters.')
       .max(100, 'Name must not exceed 100 characters.'),
 
-    contactMethod: z.enum(['email', 'phone'], {
-      errorMap: (issue) => ({
-        message:
-          issue.code === 'invalid_type' && issue.received === 'undefined'
-            ? 'Please select your preferred contact method.'
-            : 'Preferred contact method must be either email or phone.',
-      }),
-    }),
+    contactMethod: z
+      .enum(['email', 'phone'], {
+        errorMap: (issue) => ({
+          message:
+            issue.code === 'invalid_type' && issue.received === 'undefined'
+              ? 'Please select your preferred contact method.'
+              : 'Preferred contact method must be either email or phone.',
+        }),
+      })
+      .optional()
+      .default('phone'),
 
     email: z
       .string()
@@ -111,10 +114,11 @@ export const enquirySchema = z
       .or(z.literal('')),
 
     location: z
-      .string({ required_error: 'Please enter your project city or locality.' })
+      .string()
       .trim()
-      .min(2, 'Project location must be at least 2 characters.')
-      .max(120, 'Project location must not exceed 120 characters.'),
+      .max(120, 'Project location must not exceed 120 characters.')
+      .optional()
+      .or(z.literal('')),
 
     service: z
       .string()
@@ -154,56 +158,50 @@ export const enquirySchema = z
     projectBrief: projectBriefSchema.nullable().optional(),
   })
   .superRefine((data, ctx) => {
-    // 1. Validate email when email is preferred contact method
-    if (data.contactMethod === 'email') {
-      if (!data.email || data.email.trim() === '') {
+    // 1. Validate email when email is preferred or provided
+    if (data.email && data.email.trim() !== '') {
+      const emailValidation = z.string().email('Please enter a valid email address.');
+      const result = emailValidation.safeParse(data.email.trim());
+      if (!result.success) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['email'],
-          message: 'Email address is required when email is your preferred contact method.',
+          message: 'Please enter a valid email address.',
         });
-      } else {
-        const emailValidation = z.string().email('Please enter a valid email address.');
-        const result = emailValidation.safeParse(data.email.trim());
-        if (!result.success) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['email'],
-            message: 'Please enter a valid email address.',
-          });
-        }
       }
+    } else if (data.contactMethod === 'email') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['email'],
+        message: 'Email address is required when email is your preferred contact method.',
+      });
     }
 
-    // 2. Validate phone when phone is preferred contact method
-    if (data.contactMethod === 'phone') {
-      if (!data.phone || data.phone.trim() === '') {
+    // 2. Validate phone when phone is preferred or provided
+    if (data.phone && data.phone.trim() !== '') {
+      const cleanedPhone = data.phone.trim();
+      if (cleanedPhone.length < 7 || !PHONE_REGEX.test(cleanedPhone)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['phone'],
-          message: 'Phone number is required when phone is your preferred contact method.',
+          message: 'Please enter a valid telephone number (including country/area code).',
         });
-      } else {
-        const cleanedPhone = data.phone.trim();
-        if (cleanedPhone.length < 7 || !PHONE_REGEX.test(cleanedPhone)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['phone'],
-            message: 'Please enter a valid telephone number (including country/area code).',
-          });
-        }
       }
+    } else if (data.contactMethod === 'phone') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['phone'],
+        message: 'Phone number is required when phone is your preferred contact method.',
+      });
     }
 
-    // Optional phone validation if provided while email preferred
-    if (data.contactMethod === 'email' && data.phone && data.phone.trim() !== '') {
-      if (data.phone.trim().length < 7 || !PHONE_REGEX.test(data.phone.trim())) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['phone'],
-          message: 'Please enter a valid telephone number.',
-        });
-      }
+    // If neither phone nor email is supplied, require at least phone
+    if ((!data.phone || data.phone.trim() === '') && (!data.email || data.email.trim() === '')) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['phone'],
+        message: 'Mobile / telephone number is required.',
+      });
     }
 
     // 3. Message requirement: If no projectBrief is attached, message is required

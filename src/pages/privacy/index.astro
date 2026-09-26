@@ -4,6 +4,7 @@ import Container from '../../components/layout/Container.astro';
 import Section from '../../components/layout/Section.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import Badge from '../../components/ui/Badge.astro';
+import { siteConfig } from '../../config/site';
 import { getWebPageSchema, getBreadcrumbListSchema } from '../../lib/seo/schema';
 import { SITE_URL } from '../../lib/seo/metadata';
 
@@ -245,9 +246,13 @@ const privacyStructuredData = [
             You may request a review, update, or deletion of your submitted consultation details at any time by contacting our studio administration:
           </p>
           <div class="p-4 bg-surface-elevated rounded-sm border border-border-subtle text-xs space-y-1">
-            <p><strong>Practice:</strong> Saar Business Support Solution</p>
-            <p><strong>Administration Email:</strong> <span class="font-mono text-brand-navy">hello@saarbusiness.com</span></p>
-            <p><strong>Region:</strong> Delhi NCR, India</p>
+            <p><strong>Practice:</strong> {siteConfig.name}</p>
+            <p><strong>Proprietor:</strong> {siteConfig.owner.name} ({siteConfig.owner.designation})</p>
+            <p><strong>Administration Email:</strong> <a href={`mailto:${siteConfig.email}`} class="font-mono text-brand-navy hover:text-brand-gold underline underline-offset-2">{siteConfig.email}</a></p>
+            <p><strong>Telephone / WhatsApp:</strong> <a href={`tel:${siteConfig.phoneClean || siteConfig.phone?.replace(/[^0-9+]/g, '')}`} class="font-mono text-brand-navy hover:text-brand-gold underline underline-offset-2">{siteConfig.phone}</a></p>
+            {siteConfig.address && (
+              <p><strong>Registered Studio:</strong> {siteConfig.address.formatted}</p>
+            )}
           </div>
         </section>
       </div>

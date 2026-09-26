@@ -53,6 +53,10 @@ const projects = defineCollection({
       'Turnkey Contracting',
       'Renovation',
       'Property Solutions',
+      'Residential Projects',
+      'Commercial Projects',
+      'Hospitality',
+      'Retail & Showrooms',
     ]),
     spaceType: z.string().min(2, 'Space type is required'),
     summary: z.string().min(10, 'Summary is required'),
@@ -72,6 +76,10 @@ const projects = defineCollection({
     seoDescription: z.string().min(20),
     /** Internal review notes - stripped by public helper functions */
     internalNotes: z.string().optional(),
+    /** Whether images are demo/illustrative or actual project photos */
+    imageType: z.enum(['demo', 'actual']).default('actual'),
+    /** Client name for the project */
+    clientName: z.string().optional(),
   }),
 });
 

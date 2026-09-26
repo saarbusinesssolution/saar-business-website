@@ -3,7 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/layout/Container.astro';
 import Section from '../../components/layout/Section.astro';
 import ProjectCard from '../../components/cards/ProjectCard.astro';
-import ProjectFilters from '../../components/projects/ProjectFilters.astro';
+import ProjectFilters, { type CategoryFilterItem } from '../../components/projects/ProjectFilters.astro';
+import OurClients from '../../components/sections/OurClients.astro';
 import CTASection from '../../components/sections/CTASection.astro';
 import ContactActions from '../../components/ui/ContactActions.astro';
 import Button from '../../components/ui/Button.astro';
@@ -22,9 +23,9 @@ const breadcrumbs = [
 const structuredData = [
   getWebPageSchema({
     canonicalUrl: `${SITE_URL}/projects/`,
-    title: 'Architectural Design Concepts & Portfolio | SAAR',
+    title: 'Architectural Portfolio & Selected Works | SAAR',
     description:
-      'Explore architectural design concepts and residential spatial studies by SAAR in Delhi NCR. Minimalist proportions, authentic natural materials, and disciplined daylight orchestration.',
+      'Explore architectural design studies, client projects, and turnkey spatial executions by SAAR across Navi Mumbai and Maharashtra.',
     type: 'CollectionPage',
   }),
   getBreadcrumbListSchema([
@@ -33,12 +34,40 @@ const structuredData = [
   ]),
 ];
 
-// Determine unique categories present in published data
-const availableCategories = Array.from(
-  new Set(publishedProjects.map((p) => p.category))
-).sort();
+// Preferred category display order
+const categoryOrder = [
+  'Interior Design',
+  'Residential Projects',
+  'Commercial Projects',
+  'Hospitality',
+  'Retail & Showrooms',
+  'Turnkey Contracting',
+  'Renovation',
+];
 
-const hasOnlyConcepts = publishedProjects.every((p) => p.projectNature === 'concept');
+// Calculate exact counts per category
+const categoryCounts = publishedProjects.reduce<Record<string, number>>((acc, p) => {
+  acc[p.category] = (acc[p.category] || 0) + 1;
+  return acc;
+}, {});
+
+// Construct ordered categories list with counts
+const orderedFilterCategories: CategoryFilterItem[] = categoryOrder
+  .filter((cat) => (categoryCounts[cat] || 0) > 0)
+  .map((cat) => ({
+    name: cat,
+    count: categoryCounts[cat] || 0,
+  }));
+
+const additionalCategories: CategoryFilterItem[] = Object.keys(categoryCounts)
+  .filter((cat) => !categoryOrder.includes(cat))
+  .sort()
+  .map((cat) => ({
+    name: cat,
+    count: categoryCounts[cat],
+  }));
+
+const availableFilterCategories = [...orderedFilterCategories, ...additionalCategories];
 
 const hasAnyContact = Boolean(
   (siteConfig.phone && siteConfig.phone.trim().length > 5) ||
@@ -48,8 +77,8 @@ const hasAnyContact = Boolean(
 ---
 
 <BaseLayout
-  title={hasOnlyConcepts ? "Architectural Design Concepts & Portfolio" : "Selected Works & Case Studies"}
-  description="Explore architectural design concepts and residential spatial studies by SAAR. Minimalist proportions, authentic natural materials, and disciplined daylight orchestration."
+  title="Selected Works, Client Projects & Architectural Portfolio"
+  description="Explore architectural design concepts, client projects, and turnkey contracting works by SAAR across Navi Mumbai and Maharashtra."
   breadcrumbs={breadcrumbs}
   currentPath="/projects/"
   structuredData={structuredData}
@@ -62,25 +91,26 @@ const hasAnyContact = Boolean(
           Spatial Explorations & Portfolio
         </span>
         <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-brand-navy tracking-tight mb-6 leading-tight">
-          {hasOnlyConcepts ? "Explore Design Directions" : "Selected Works & Architectural Studies"}
+          Selected Works & Client Portfolio
         </h1>
         <p class="text-base sm:text-lg text-brand-charcoal/85 leading-relaxed font-normal mb-6">
-          A curated collection of architectural design studies, residential typologies, and interior concepts demonstrating our philosophy of material honesty, daylight filtration, and spatial restraint.
+          Explore Design Directions, architectural case studies, residential typologies, and commercial fit-outs demonstrating our commitment to material honesty, disciplined execution, and single-point turnkey accountability.
         </p>
 
-        <!-- Mandatory Concept Transparency Callout -->
-        {hasOnlyConcepts && (
-          <div class="p-4 rounded-sm bg-surface-subtle border-l-2 border-brand-gold">
-            <p class="text-xs text-brand-charcoal/80 leading-normal m-0">
-              <strong class="text-brand-navy font-semibold">Transparency Notice:</strong> In keeping with our strict zero-fabrication standard, works in this showcase represent conceptual architectural design studies. Physical commissioned client case studies will be introduced following client publication authorizations.
-            </p>
-          </div>
-        )}
+        <!-- Transparency & Illustrative Imagery Notice -->
+        <div class="p-4 rounded-sm bg-surface-subtle border-l-2 border-brand-gold">
+          <p class="text-xs text-brand-charcoal/80 leading-normal m-0">
+            <strong class="text-brand-navy font-semibold">Transparency & Imagery Notice:</strong> In keeping with our strict zero-fabrication standard, selected client project presentations currently display illustrative demo photography while on-site photography permissions and final project documentation are in progress. All demo photography is clearly indicated.
+          </p>
+        </div>
       </div>
     </Container>
   </Section>
 
-  <!-- 2. Portfolio Gallery & Filtering Section -->
+  <!-- 2. Our Clients Section -->
+  <OurClients />
+
+  <!-- 3. Portfolio Gallery & Filtering Section -->
   <Section bg="page" padding="lg" class="border-b border-border-subtle">
     <Container size="content">
       <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
@@ -89,18 +119,18 @@ const hasAnyContact = Boolean(
             Project Index
           </span>
           <h2 class="font-serif text-2xl sm:text-3xl font-bold text-brand-navy mt-1">
-            {hasOnlyConcepts ? "Curated Concept Studies" : "All Projects & Studies"}
+            All Works & Architectural Studies
           </h2>
         </div>
         <p class="text-xs sm:text-sm text-brand-charcoal/70 max-w-md m-0">
-          Filter projects by spatial category or explore complete architectural case studies.
+          Filter projects by spatial discipline or explore complete project case studies and specifications.
         </p>
       </div>
 
-      <!-- Progressively Enhanced Category Filters -->
-      {availableCategories.length > 0 && (
+      <!-- Progressively Enhanced Category Filters with Accurate Counts -->
+      {availableFilterCategories.length > 0 && (
         <ProjectFilters
-          categories={availableCategories}
+          categories={availableFilterCategories}
           totalCount={publishedProjects.length}
         />
       )}
@@ -127,6 +157,8 @@ const hasAnyContact = Boolean(
                 imagePath={coverMeta?.readiness === 'available' ? coverMeta.assetPath : undefined}
                 imageAlt={coverMeta?.altText || project.title}
                 href={getProjectUrl(project.slug)}
+                imageType={project.imageType}
+                clientName={project.clientName}
               />
             </div>
           );
@@ -159,7 +191,7 @@ const hasAnyContact = Boolean(
     </Container>
   </Section>
 
-  <!-- 3. Consultation CTA Section -->
+  <!-- 4. Consultation CTA Section -->
   <CTASection
     id="contact"
     eyebrow="Commission an Inquiry"
@@ -182,7 +214,7 @@ const hasAnyContact = Boolean(
         </div>
       )}
 
-      <div class="mt-4 flex flex-wrap gap-4 justify-center">
+      <div class="mt-6 flex flex-wrap gap-4 justify-center">
         <Button
           variant="gold"
           size="md"
@@ -193,10 +225,10 @@ const hasAnyContact = Boolean(
         <Button
           variant="secondary"
           size="md"
-          href="/#process"
+          href="/plan-my-project/"
           class="bg-surface-pure/10 text-brand-softwhite border-brand-softwhite/30 hover:bg-surface-pure/20"
         >
-          Our 4-Stage Process
+          Plan My Project
         </Button>
       </div>
     </div>

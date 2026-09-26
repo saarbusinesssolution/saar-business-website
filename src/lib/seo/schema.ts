@@ -10,18 +10,41 @@ export function getOrganizationSchema() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     '@id': `${SITE_URL}/#organization`,
-    name: 'Saar Business Support Solution',
+    name: 'SAAR Business Support Solution',
     alternateName: 'SAAR',
     url: SITE_URL,
     logo: `${SITE_URL}/images/brand/logo-full.webp`,
+    telephone: '+91 9930321817',
+    email: 'saarbusinesssolution@gmail.com',
     description:
-      'Premier architectural space planning, bespoke interior design, and turnkey contracting solutions in Delhi NCR.',
+      'Premier architectural space planning, bespoke interior design, and turnkey contracting solutions in Delhi NCR and western regional markets.',
     address: {
       '@type': 'PostalAddress',
-      addressRegion: 'Delhi NCR',
+      streetAddress: 'Shop No. 1, Thakkar Residency, Plot No. 224, Sector 17',
+      addressLocality: 'Ulwe',
+      addressRegion: 'Maharashtra',
+      postalCode: '410206',
       addressCountry: 'IN',
     },
+    founder: {
+      '@type': 'Person',
+      name: 'Ramnewas Verma',
+      jobTitle: 'Proprietor',
+      image: `${SITE_URL}/images/team/ramnewas-verma.webp`,
+    },
     areaServed: [
+      {
+        '@type': 'AdministrativeArea',
+        name: 'Maharashtra',
+      },
+      {
+        '@type': 'City',
+        name: 'Navi Mumbai',
+      },
+      {
+        '@type': 'City',
+        name: 'Mumbai',
+      },
       {
         '@type': 'AdministrativeArea',
         name: 'Delhi NCR',
@@ -46,6 +69,42 @@ export function getOrganizationSchema() {
       'Residential Renovation',
       'Commercial Interiors',
     ],
+  };
+}
+
+/**
+ * Returns the LocalBusiness schema representing the physical studio entity.
+ * Strictly uses verified details: no fabricated opening hours, reviews, or prices.
+ */
+export function getLocalBusinessSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': ['LocalBusiness', 'HomeAndConstructionBusiness'],
+    '@id': `${SITE_URL}/#localbusiness`,
+    name: 'SAAR Business Support Solution',
+    alternateName: 'SAAR',
+    url: SITE_URL,
+    logo: `${SITE_URL}/images/brand/logo-full.webp`,
+    image: `${SITE_URL}/images/brand/logo-full.webp`,
+    telephone: '+91 9930321817',
+    email: 'saarbusinesssolution@gmail.com',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: 'Shop No. 1, Thakkar Residency, Plot No. 224, Sector 17',
+      addressLocality: 'Ulwe',
+      addressRegion: 'Maharashtra',
+      postalCode: '410206',
+      addressCountry: 'IN',
+    },
+    founder: {
+      '@type': 'Person',
+      name: 'Ramnewas Verma',
+      jobTitle: 'Proprietor',
+      image: `${SITE_URL}/images/team/ramnewas-verma.webp`,
+    },
+    parentOrganization: {
+      '@id': `${SITE_URL}/#organization`,
+    },
   };
 }
 

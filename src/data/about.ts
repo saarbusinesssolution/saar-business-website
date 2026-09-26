@@ -37,12 +37,22 @@ export interface AboutData {
     ctaLabel: string;
     ctaHref: string;
   };
+  leadership: LeadershipProfile;
   operationalFootprint: {
     title: string;
     serviceCoverage: string;
     consultationModel: string;
     physicalCoordinatesNotice: string;
   };
+}
+
+export interface LeadershipProfile {
+  name: string;
+  designation: string;
+  image: string;
+  bio: string[];
+  quote: string;
+  focusAreas: string[];
 }
 
 export const aboutData: AboutData = {
@@ -118,13 +128,31 @@ export const aboutData: AboutData = {
     ctaLabel: 'Explore Design Directions',
     ctaHref: '/projects/',
   },
+  leadership: {
+    name: 'Ramnewas Verma',
+    designation: 'Proprietor',
+    image: '/images/team/ramnewas-verma.webp',
+    bio: [
+      'Ramnewas Verma leads SAAR Business Support Solution with a practical, execution-first approach to architectural interior design and turnkey contracting across Delhi NCR.',
+      'Recognizing the persistent divide between architectural drawings and site delivery, he established the practice around single-point accountability — ensuring spatial integrity, material authenticity, and line-item clarity are strictly preserved from initial brief through project handover.',
+      'His leadership emphasizes direct owner governance on site, rigorous vendor and MEP trade coordination, and complete transparency in quantities and construction documentation.',
+    ],
+    quote:
+      'True architectural delivery requires standing behind every millimeter conceived on the drawing board. Our single-point governance ensures that promises made during design are faithfully realized on site.',
+    focusAreas: [
+      'Single-Point Operational Governance',
+      'Material Integrity & Authentic Finishes',
+      'On-Site Trade & MEP Quality Supervision',
+      'Transparent Quantity & Cost Auditing',
+    ],
+  },
   operationalFootprint: {
     title: 'Operational Coverage & Consultation',
     serviceCoverage:
-      'SAAR provides architectural interior design and turnkey execution services across select regional metropolitan markets for qualified residential and commercial projects.',
+      'SAAR provides architectural interior design and turnkey execution services across select regional metropolitan markets (including Navi Mumbai, Mumbai, and Delhi NCR) for qualified residential and commercial projects.',
     consultationModel:
       'We initiate all client engagements through structured Stage 01 discovery discussions to assess spatial feasibility, site logistics, and alignment with our delivery standards.',
     physicalCoordinatesNotice:
-      'Physical studio consultations are coordinated by prior appointment. Registered office coordinates will be published upon final operational administrative sign-off.',
+      'Registered office: Shop No. 1, Thakkar Residency, Plot No. 224, Sector 17, Ulwe – 410206. Studio consultations and site walk-throughs are coordinated by prior appointment.',
   },
 };

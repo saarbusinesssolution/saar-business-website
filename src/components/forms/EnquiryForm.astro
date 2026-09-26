@@ -3,7 +3,6 @@ import TextInput from '../ui/TextInput.astro';
 import TextArea from '../ui/TextArea.astro';
 import Select from '../ui/Select.astro';
 import Checkbox from '../ui/Checkbox.astro';
-import RadioGroup from '../ui/RadioGroup.astro';
 import Button from '../ui/Button.astro';
 import Badge from '../ui/Badge.astro';
 import FormField from '../ui/FormField.astro';
@@ -115,43 +114,22 @@ const isPlannerMode = mode === 'planner';
         />
       </FormField>
 
-      <FormField id={`${formId}-location`} label="Project Locality / City" required helpText="City or neighborhood where the project is situated.">
+      <FormField id={`${formId}-phone`} label="Mobile Number" required helpText="Enter your mobile or WhatsApp number.">
         <TextInput
-          id={`${formId}-location`}
-          name="location"
+          id={`${formId}-phone`}
+          name="phone"
+          type="tel"
           required
-          autocomplete="address-level2"
-          placeholder="e.g. South Delhi, Gurgaon Golf Course Rd"
-          maxlength={120}
+          autocomplete="tel"
+          placeholder="+91 99303 21817"
+          maxlength={25}
         />
       </FormField>
     </div>
 
-    {/* Preferred Contact Method */}
-    <RadioGroup
-      name="contactMethod"
-      legend="Preferred Contact Method"
-      required
-      selectedValue="email"
-      options={[
-        {
-          id: `${formId}-method-email`,
-          value: 'email',
-          label: 'Email Dialogue',
-          description: 'Receive written brief assessment and scheduling links via email.',
-        },
-        {
-          id: `${formId}-method-phone`,
-          value: 'phone',
-          label: 'Direct Phone Consultation',
-          description: 'Coordinate initial spatial discovery via telephone call.',
-        },
-      ]}
-    />
-
-    {/* Contact Channels */}
+    {/* Secondary Channels & Service */}
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-      <FormField id={`${formId}-email`} label="Email Address" helpText="Required if email is your preferred method.">
+      <FormField id={`${formId}-email`} label="Email Address (Optional)" helpText="Optional: For receiving drawings & detailed proposals.">
         <TextInput
           id={`${formId}-email`}
           name="email"
@@ -162,28 +140,14 @@ const isPlannerMode = mode === 'planner';
         />
       </FormField>
 
-      <FormField id={`${formId}-phone`} label="Telephone Number" helpText="Required if phone is your preferred method.">
-        <TextInput
-          id={`${formId}-phone`}
-          name="phone"
-          type="tel"
-          autocomplete="tel"
-          placeholder="+91 98765 43210"
-          maxlength={25}
-        />
-      </FormField>
-    </div>
-
-    {/* Standalone Mode: Discipline Selection & Overview */}
-    {!isPlannerMode && (
-      <>
-        <FormField id={`${formId}-service`} label="Primary Discipline Required" required>
+      {!isPlannerMode && (
+        <FormField id={`${formId}-service`} label="Service Interested In" required>
           <Select
             id={`${formId}-service`}
             name="service"
             required
             options={[
-              { value: '', label: 'Select required service...' },
+              { value: '', label: 'Select service of interest...' },
               { value: 'interior-design', label: 'Interior Design & Space Planning' },
               { value: 'turnkey-contracting', label: 'Turnkey Contracting & Execution' },
               { value: 'renovation', label: 'Architectural Renovation & Remodeling' },
@@ -191,18 +155,26 @@ const isPlannerMode = mode === 'planner';
             ]}
           />
         </FormField>
+      )}
+    </div>
 
-        <FormField id={`${formId}-message`} label="Project Overview & Requirements" required helpText="Briefly outline your space requirements so we can prepare for our initial discussion.">
-          <TextArea
-            id={`${formId}-message`}
-            name="message"
-            required
-            rows={4}
-            maxlength={2000}
-            placeholder="Please describe your space (e.g. 4BHK apartment, corporate office), approximate area, expected timeline, and key priorities (minimum 10 characters)..."
-          />
-        </FormField>
-      </>
+    {/* Hidden Contact Method & Location Compatibility Inputs */}
+    <input type="hidden" name="contactMethod" value="phone" />
+    <input type="hidden" name="location" value="Direct Consultation" />
+
+    {/* Standalone Mode: Project Overview & Message */}
+    {!isPlannerMode && (
+      <FormField id={`${formId}-message`} label="Message" required helpText="Briefly outline your space requirements so we can prepare for our initial discussion.">
+        <TextArea
+          id={`${formId}-message`}
+          name="message"
+          required
+          rows={4}
+          minlength={10}
+          maxlength={2000}
+          placeholder="Please describe your space (e.g. 4BHK apartment, corporate office), approximate area, expected timeline, and key priorities (minimum 10 characters)..."
+        />
+      </FormField>
     )}
 
     {/* Planner Mode: Optional Note */}
@@ -282,28 +254,9 @@ const isPlannerMode = mode === 'planner';
     const submitText = document.getElementById(`${formId}-submit-text`);
     const submitSpinner = document.getElementById(`${formId}-submit-spinner`);
 
-    // Radio inputs for contact method
-    const contactMethodRadios = form.querySelectorAll('input[name="contactMethod"]');
+    // Contact inputs
     const emailInput = document.getElementById(`${formId}-email`);
     const phoneInput = document.getElementById(`${formId}-phone`);
-
-    // Handle contact method radio changes
-    function updateContactMethodLabels() {
-      const selectedMethod = form.querySelector('input[name="contactMethod"]:checked')?.value || 'email';
-
-      if (selectedMethod === 'email') {
-        if (emailInput) emailInput.setAttribute('required', 'true');
-        if (phoneInput) phoneInput.removeAttribute('required');
-      } else {
-        if (phoneInput) phoneInput.setAttribute('required', 'true');
-        if (emailInput) emailInput.removeAttribute('required');
-      }
-    }
-
-    contactMethodRadios.forEach((radio) => {
-      radio.addEventListener('change', updateContactMethodLabels);
-    });
-    updateContactMethodLabels();
 
     // Track enquiry form start on first interaction
     let hasFiredFormStart = false;
@@ -330,10 +283,10 @@ const isPlannerMode = mode === 'planner';
       // Gather form data
       const formData = new FormData(form);
       const name = formData.get('name')?.toString().trim() || '';
-      const contactMethod = formData.get('contactMethod')?.toString() || 'email';
+      const contactMethod = formData.get('contactMethod')?.toString() || 'phone';
       const email = formData.get('email')?.toString().trim() || '';
       const phone = formData.get('phone')?.toString().trim() || '';
-      const location = formData.get('location')?.toString().trim() || '';
+      const location = formData.get('location')?.toString().trim() || 'General Consultation';
       const service = formData.get('service')?.toString().trim() || undefined;
       const message = formData.get('message')?.toString().trim() || '';
       const acknowledgement = formData.get('acknowledgement') === 'on' || formData.get('acknowledgement') === 'true';
@@ -352,24 +305,20 @@ const isPlannerMode = mode === 'planner';
         localErrors.push({ field: `${formId}-name`, message: 'Please enter your full name.' });
       }
 
-      if (contactMethod === 'email' && (!email || !email.includes('@'))) {
+      if (!phone || phone.length < 7) {
+        localErrors.push({ field: `${formId}-phone`, message: 'Please enter a valid mobile number.' });
+      }
+
+      if (email && !email.includes('@')) {
         localErrors.push({ field: `${formId}-email`, message: 'Please enter a valid email address.' });
-      }
-
-      if (contactMethod === 'phone' && (!phone || phone.length < 7)) {
-        localErrors.push({ field: `${formId}-phone`, message: 'Please enter a valid telephone number.' });
-      }
-
-      if (!location || location.length < 2) {
-        localErrors.push({ field: `${formId}-location`, message: 'Please enter your project city or locality.' });
       }
 
       if (!isPlannerMode && !projectBrief) {
         if (!service) {
-          localErrors.push({ field: `${formId}-service`, message: 'Please select a primary discipline.' });
+          localErrors.push({ field: `${formId}-service`, message: 'Please select a service interested in.' });
         }
         if (!message || message.length < 10) {
-          localErrors.push({ field: `${formId}-message`, message: 'Please provide a project overview (minimum 10 characters).' });
+          localErrors.push({ field: `${formId}-message`, message: 'Please provide a message outlining your project requirements (minimum 10 characters).' });
         }
       }
 

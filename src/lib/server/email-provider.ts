@@ -50,7 +50,7 @@ export function formatNotificationPlainText(
     `Preferred Contact Method: ${submission.contactMethod.toUpperCase()}`,
     `Email Address: ${submission.email || 'Not provided (Phone preferred)'}`,
     `Telephone Number: ${submission.phone || 'Not provided (Email preferred)'}`,
-    `Project Location / Locality: ${submission.location}`,
+    `Project Location / Locality: ${submission.location || 'General Consultation'}`,
     '',
     '------------------------------------------------------------------',
     '2. PROJECT REQUIREMENTS',
@@ -115,7 +115,7 @@ export function formatNotificationHtml(
   const safeMethod = escapeHtml(submission.contactMethod.toUpperCase());
   const safeEmail = escapeHtml(submission.email || 'Not provided');
   const safePhone = escapeHtml(submission.phone || 'Not provided');
-  const safeLocation = escapeHtml(submission.location);
+  const safeLocation = escapeHtml(submission.location || 'General Consultation');
   const safeService = escapeHtml(submission.service || 'Attached in brief');
   const safeMessage = submission.message ? escapeHtml(submission.message).replace(/\n/g, '<br/>') : '';
 
@@ -187,7 +187,7 @@ export async function sendEnquiryNotification(
   env: EnquiryServerEnv
 ): Promise<EmailDispatchResult> {
   const timestamp = new Date().toISOString();
-  const locationClean = sanitizeHeader(submission.location);
+  const locationClean = sanitizeHeader(submission.location || 'General Consultation');
   const subjectCategory = submission.projectBrief?.space?.categoryLabel || submission.service || 'Consultation';
   const emailSubject = sanitizeHeader(`[SAAR Lead] ${subjectCategory} (${locationClean}) - Ref #${reference}`);
 
@@ -195,7 +195,7 @@ export async function sendEnquiryNotification(
   const htmlContent = formatNotificationHtml(submission, reference, timestamp);
 
   const apiKey = env.RESEND_API_KEY;
-  const recipient = env.ENQUIRY_RECIPIENT_EMAIL;
+  const recipient = env.ENQUIRY_RECIPIENT_EMAIL || 'saarbusinesssolution@gmail.com';
   const sender = env.ENQUIRY_SENDER_EMAIL;
 
   // Check if test mock delivery is explicitly enabled in non-production environment

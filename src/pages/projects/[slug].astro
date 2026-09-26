@@ -69,7 +69,7 @@ const structuredData = [
   currentPath={canonicalPath}
   structuredData={structuredData}
 >
-  <div data-project-id={project.id} data-project-nature="concept">
+  <div data-project-id={project.id} data-project-nature={project.projectNature}>
     <ProjectDetail
       project={project}
       relatedServices={relatedServices}
